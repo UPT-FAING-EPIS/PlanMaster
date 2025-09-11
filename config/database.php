@@ -19,7 +19,7 @@ class Database {
         } else {
             // Configuración local
             $this->host = "localhost";
-            $this->db_name = "gameon";
+            $this->db_name = "planmaster";
             $this->username = "root";
             $this->password = "";
             $this->port = 3306;

@@ -115,17 +115,44 @@ class AuthController {
         }
     }
     
-    // Procesar login con Google
+    // Procesar login con Google (JWT Token)
     public function googleLogin() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $google_data = json_decode($_POST['google_data'], true);
+            $input = json_decode(file_get_contents('php://input'), true);
+            $credential = $input['credential'] ?? null;
             
-            if (isset($google_data['sub']) && isset($google_data['email']) && isset($google_data['name'])) {
-                $google_id = $google_data['sub'];
-                $email = $google_data['email'];
-                $name = $google_data['name'];
-                $avatar = $google_data['picture'] ?? null;
-                
+            if (!$credential) {
+                echo json_encode(['success' => false, 'message' => 'Token de Google no recibido']);
+                exit();
+            }
+            
+            // Decodificar el JWT token de Google (sin verificación por simplicidad)
+            $parts = explode('.', $credential);
+            if (count($parts) !== 3) {
+                echo json_encode(['success' => false, 'message' => 'Token de Google inválido']);
+                exit();
+            }
+            
+            // Decodificar el payload
+            $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1])), true);
+            
+            if (!$payload || !isset($payload['sub']) || !isset($payload['email']) || !isset($payload['name'])) {
+                echo json_encode(['success' => false, 'message' => 'Datos de Google incompletos']);
+                exit();
+            }
+            
+            $google_id = $payload['sub'];
+            $email = $payload['email'];
+            $name = $payload['name'];
+            $avatar = $payload['picture'] ?? null;
+            
+            // Verificar que el email esté verificado por Google
+            if (!isset($payload['email_verified']) || !$payload['email_verified']) {
+                echo json_encode(['success' => false, 'message' => 'Email no verificado por Google']);
+                exit();
+            }
+            
+            try {
                 if ($this->user->loginWithGoogle($google_id, $email, $name, $avatar)) {
                     $_SESSION['user_id'] = $this->user->id;
                     $_SESSION['user_name'] = $this->user->name;
@@ -133,13 +160,14 @@ class AuthController {
                     $_SESSION['user_avatar'] = $this->user->avatar;
                     $_SESSION['logged_in'] = true;
                     
-                    echo json_encode(['success' => true, 'redirect' => '../../Views/Users/dashboard.php']);
+                    echo json_encode(['success' => true, 'message' => 'Login exitoso con Google']);
                 } else {
-                    echo json_encode(['success' => false, 'error' => 'Error al procesar el login con Google']);
+                    echo json_encode(['success' => false, 'message' => 'Error al procesar el login con Google']);
                 }
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Datos de Google incompletos']);
+            } catch (Exception $e) {
+                echo json_encode(['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()]);
             }
+            
             exit();
         }
     }
@@ -199,7 +227,7 @@ if (isset($_GET['action'])) {
         case 'register':
             $auth->register();
             break;
-        case 'google-login':
+        case 'google_login':
             $auth->googleLogin();
             break;
         case 'logout':

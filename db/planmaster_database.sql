@@ -75,9 +75,9 @@ CREATE INDEX idx_sections_type ON project_sections(section_type);
 CREATE INDEX idx_sessions_user_id ON user_sessions(user_id);
 CREATE INDEX idx_sessions_expires ON user_sessions(expires_at);
 
--- Usuario administrador por defecto (opcional)
+-- Usuario administrador por defecto (contraseña: admin)
 INSERT INTO users (email, password, name, email_verified, status) 
-VALUES ('admin@planmaster.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrador PlanMaster', 1, 'active')
+VALUES ('admin@planmaster.com', '$2y$10$Al394jYSoakQS7kMQ9cbHO7a/B/VhInaRnwb62wKHf5zaQkLM3rRK', 'Administrador PlanMaster', 1, 'active')
 ON DUPLICATE KEY UPDATE email = email;
 
 -- Datos de ejemplo para las secciones del plan estratégico

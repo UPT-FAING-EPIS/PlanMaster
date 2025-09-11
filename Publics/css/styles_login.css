@@ -9,7 +9,7 @@
 }
 
 body {
-    font-family: 'Poppins', 'Arial', sans-serif;
+    font-family: 'Arial', 'Helvetica', sans-serif;
     background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
     min-height: 100vh;
     display: flex;
@@ -56,6 +56,7 @@ body {
     position: relative;
 }
 
+/* Overlay flotante corregido */
 .welcome-panel::before {
     content: '';
     position: absolute;
@@ -63,8 +64,15 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 35px,
+        rgba(255,255,255,0.05) 35px,
+        rgba(255,255,255,0.05) 70px
+    );
     animation: float 20s linear infinite;
+    pointer-events: none; /* Importante: no interceptar clicks */
 }
 
 @keyframes float {
@@ -185,6 +193,8 @@ body {
 
 .form-group {
     margin-bottom: 25px;
+    position: relative;
+    z-index: 5;
 }
 
 .form-label {
@@ -203,12 +213,21 @@ body {
     font-size: 1rem;
     transition: all 0.3s ease;
     background: white;
+    position: relative;
+    z-index: 5;
+    pointer-events: auto;
+    box-sizing: border-box;
+    color: #333;
 }
 
 .form-input:focus {
     outline: none;
     border-color: #42a5f5;
     box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.1);
+}
+
+.form-input::placeholder {
+    color: #999;
 }
 
 .form-input.error {
@@ -270,6 +289,9 @@ body {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
+    position: relative;
+    z-index: 10; /* Asegurar que esté por encima */
+    pointer-events: auto; /* Asegurar que sea clickeable */
 }
 
 .btn-primary {
@@ -292,11 +314,33 @@ body {
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 10; /* Asegurar que esté por encima */
 }
 
 .btn-google:hover {
     border-color: #42a5f5;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-google:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* Ocultar el botón automático de Google */
+.g_id_signin {
+    display: none !important;
+}
+
+#g_id_onload {
+    display: none !important;
 }
 
 .google-icon {

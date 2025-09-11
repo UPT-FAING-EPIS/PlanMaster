@@ -1,4 +1,4 @@
-<?php
+t<?php
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
 
@@ -17,12 +17,6 @@ if (AuthController::isLoggedIn()) {
     
     <!-- CSS -->
     <link rel="stylesheet" href="../../Publics/css/styles_login.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Google Sign-In -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../../Resources/favicon.ico">
@@ -144,18 +138,23 @@ if (AuthController::isLoggedIn()) {
                 <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #e0e0e0; z-index: -1;"></div>
             </div>
             
-            <!-- Google Login -->
-            <button id="googleLogin" class="btn btn-google">
-                <svg class="google-icon" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Continuar con Google
-            </button>
-            
-            <div class="text-center text-small">
+    <!-- Google Login (Real) -->
+    <div id="g_id_onload"
+         data-client_id="123656077365-r7upne95qtnee2qqmjli12cgeb7jomjm.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+    
+    <!-- Botón personalizado de Google -->
+    <button type="button" id="googleLogin" class="btn btn-google" onclick="triggerGoogleLogin()">
+        <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Continuar con Google
+    </button>            <div class="text-center text-small">
                 <p>Al registrarte, aceptas nuestros 
                    <a href="#" class="link">Términos de Servicio</a> y 
                    <a href="#" class="link">Política de Privacidad</a>
@@ -164,24 +163,98 @@ if (AuthController::isLoggedIn()) {
         </div>
     </div>
     
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
     <!-- JavaScript -->
     <script src="../../Publics/js/login.js"></script>
     
-    <!-- Google Sign-In Configuration -->
     <script>
-        window.onload = function () {
-            google.accounts.id.initialize({
-                client_id: "TU_GOOGLE_CLIENT_ID", // Debes reemplazar esto con tu Client ID real
-                callback: handleCredentialResponse,
-                auto_select: false,
-                cancel_on_tap_outside: true
-            });
+        // Función para manejar la respuesta de Google
+        function handleCredentialResponse(response) {
+            console.log('Token de Google recibido:', response.credential);
             
-            // Renderizar el botón de Google (opcional, ya tenemos nuestro botón personalizado)
-            // google.accounts.id.renderButton(
-            //     document.getElementById("google-signin-btn"),
-            //     { theme: "outline", size: "large", width: "100%" }
-            // );
+            // Mostrar loading
+            const googleBtn = document.getElementById('googleLogin');
+            if (googleBtn) {
+                googleBtn.innerHTML = '⏳ Iniciando sesión con Google...';
+                googleBtn.disabled = true;
+            }
+            
+            // Enviar el token al servidor
+            fetch('../../Controllers/AuthController.php?action=google_login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    credential: response.credential
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Login exitoso:', data);
+                    // Redirigir al dashboard
+                    window.location.href = '../Users/dashboard.php';
+                } else {
+                    console.error('Error en login:', data.message);
+                    alert('Error al iniciar sesión con Google: ' + data.message);
+                    
+                    // Restaurar botón
+                    if (googleBtn) {
+                        googleBtn.innerHTML = `
+                            <svg class="google-icon" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Continuar con Google
+                        `;
+                        googleBtn.disabled = false;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error de red:', error);
+                alert('Error de conexión. Por favor intenta de nuevo.');
+                
+                // Restaurar botón
+                if (googleBtn) {
+                    googleBtn.innerHTML = `
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continuar con Google
+                    `;
+                    googleBtn.disabled = false;
+                }
+            });
+        }
+        
+        // Función para activar el login de Google cuando se hace clic en el botón personalizado
+        function triggerGoogleLogin() {
+            // Si Google Identity está cargado, usar prompt
+            if (window.google && window.google.accounts) {
+                google.accounts.id.prompt();
+            } else {
+                alert('Google Identity Services no está disponible. Por favor recarga la página.');
+            }
+        }
+        
+        // Inicializar Google Identity cuando la página se carga
+        window.onload = function() {
+            if (window.google && window.google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: "123656077365-r7upne95qtnee2qqmjli12cgeb7jomjm.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                console.log('Google Identity inicializado correctamente');
+            }
         };
     </script>
 </body>
