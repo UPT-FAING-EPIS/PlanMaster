@@ -6,33 +6,33 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para cambiar entre tabs
     function handleTabs() {
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
+        const loginTab = document.querySelector('[data-tab="login-content"]');
+        const registerTab = document.querySelector('[data-tab="register-content"]');
+        const loginContent = document.getElementById('login-content');
+        const registerContent = document.getElementById('register-content');
         
         console.log('Elementos encontrados:', {
             loginTab: !!loginTab,
             registerTab: !!registerTab, 
-            loginForm: !!loginForm,
-            registerForm: !!registerForm
+            loginContent: !!loginContent,
+            registerContent: !!registerContent
         });
         
-        if (loginTab && registerTab && loginForm && registerForm) {
+        if (loginTab && registerTab && loginContent && registerContent) {
             loginTab.onclick = function() {
                 console.log('Cambiando a tab de login');
                 loginTab.classList.add('active');
                 registerTab.classList.remove('active');
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
+                loginContent.classList.add('active');
+                registerContent.classList.remove('active');
             };
             
             registerTab.onclick = function() {
                 console.log('Cambiando a tab de registro');
                 registerTab.classList.add('active');
                 loginTab.classList.remove('active');
-                registerForm.style.display = 'block';
-                loginForm.style.display = 'none';
+                registerContent.classList.add('active');
+                loginContent.classList.remove('active');
             };
         }
     }
@@ -61,6 +61,52 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Función para manejar envío de formularios
+    function handleForms() {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                console.log('Enviando formulario de login');
+                // Dejar que se envíe normalmente
+            });
+        }
+        
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                console.log('Enviando formulario de registro');
+                
+                // Validaciones básicas del lado cliente
+                const name = this.querySelector('[name="name"]').value.trim();
+                const email = this.querySelector('[name="email"]').value.trim();
+                const password = this.querySelector('[name="password"]').value;
+                const confirmPassword = this.querySelector('[name="confirm_password"]').value;
+                
+                if (!name || !email || !password || !confirmPassword) {
+                    e.preventDefault();
+                    alert('Por favor completa todos los campos');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Las contraseñas no coinciden');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert('La contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+                
+                console.log('Formulario de registro válido, enviando...');
+                // Dejar que se envíe normalmente
+            });
+        }
+    }
+    
     // Función para verificar botones
     function testButtons() {
         const buttons = document.querySelectorAll('button, .btn');
@@ -72,8 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function(e) {
                 console.log('CLICK en botón:', this.textContent.trim());
                 
-                // NO interferir con el botón de Google - ese tiene su propia función
-                // Solo manejar otros botones si es necesario
+                // NO interferir con ningún botón - dejar que funcionen normalmente
             });
         });
     }
@@ -81,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar todas las funciones
     handleTabs();
     testInputs();
+    handleForms();
     testButtons();
     
     console.log('JavaScript del login inicializado correctamente');

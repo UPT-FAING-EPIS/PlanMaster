@@ -306,34 +306,6 @@ body {
     box-shadow: 0 8px 25px rgba(30, 136, 229, 0.4);
 }
 
-.btn-google {
-    background: white;
-    color: #333;
-    border: 2px solid #e0e0e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 10; /* Asegurar que esté por encima */
-}
-
-.btn-google:hover {
-    border-color: #42a5f5;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.btn-google:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.google-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
-
 /* Mostrar el botón automático de Google */
 .g_id_signin {
     margin-bottom: 15px !important;
@@ -348,12 +320,6 @@ body {
 
 #g_id_onload {
     display: block !important;
-}
-
-.google-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
 }
 
 /* Mensajes de alerta */
