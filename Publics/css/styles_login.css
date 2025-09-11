@@ -334,13 +334,20 @@ body {
     margin-right: 10px;
 }
 
-/* Ocultar el botón automático de Google */
+/* Mostrar el botón automático de Google */
 .g_id_signin {
-    display: none !important;
+    margin-bottom: 15px !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.g_id_signin > div {
+    width: 100% !important;
+    justify-content: center !important;
 }
 
 #g_id_onload {
-    display: none !important;
+    display: block !important;
 }
 
 .google-icon {

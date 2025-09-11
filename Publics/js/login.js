@@ -72,11 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function(e) {
                 console.log('CLICK en botón:', this.textContent.trim());
                 
-                // Si es botón de Google, mostrar mensaje
-                if (this.textContent.includes('Google')) {
-                    e.preventDefault();
-                    alert('Login con Google no configurado aún.\n\nUsa las credenciales de prueba:\nEmail: admin@planmaster.com\nContraseña: admin');
-                }
+                // NO interferir con el botón de Google - ese tiene su propia función
+                // Solo manejar otros botones si es necesario
             });
         });
     }

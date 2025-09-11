@@ -248,13 +248,43 @@ if (AuthController::isLoggedIn()) {
         
         // Inicializar Google Identity cuando la página se carga
         window.onload = function() {
-            if (window.google && window.google.accounts) {
-                google.accounts.id.initialize({
-                    client_id: "123656077365-r7upne95qtnee2qqmjli12cgeb7jomjm.apps.googleusercontent.com",
-                    callback: handleCredentialResponse
-                });
-                console.log('Google Identity inicializado correctamente');
+            console.log('Inicializando Google Identity...');
+            
+            // Esperar a que Google se cargue
+            function initGoogle() {
+                if (window.google && window.google.accounts) {
+                    try {
+                        google.accounts.id.initialize({
+                            client_id: "123656077365-r7upne95qtnee2qqmjli12cgeb7jomjm.apps.googleusercontent.com",
+                            callback: handleCredentialResponse,
+                            auto_select: false,
+                            cancel_on_tap_outside: false
+                        });
+                        console.log('Google Identity inicializado correctamente');
+                        
+                        // Renderizar el botón automático también
+                        google.accounts.id.renderButton(
+                            document.querySelector('.g_id_signin'),
+                            { 
+                                theme: 'outline', 
+                                size: 'large',
+                                type: 'standard',
+                                text: 'continue_with',
+                                shape: 'rectangular',
+                                width: '100%'
+                            }
+                        );
+                        
+                    } catch (e) {
+                        console.error('Error al inicializar Google:', e);
+                    }
+                } else {
+                    console.log('Google no disponible aún, reintentando...');
+                    setTimeout(initGoogle, 500);
+                }
             }
+            
+            initGoogle();
         };
     </script>
 </body>

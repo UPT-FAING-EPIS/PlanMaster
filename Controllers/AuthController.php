@@ -117,9 +117,15 @@ class AuthController {
     
     // Procesar login con Google (JWT Token)
     public function googleLogin() {
+        // Configurar headers para JSON
+        header('Content-Type: application/json');
+        
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
             $credential = $input['credential'] ?? null;
+            
+            // Log para debug
+            error_log('Google login attempt: ' . json_encode($input));
             
             if (!$credential) {
                 echo json_encode(['success' => false, 'message' => 'Token de Google no recibido']);
@@ -136,8 +142,11 @@ class AuthController {
             // Decodificar el payload
             $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1])), true);
             
+            // Log del payload para debug
+            error_log('Google payload: ' . json_encode($payload));
+            
             if (!$payload || !isset($payload['sub']) || !isset($payload['email']) || !isset($payload['name'])) {
-                echo json_encode(['success' => false, 'message' => 'Datos de Google incompletos']);
+                echo json_encode(['success' => false, 'message' => 'Datos de Google incompletos', 'payload' => $payload]);
                 exit();
             }
             
@@ -165,9 +174,13 @@ class AuthController {
                     echo json_encode(['success' => false, 'message' => 'Error al procesar el login con Google']);
                 }
             } catch (Exception $e) {
+                error_log('Google login error: ' . $e->getMessage());
                 echo json_encode(['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()]);
             }
             
+            exit();
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             exit();
         }
     }

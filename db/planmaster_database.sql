@@ -77,8 +77,10 @@ CREATE INDEX idx_sessions_expires ON user_sessions(expires_at);
 
 -- Usuario administrador por defecto (contraseña: admin)
 INSERT INTO users (email, password, name, email_verified, status) 
-VALUES ('admin@planmaster.com', '$2y$10$Al394jYSoakQS7kMQ9cbHO7a/B/VhInaRnwb62wKHf5zaQkLM3rRK', 'Administrador PlanMaster', 1, 'active')
-ON DUPLICATE KEY UPDATE email = email;
+VALUES ('admin@planmaster.com', '$2y$10$rCgRXCL8EfE5IUvYwLBVN.6wxPoSCS9QZUTnULXwT2cH4SCcrJ9U.', 'Administrador PlanMaster', 1, 'active')
+ON DUPLICATE KEY UPDATE 
+    password = '$2y$10$rCgRXCL8EfE5IUvYwLBVN.6wxPoSCS9QZUTnULXwT2cH4SCcrJ9U.',
+    name = 'Administrador PlanMaster';
 
 -- Datos de ejemplo para las secciones del plan estratégico
 INSERT INTO project_sections (project_id, section_type, section_title, section_content, is_completed) 
