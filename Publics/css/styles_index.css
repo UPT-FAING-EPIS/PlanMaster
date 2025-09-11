@@ -1,0 +1,339 @@
+/* Reset y configuración general */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Contenedor principal de secciones */
+.section {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Sección 1 - pres01.jpg */
+.section1 {
+    background-image: url('../../Resources/pres01.jpg');
+}
+
+/* Sección 2 - pres2.jpg */
+.section2 {
+    background-image: url('../../Resources/pres2.jpg');
+}
+
+/* Sección 3 - pres3.jpg */
+.section3 {
+    background-image: url('../../Resources/pres3.jpg');
+}
+
+/* Overlay removido - sin oscurecimiento */
+
+/* Contenido de cada sección */
+.section-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+}
+
+/* === SECCIÓN 1 - ELEMENTOS === */
+/* Imagen pepol1.png con efectos de agrandamiento */
+.pepol-image {
+    position: absolute;
+    top: 50%;
+    right: 15%; /* Coordenada X: derecha 15% */
+    transform: translateY(-50%); /* Coordenada Y: centro vertical */
+    width: 500px;
+    height: auto;
+    z-index: 3;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        transform: translateY(-50%) scale(1.1);
+    }
+}
+
+/* Botón CLIC reposicionado */
+.btn-clic {
+    position: absolute;
+    top: 74%; /* Coordenada Y: 60% desde arriba */
+    left: 35%; /* Coordenada X: 25% desde la izquierda */
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    animation: fadeInUp 1s ease-out 0.5s both;
+}
+
+/* === SECCIÓN 2 - BENEFICIOS === */
+.benefits-container {
+    position: absolute;
+    right: 5%; /* Coordenada X: derecha 5% */
+    top: 20%; /* Coordenada Y: 20% desde arriba */
+    width: 45%;
+    z-index: 4;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 80px;
+    animation: slideInRight 1s ease-out;
+}
+
+.benefit-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+    animation: spin 4s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.benefit-text {
+    color: #000;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 500;
+    text-align: left;
+}
+
+.benefit-title {
+    color: #000;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.benefit-description {
+    color: #000;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* === SECCIÓN 3 - FRASE FINAL === */
+.final-phrase {
+    position: absolute;
+    right: 8%; /* Coordenada X: derecha 10% */
+    top: 58%; /* Coordenada Y: centro vertical */
+    transform: translateY(-50%);
+    width: 40%;
+    z-index: 3;
+}
+
+.phrase-text {
+    color: white;
+    font-size: 37px; /* Aumentado de 36px a 37px */
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: glowAndPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowAndPulse {
+    0%, 100% {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
+        transform: translateY(-50%) scale(1.05);
+    }
+}
+
+/* Animación glow antigua - reemplazada por glowAndPulse */
+
+/* Animación fadeInUp necesaria */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-clic:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0, 123, 255, 0.6);
+}
+
+.btn-clic:active {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Animación de entrada del botón - ya incluida arriba */
+
+/* Indicador de scroll */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: white;
+    text-align: center;
+}
+
+.scroll-arrow {
+    font-size: 24px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.scroll-text {
+    font-size: 14px;
+    margin-top: 5px;
+    opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-clic {
+        font-size: 18px;
+        padding: 15px 30px;
+        left: 50%;
+        top: 70%;
+    }
+    
+    .scroll-text {
+        font-size: 12px;
+    }
+    
+    .pepol-image {
+        width: 200px;
+        right: 5%;
+    }
+    
+    .benefits-container {
+        width: 90%;
+        right: 5%;
+        top: 15%;
+    }
+    
+    .benefit-text {
+        font-size: 14px;
+    }
+    
+    .benefit-title {
+        font-size: 16px;
+    }
+    
+    .benefit-description {
+        font-size: 14px;
+    }
+    
+    .final-phrase {
+        width: 80%;
+        right: 10%;
+    }
+    
+    .phrase-text {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-clic {
+        font-size: 16px;
+        padding: 12px 25px;
+    }
+    
+    .pepol-image {
+        width: 150px;
+        right: 2%;
+    }
+    
+    .benefit-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 15px;
+    }
+    
+    .benefit-text {
+        font-size: 12px;
+        padding: 10px;
+    }
+    
+    .benefit-title {
+        font-size: 14px;
+    }
+    
+    .benefit-description {
+        font-size: 12px;
+    }
+    
+    .phrase-text {
+        font-size: 18px;
+    }
+}
