@@ -308,7 +308,8 @@ body {
 
 /* Mostrar el botón automático de Google */
 .g_id_signin {
-    margin-bottom: 15px !important;
+    margin-bottom: 20px !important;
+    margin-top: 10px !important;
     display: block !important;
     width: 100% !important;
 }
