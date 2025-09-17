@@ -1,12 +1,11 @@
 <?php
-session_start();
-require_once __DIR__ . '/../Models/User.php';
+require_once '../core/Controller.php';
 
-class AuthController {
+class AuthController extends Controller{
     private $user;
     
     public function __construct() {
-        $this->user = new User();
+        $this->user = $this->model('User');
     }
     
     // Procesar login

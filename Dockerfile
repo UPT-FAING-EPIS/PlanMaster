@@ -1,15 +1,14 @@
 FROM php:8.2-apache
 
-# Instala dependencias necesarias para PostgreSQL, GD y ZIP
+# Instala dependencias necesarias para MySQL, GD, ZIP e intl
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
     libpng-dev \
     libzip-dev \
     unzip \
     libicu-dev \
-    && docker-php-ext-install pdo_pgsql pgsql gd zip intl
+    && docker-php-ext-install pdo_mysql mysqli gd zip intl
 
-# Habilita mod_rewrite (opcional pero común para frameworks)
+# Habilita mod_rewrite (útil para frameworks MVC)
 RUN a2enmod rewrite
 
 # Copia los archivos del proyecto al contenedor
