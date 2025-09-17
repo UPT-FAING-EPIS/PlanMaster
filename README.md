@@ -175,6 +175,7 @@ Este proyecto es parte del curso de **Planeamiento Estratégico** de la Universi
 - Sebastián Nicolás Fuentes Avalos (2022073902)
 - Cesar Nikolas Camac Melendez 2022074262)
 - Gabriela Luzkalid Gutierrez Mamani (2022074263)
+
 **Docente**: Dr. Oscar Jimenez Flores
 
 ---
