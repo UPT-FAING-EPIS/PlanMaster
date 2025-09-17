@@ -1,4 +1,5 @@
-# Estudiante: Sebastián Nicolás Fuentes Avalos
+# Estudiantes: 
+- Sebastián Nicolás Fuentes Avalos
 
 # PlanMaster - Sistema PETI para Planes Estratégicos
 
