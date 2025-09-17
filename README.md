@@ -1,5 +1,5 @@
 # Estudiantes: 
-- Sebastián Nicolás Fuentes Avalos
+- Sebastián Nicolás Fuentes Avalos 
 - Cesar Nikolas Camac Melendez
 - Gabriela Luzkalid Gutierrez Mamani
 
