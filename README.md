@@ -1,4 +1,7 @@
-# Estudiante: Sebastián Nicolás Fuentes Avalos
+# Estudiantes: 
+- Sebastián Nicolás Fuentes Avalos
+- Cesar Nikolas Camac Melendez
+- Gabriela Luzkalid Gutierrez Mamani
 
 # PlanMaster - Sistema PETI para Planes Estratégicos
 
@@ -168,7 +171,11 @@ GOOGLE_CLIENT_ID=tu-client-id
 
 Este proyecto es parte del curso de **Planeamiento Estratégico** de la Universidad Privada de Tacna.
 
-**Desarrollador**: Sebastián Nicolás Fuentes Avalos (2022073902)
+**Desarrolladores**: 
+- Sebastián Nicolás Fuentes Avalos (2022073902)
+- Cesar Nikolas Camac Melendez 2022074262)
+- Gabriela Luzkalid Gutierrez Mamani (2022074263)
+
 **Docente**: Dr. Oscar Jimenez Flores
 
 ---
