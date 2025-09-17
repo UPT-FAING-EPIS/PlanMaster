@@ -341,32 +341,33 @@ function createProject() {
         return;
     }
     
-    // Simular creación del proyecto
-    const projectData = {
-        id: Date.now(),
-        projectName: projectName,
-        companyName: companyName,
-        createdAt: new Date().toISOString(),
-        status: 'draft',
-        progress: 0
-    };
+    // Deshabilitar botón para evitar doble envío
+    const confirmBtn = document.querySelector('.btn-modal-confirm');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Creando...';
     
-    // Guardar en localStorage (temporal)
-    const projects = JSON.parse(localStorage.getItem('userProjects') || '[]');
-    projects.push(projectData);
-    localStorage.setItem('userProjects', JSON.stringify(projects));
+    // Crear formulario para enviar datos
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '../../Controllers/ProjectController.php?action=create';
+    form.style.display = 'none';
     
-    // Cerrar modal
-    closeProjectModal();
+    // Agregar campos
+    const projectNameInput = document.createElement('input');
+    projectNameInput.type = 'hidden';
+    projectNameInput.name = 'project_name';
+    projectNameInput.value = projectName;
+    form.appendChild(projectNameInput);
     
-    // Mostrar notificación de éxito
-    showNotification('¡Proyecto creado exitosamente! Redirigiendo...', 'success');
+    const companyNameInput = document.createElement('input');
+    companyNameInput.type = 'hidden';
+    companyNameInput.name = 'company_name';
+    companyNameInput.value = companyName;
+    form.appendChild(companyNameInput);
     
-    // Simular redirección al editor del proyecto
-    setTimeout(() => {
-        // Aquí iría la redirección al editor del plan estratégico
-        window.location.href = `project-editor.php?id=${projectData.id}`;
-    }, 2000);
+    // Agregar formulario al DOM y enviarlo
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function showSectionPreview(sectionNumber) {
