@@ -94,6 +94,18 @@ $user = AuthController::getCurrentUser();
                     </div>
                 </div>
             </div>
+
+            <!-- Botón para iniciar proyecto -->
+            <div class="start-project-section">
+                <div class="start-project-card">
+                    <h2>¿Listo para comenzar?</h2>
+                    <p>Inicia tu primer proyecto estratégico y completa los 11 apartados con nuestra guía paso a paso.</p>
+                    <button class="btn-start-project" onclick="startNewProject()">
+                        <span class="btn-icon">🚀</span>
+                        Iniciar Nuevo Proyecto
+                    </button>
+                </div>
+            </div>
             
             <!-- Los 11 apartados del plan estratégico -->
             <div class="strategic-sections">
@@ -165,18 +177,6 @@ $user = AuthController::getCurrentUser();
                         <h3>Matriz CAME</h3>
                         <p>Corregir, Afrontar, Mantener, Explotar</p>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Botón para iniciar proyecto -->
-            <div class="start-project-section">
-                <div class="start-project-card">
-                    <h2>¿Listo para comenzar?</h2>
-                    <p>Inicia tu primer proyecto estratégico y completa los 11 apartados con nuestra guía paso a paso.</p>
-                    <button class="btn-start-project" onclick="startNewProject()">
-                        <span class="btn-icon">🚀</span>
-                        Iniciar Nuevo Proyecto
-                    </button>
                 </div>
             </div>
             
