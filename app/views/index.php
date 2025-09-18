@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PlanMaster - Tu Plan Estratégico en un Solo Clic</title>
-    <link rel="stylesheet" href="Publics/css/styles_index.css">
+    <link rel="stylesheet" href="css/styles_index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
         <img src="Resources/pepol2.png" alt="Persona planificando" class="pepol-image">
         
         <!-- Botón CLIC reposicionado -->
-        <a href="Views/Auth/login.php" class="btn-clic">¡¡CLICK!!</a>
+        <a href="auth/login" class="btn-clic">¡¡CLICK!!</a>
         
         <!-- Indicador de scroll solo en la primera sección -->
         <div class="scroll-indicator">

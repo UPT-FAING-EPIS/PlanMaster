@@ -56,6 +56,8 @@ class AuthController extends Controller{
                 $this->view('auth/login');
                 exit();
             }
+        }else {
+            $this->view('auth/login');
         }
     }
     

@@ -1,13 +1,3 @@
-t<?php
-session_start();
-require_once __DIR__ . '/../../Controllers/AuthController.php';
-
-// Si ya está logueado, redirigir al dashboard
-if (AuthController::isLoggedIn()) {
-    header("Location: ../Users/dashboard.php");
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -16,16 +6,16 @@ if (AuthController::isLoggedIn()) {
     <title>Iniciar Sesión - PlanMaster</title>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="../../Publics/css/styles_login.css">
+    <link rel="stylesheet" href="/css/styles_login.css">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../../Resources/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="Resources/favicon.ico">
 </head>
 <body>
     <div class="login-container">
         <!-- Panel izquierdo - Bienvenida -->
         <div class="welcome-panel">
-            <a href="../../index.php" class="back-button">← Volver al inicio</a>
+            <a href="/" class="back-button">← Volver al inicio</a>
             
             <div class="logo-welcome">PlanMaster</div>
             <p class="welcome-subtitle">Tu plan estratégico en un solo clic</p>
@@ -85,7 +75,7 @@ if (AuthController::isLoggedIn()) {
             
             <!-- Contenido de Login -->
             <div id="login-content" class="form-content active">
-                <form id="loginForm" method="POST" action="../../Controllers/AuthController.php?action=login">
+                <form id="loginForm" method="POST" action="/auth/login">
                     <div class="form-group">
                         <label for="login-email" class="form-label">Email</label>
                         <input type="email" id="login-email" name="email" class="form-input" 
@@ -116,7 +106,7 @@ if (AuthController::isLoggedIn()) {
             
             <!-- Contenido de Registro -->
             <div id="register-content" class="form-content">
-                <form id="registerForm" method="POST" action="../../Controllers/AuthController.php?action=register">
+                <form id="registerForm" method="POST" action="/auth/register">
                     <div class="form-group">
                         <label for="register-name" class="form-label">Nombre completo</label>
                         <input type="text" id="register-name" name="name" class="form-input" 
@@ -156,7 +146,7 @@ if (AuthController::isLoggedIn()) {
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <!-- JavaScript -->
-    <script src="../../Publics/js/login.js"></script>
+    <script src="/js/login.js"></script>
     
     <script>
         // Función para manejar la respuesta de Google
@@ -164,7 +154,7 @@ if (AuthController::isLoggedIn()) {
             console.log('Token de Google recibido:', response.credential);
             
             // Enviar el token al servidor
-            fetch('../../Controllers/AuthController.php?action=google_login', {
+            fetch('/auth/google_login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

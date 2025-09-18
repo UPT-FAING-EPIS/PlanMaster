@@ -15,23 +15,22 @@ class Model {
         $this->user     = 'root';
         $this->password = 'GNUIiFbglnoCNLHasqsuFNVCCdGBPzry';
 
-        try {
-            // ⚠️ Aquí estás usando PostgreSQL (pgsql) aunque las variables se llaman MYSQL_*
-            $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset=utf8";
-            
-            $this->conn = new PDO($dsn, $this->user, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->exec("SET NAMES 'UTF8'");
-        } catch (PDOException $e) {
-            die("Error de conexión: " . $e->getMessage());
+        // Conexión MySQLi
+        $this->conn = new mysqli($this->host, $this->user, $this->password, $this->dbname, $this->port);
+        if ($this->conn->connect_error) {
+            die("Error de conexión: " . $this->conn->connect_error);
         }
+        $this->conn->set_charset("utf8");
     }
 
     public function getConnection() {
-        return $this->conn;
+    return $this->conn;
     }
 
     public function closeConnection() {
+        if ($this->conn) {
+            $this->conn->close();
+        }
         $this->conn = null;
     }
 }
