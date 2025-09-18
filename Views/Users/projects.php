@@ -91,8 +91,8 @@ $projects = $projectController->getUserProjects();
                             <div class="project-card">
                                 <div class="project-header">
                                     <div class="project-info">
-                                        <h3 class="project-name"><?php echo htmlspecialchars($project['project_name']); ?></h3>
-                                        <p class="company-name"><?php echo htmlspecialchars($project['company_name']); ?></p>
+                                        <h3 class="project-name"><?php echo htmlspecialchars($project['project_name'] ?? 'Sin nombre'); ?></h3>
+                                        <p class="company-name"><?php echo htmlspecialchars($project['company_name'] ?? 'Sin empresa'); ?></p>
                                     </div>
                                     <span class="project-status <?php echo $statusClass; ?>">
                                         <?php echo $statusText; ?>
@@ -102,13 +102,13 @@ $projects = $projectController->getUserProjects();
                                 <div class="project-progress">
                                     <div class="progress-info">
                                         <span class="progress-text">Progreso</span>
-                                        <span class="progress-percentage"><?php echo round($progress['percentage']); ?>%</span>
+                                        <span class="progress-percentage"><?php echo round($progress['percentage'] ?? 0); ?>%</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: <?php echo $progress['percentage']; ?>%"></div>
+                                        <div class="progress-fill" style="width: <?php echo ($progress['percentage'] ?? 0); ?>%"></div>
                                     </div>
                                     <div class="progress-details">
-                                        <small><?php echo $progress['completed']; ?> de <?php echo $progress['total']; ?> secciones completadas</small>
+                                        <small><?php echo ($progress['completed'] ?? 0); ?> de <?php echo ($progress['total'] ?? 4); ?> secciones completadas</small>
                                     </div>
                                 </div>
                                 

@@ -44,6 +44,7 @@ class ProjectController {
             $this->project->project_name = $project_name;
             $this->project->company_name = $company_name;
             $this->project->status = 'in_progress';
+            $this->project->progress_percentage = 0.00; // Asegurar que siempre sea 0.00 inicialmente
             
             if ($this->project->create()) {
                 $_SESSION['success'] = "Proyecto creado exitosamente";
@@ -261,13 +262,14 @@ class ProjectController {
         
         $completed = array_sum($progress);
         $total = count($progress);
-        $percentage = ($completed / $total) * 100;
+        $percentage = $total > 0 ? ($completed / $total) * 100 : 0;
         
         return [
             'progress' => $progress,
-            'percentage' => $percentage,
-            'completed' => $completed,
-            'total' => $total
+            'percentage' => (float)$percentage,
+            'completed' => (int)$completed,
+            'total' => (int)$total,
+            'sections' => $progress // Para compatibilidad
         ];
     }
 }
