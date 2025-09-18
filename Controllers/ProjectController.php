@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start(); // Removido para evitar conflicto - la sesión se maneja en AuthController
 require_once __DIR__ . '/../Models/Project.php';
 require_once __DIR__ . '/../Models/Mission.php';
 require_once __DIR__ . '/../Models/Vision.php';
@@ -48,7 +48,7 @@ class ProjectController {
             if ($this->project->create()) {
                 $_SESSION['success'] = "Proyecto creado exitosamente";
                 $_SESSION['current_project_id'] = $this->project->id;
-                header("Location: ../Views/Projects/projects.php?id=" . $this->project->id);
+                header("Location: ../Views/Projects/project.php?id=" . $this->project->id);
                 exit();
             } else {
                 $_SESSION['error'] = "Error al crear el proyecto";
@@ -87,13 +87,17 @@ class ProjectController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $project_id = intval($_POST['project_id']);
             $mission_text = trim($_POST['mission_text']);
+            $save_and_exit = isset($_POST['save_and_exit']);
             
             // Verificar que el proyecto pertenece al usuario
             $project = $this->getProject($project_id);
             
             if (empty($mission_text)) {
                 $_SESSION['error'] = "La misión no puede estar vacía";
-                header("Location: ../Views/Projects/mission.php?id=" . $project_id);
+                $redirect_url = $save_and_exit ? 
+                    "../Views/Projects/sections/mission.php?project_id=" . $project_id :
+                    "../Views/Projects/mission.php?id=" . $project_id;
+                header("Location: " . $redirect_url);
                 exit();
             }
             
@@ -102,11 +106,19 @@ class ProjectController {
             
             if ($this->mission->save()) {
                 $_SESSION['success'] = "Misión guardada exitosamente";
-                header("Location: ../Views/Projects/vision.php?id=" . $project_id);
+                
+                if ($save_and_exit) {
+                    header("Location: ../Views/Users/dashboard.php");
+                } else {
+                    header("Location: ../Views/Projects/vision.php?id=" . $project_id);
+                }
                 exit();
             } else {
                 $_SESSION['error'] = "Error al guardar la misión";
-                header("Location: ../Views/Projects/mission.php?id=" . $project_id);
+                $redirect_url = $save_and_exit ? 
+                    "../Views/Projects/sections/mission.php?project_id=" . $project_id :
+                    "../Views/Projects/mission.php?id=" . $project_id;
+                header("Location: " . $redirect_url);
                 exit();
             }
         }
@@ -228,7 +240,7 @@ class ProjectController {
             
             if ($this->objectives->saveProjectObjectives($project_id, $strategic_objectives)) {
                 $_SESSION['success'] = "Objetivos guardados exitosamente";
-                header("Location: ../Views/Projects/projects.php?id=" . $project_id);
+                header("Location: ../Views/Projects/project.php?id=" . $project_id);
                 exit();
             } else {
                 $_SESSION['error'] = "Error al guardar los objetivos";
@@ -262,6 +274,11 @@ class ProjectController {
 
 // Manejo de rutas
 if (isset($_GET['action'])) {
+    // Iniciar sesión si no está iniciada
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
     $controller = new ProjectController();
     
     switch ($_GET['action']) {

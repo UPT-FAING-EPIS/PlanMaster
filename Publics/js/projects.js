@@ -1,37 +1,92 @@
-// Projects JavaScript - PlanMaster
+// JavaScript para la página de proyectos - PlanMaster
 document.addEventListener('DOMContentLoaded', function() {
-    initProjects();
-    setupProgressCircles();
+    console.log('Projects.js cargado correctamente');
+    
+    // Inicializar funcionalidades
+    initProjectsPage();
     setupEventListeners();
-    animateElements();
+    animateProjectCards();
 });
 
-function initProjects() {
-    // Inicializar funcionalidades específicas de proyectos
-    console.log('Proyecto cargado:', projectData);
-    console.log('Progreso:', progressData);
+function initProjectsPage() {
+    // Verificar si hay proyectos
+    const projectCards = document.querySelectorAll('.project-card');
+    console.log('Proyectos encontrados:', projectCards.length);
     
-    // Actualizar círculo de progreso en el header
-    updateProgressCircle();
-    
-    // Verificar estado de las secciones
-    updateSectionStates();
+    // Configurar animaciones de entrada
+    projectCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
 }
 
-function setupProgressCircles() {
-    // Configurar el círculo de progreso en el header
-    const progressCircle = document.querySelector('.progress-circle');
-    if (progressCircle && progressData) {
-        const percentage = Math.round(progressData.percentage);
-        progressCircle.style.setProperty('--progress', percentage);
+function setupEventListeners() {
+    // Botones de nuevo proyecto
+    const newProjectBtns = document.querySelectorAll('.btn-new-project, .btn-start-first-project');
+    newProjectBtns.forEach(btn => {
+        btn.addEventListener('click', startNewProject);
+    });
+}
+
+function animateProjectCards() {
+    const cards = document.querySelectorAll('.project-card');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'slideInUp 0.6s ease-out';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    cards.forEach(card => observer.observe(card));
+}
+
+// Función para continuar un proyecto
+function continueProject(projectId) {
+    console.log('Continuando proyecto ID:', projectId);
+    
+    // Mostrar indicador de carga
+    showNotification('Cargando proyecto...', 'info');
+    
+    // Simular carga y redirigir
+    setTimeout(() => {
+        // Redirigir a la página del proyecto
+        window.location.href = `../Projects/project.php?id=${projectId}`;
+    }, 1000);
+}
+
+// Función para editar un proyecto
+function editProject(projectId) {
+    console.log('Editando proyecto ID:', projectId);
+    
+    // Crear modal de edición
+    showEditProjectModal(projectId);
+}
+
+// Función para duplicar un proyecto
+function duplicateProject(projectId) {
+    console.log('Duplicando proyecto ID:', projectId);
+    
+    // Mostrar confirmación
+    if (confirm('¿Estás seguro de que quieres duplicar este proyecto?')) {
+        // Simular duplicación
+        showNotification('Duplicando proyecto...', 'info');
         
-        // Animar el progreso
         setTimeout(() => {
-            progressCircle.style.background = `conic-gradient(
-                var(--secondary-color) 0% ${percentage}%, 
-                #e0e0e0 ${percentage}% 100%
-            )`;
-        }, 500);
+            showNotification('Proyecto duplicado exitosamente', 'success');
+            // Recargar la página para mostrar el proyecto duplicado
+            location.reload();
+        }, 2000);
     }
 }
 

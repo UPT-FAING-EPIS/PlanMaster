@@ -1,0 +1,385 @@
+/* Estilos para la vista individual del proyecto - PlanMaster */
+
+/* Header del proyecto */
+.project-header-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.project-info {
+    flex: 1;
+}
+
+.project-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.company-title {
+    font-size: 1.2rem;
+    margin: 0;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* Círculo de progreso */
+.project-progress-circle {
+    margin: 0 30px;
+}
+
+.circle-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #42a5f5 0deg, #42a5f5 var(--progress-deg, 0deg), rgba(255,255,255,0.3) var(--progress-deg, 0deg), rgba(255,255,255,0.3) 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rotateProgress 2s ease-in-out;
+}
+
+.circle-inner {
+    width: 90px;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.progress-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    line-height: 1;
+}
+
+.progress-label {
+    font-size: 0.7rem;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Acciones del header */
+.project-actions-header {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-save-exit {
+    background: linear-gradient(135deg, #4caf50, #43a047);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-save-exit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+/* Sección de progreso */
+.progress-section {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.progress-section h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.progress-details {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.progress-bar-full {
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #42a5f5, #1e88e5);
+    border-radius: 6px;
+    transition: width 1s ease-in-out;
+}
+
+/* Secciones estratégicas */
+.strategic-sections {
+    margin-bottom: 40px;
+}
+
+.sections-title {
+    color: #333;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* Tarjetas de sección */
+.section-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #e0e0e0, #e0e0e0);
+    transition: background 0.3s ease;
+}
+
+.section-card.completed::before {
+    background: linear-gradient(90deg, #4caf50, #43a047);
+}
+
+.section-card.pending::before {
+    background: linear-gradient(90deg, #ff9800, #f57c00);
+}
+
+.section-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.section-card.completed {
+    background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+    border-color: #c8e6c9;
+}
+
+.section-card.pending {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+    border-color: #ffe082;
+}
+
+/* Header de la sección */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #42a5f5, #1e88e5);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 3px 10px rgba(30, 136, 229, 0.3);
+}
+
+.section-status {
+    font-size: 1.5rem;
+}
+
+/* Contenido de la sección */
+.section-content {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.section-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.section-title {
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.section-description {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Acciones de la sección */
+.section-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-start-section,
+.btn-edit-section {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.btn-start-section {
+    background: linear-gradient(135deg, #42a5f5, #1e88e5);
+    color: white;
+    box-shadow: 0 3px 10px rgba(30, 136, 229, 0.3);
+}
+
+.btn-start-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+}
+
+.btn-edit-section {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+}
+
+.btn-edit-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+/* Animaciones */
+@keyframes rotateProgress {
+    from {
+        transform: rotate(-90deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .project-header-section {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding: 25px;
+    }
+    
+    .project-title {
+        font-size: 1.8rem;
+    }
+    
+    .company-title {
+        font-size: 1rem;
+    }
+    
+    .project-progress-circle {
+        margin: 0;
+    }
+    
+    .circle-progress {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .circle-inner {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .progress-value {
+        font-size: 1.2rem;
+    }
+    
+    .sections-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .sections-title {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .project-header-section {
+        padding: 20px;
+    }
+    
+    .project-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-card {
+        padding: 20px;
+    }
+    
+    .section-icon {
+        font-size: 2.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+    }
+    
+    .btn-save-exit {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}

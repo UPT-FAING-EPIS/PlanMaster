@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start(); // Removido para evitar error de sesión duplicada
 require_once __DIR__ . '/../Models/User.php';
 
 class AuthController {
@@ -46,7 +46,7 @@ class AuthController {
                 }
                 
                 $_SESSION['success'] = "¡Bienvenido de vuelta, " . $this->user->name . "!";
-                header("Location: ../../Views/Users/dashboard.php");
+                header("Location: /PlanMaster/Views/Users/dashboard.php");
                 exit();
             } else {
                 $_SESSION['error'] = "Email o contraseña incorrectos";
@@ -231,6 +231,7 @@ class AuthController {
 
 // Manejo de rutas
 if (isset($_GET['action'])) {
+    session_start(); // Iniciar sesión aquí en lugar del inicio del archivo
     $auth = new AuthController();
     
     switch ($_GET['action']) {

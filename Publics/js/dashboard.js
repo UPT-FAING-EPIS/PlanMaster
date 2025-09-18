@@ -86,6 +86,12 @@ function startNewProject() {
 }
 
 function showProjectModal() {
+    // Verificar si ya existe un modal y cerrarlo
+    const existingModals = document.querySelectorAll('.project-modal-overlay');
+    if (existingModals.length > 0) {
+        existingModals.forEach(modal => modal.remove());
+    }
+    
     // Crear modal dinámicamente
     const modal = document.createElement('div');
     modal.className = 'project-modal-overlay';
@@ -323,13 +329,15 @@ function showProjectModal() {
 }
 
 function closeProjectModal() {
-    const modal = document.querySelector('.project-modal-overlay');
-    if (modal) {
+    const modals = document.querySelectorAll('.project-modal-overlay');
+    modals.forEach(modal => {
         modal.style.animation = 'fadeOut 0.3s ease-in';
         setTimeout(() => {
-            modal.remove();
+            if (modal.parentNode) {
+                modal.remove();
+            }
         }, 300);
-    }
+    });
 }
 
 function createProject() {
@@ -341,8 +349,13 @@ function createProject() {
         return;
     }
     
-    // Deshabilitar botón para evitar doble envío
+    // Verificar si ya se está procesando una solicitud
     const confirmBtn = document.querySelector('.btn-modal-confirm');
+    if (confirmBtn.disabled) {
+        return; // Ya se está procesando
+    }
+    
+    // Deshabilitar botón para evitar doble envío
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Creando...';
     

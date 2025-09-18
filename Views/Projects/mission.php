@@ -266,7 +266,7 @@ $existing_mission = $missionModel->getByProjectId($project_id);
             <nav class="breadcrumb">
                 <a href="../Users/dashboard.php" class="breadcrumb-item">Inicio</a>
                 <span class="breadcrumb-separator">›</span>
-                <a href="projects.php?id=<?php echo $project_id; ?>" class="breadcrumb-item">Proyecto</a>
+                <a href="project.php?id=<?php echo $project_id; ?>" class="breadcrumb-item">Proyecto</a>
                 <span class="breadcrumb-separator">›</span>
                 <span class="breadcrumb-current">Misión</span>
             </nav>
@@ -340,7 +340,7 @@ $existing_mission = $missionModel->getByProjectId($project_id);
                     </div>
                     
                     <div class="form-actions">
-                        <a href="projects.php?id=<?php echo $project_id; ?>" class="btn btn-back">
+                        <a href="project.php?id=<?php echo $project_id; ?>" class="btn btn-back">
                             <span class="btn-icon">←</span>
                             Volver al Proyecto
                         </a>

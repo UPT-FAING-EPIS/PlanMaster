@@ -395,7 +395,7 @@ $existing_values = $valuesModel->getValueTexts($project_id);
             <nav class="breadcrumb">
                 <a href="../Users/dashboard.php" class="breadcrumb-item">Inicio</a>
                 <span class="breadcrumb-separator">›</span>
-                <a href="projects.php?id=<?php echo $project_id; ?>" class="breadcrumb-item">Proyecto</a>
+                <a href="project.php?id=<?php echo $project_id; ?>" class="breadcrumb-item">Proyecto</a>
                 <span class="breadcrumb-separator">›</span>
                 <span class="breadcrumb-current">Valores</span>
             </nav>
