@@ -126,32 +126,6 @@ class Router
         echo json_encode(['status' => 'error', 'message' => 'Ruta de API no encontrada']);
     }
 
-    private function handleExportRequest($segments)
-    {
-        // Verificar sesión y rol de admin
-        $rol = $_SESSION['usuario_rol'] ?? null;
-        if ($rol !== 'admin') {
-            header('Location: /');
-            exit;
-        }
-        
-        $exportAction = $segments[1] ?? null; // clientes, inversiones, etc.
-        $formato = $segments[2] ?? 'excel'; // excel o csv
-        
-        if ($exportAction) {
-            require_once '../app/controllers/admin/ExportController.php';
-            $controller = new ExportController();
-            
-            if (method_exists($controller, $exportAction)) {
-                $controller->$exportAction($formato);
-                return;
-            }
-        }
-        
-        http_response_code(404);
-        echo "Ruta de exportación no encontrada.";
-    }
-
     private function handleControllerRequest($segments) {}
 
 }

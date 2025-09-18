@@ -168,7 +168,7 @@
                 if (data.success) {
                     console.log('Login exitoso:', data);
                     // Redirigir al dashboard
-                    window.location.href = '../Users/dashboard.php';
+                    window.location.href = '/dashboard';
                 } else {
                     console.error('Error en login:', data.message);
                     alert('Error al iniciar sesión con Google: ' + data.message);

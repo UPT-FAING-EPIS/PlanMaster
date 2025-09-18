@@ -21,7 +21,6 @@ class AuthController extends Controller{
             // Validaciones básicas
             if (empty($email) || empty($password)) {
                 $_SESSION['error'] = "Por favor completa todos los campos";
-
                 $this->view('auth/login');
                 exit();
             }
@@ -40,6 +39,7 @@ class AuthController extends Controller{
                 $_SESSION['user_email'] = $this->user->email;
                 $_SESSION['user_avatar'] = $this->user->avatar;
                 $_SESSION['logged_in'] = true;
+                $_SESSION['usuario_rol'] = "admin"; // Guardar rol del usuario
                 
                 // Recordar usuario si está marcado
                 if ($remember_me) {
@@ -49,7 +49,7 @@ class AuthController extends Controller{
                 }
                 
                 $_SESSION['success'] = "¡Bienvenido de vuelta, " . $this->user->name . "!";
-                header("Location: ../../Views/Users/dashboard.php");
+                header("Location: /dashboard");
                 exit();
             } else {
                 $_SESSION['error'] = "Email o contraseña incorrectos";
