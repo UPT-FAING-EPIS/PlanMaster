@@ -192,7 +192,6 @@ class AuthController extends Controller{
     
     // Logout
     public function logout() {
-        session_start();
         
         // Limpiar cookies de recordar usuario
         if (isset($_COOKIE['remember_token'])) {
@@ -203,58 +202,12 @@ class AuthController extends Controller{
         session_unset();
         session_destroy();
         
-        header("Location: ../../index.php");
+        header("Location: /");
         exit();
     }
     
-    // Verificar si el usuario está logueado
-    public static function isLoggedIn() {
-        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-    }
-    
-    // Requerir login (middleware)
-    public static function requireLogin() {
-        if (!self::isLoggedIn()) {
-            $auth = new self();
-            $auth->view('auth/login');
-            exit();
-        }
-    }
-    
-    // Obtener datos del usuario actual
-    public static function getCurrentUser() {
-        if (self::isLoggedIn()) {
-            return [
-                'id' => $_SESSION['user_id'],
-                'name' => $_SESSION['user_name'],
-                'email' => $_SESSION['user_email'],
-                'avatar' => $_SESSION['user_avatar']
-            ];
-        }
-        return null;
-    }
+
 }
 
-// Manejo de rutas
-if (isset($_GET['action'])) {
-    $auth = new AuthController();
-    
-    switch ($_GET['action']) {
-        case 'login':
-            $auth->login();
-            break;
-        case 'register':
-            $auth->register();
-            break;
-        case 'google_login':
-            $auth->googleLogin();
-            break;
-        case 'logout':
-            $auth->logout();
-            break;
-        default:
-            $auth->view('auth/login');
-            break;
-    }
-}
+
 ?>

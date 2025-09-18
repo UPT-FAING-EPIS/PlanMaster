@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../../Resources/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/Resources/favicon.ico">
 </head>
 <body>
     <!-- Header -->
@@ -82,6 +82,18 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Botón para iniciar proyecto -->
+            <div class="start-project-section">
+                <div class="start-project-card">
+                    <h2>¿Listo para comenzar?</h2>
+                    <p>Inicia tu primer proyecto estratégico y completa los 11 apartados con nuestra guía paso a paso.</p>
+                    <button class="btn-start-project" onclick="startNewProject()">
+                        <span class="btn-icon">🚀</span>
+                        Iniciar Nuevo Proyecto
+                    </button>
                 </div>
             </div>
             
@@ -158,18 +170,6 @@
                 </div>
             </div>
             
-            <!-- Botón para iniciar proyecto -->
-            <div class="start-project-section">
-                <div class="start-project-card">
-                    <h2>¿Listo para comenzar?</h2>
-                    <p>Inicia tu primer proyecto estratégico y completa los 11 apartados con nuestra guía paso a paso.</p>
-                    <button class="btn-start-project" onclick="startNewProject()">
-                        <span class="btn-icon">🚀</span>
-                        Iniciar Nuevo Proyecto
-                    </button>
-                </div>
-            </div>
-            
             <!-- Proyectos existentes (placeholder) -->
             <div class="existing-projects">
                 <h2>Tus Proyectos</h2>
@@ -188,6 +188,6 @@
     <?php include 'footer.php'; ?>
     
     <!-- JavaScript -->
-    <script src="../../Publics/js/dashboard.js"></script>
+    <script src="/js/dashboard.js"></script>
 </body>
 </html>

@@ -3,26 +3,26 @@
         <!-- Logo y navegación principal -->
         <div class="header-left">
             <div class="logo">
-                <a href="dashboard.php">
+                <a href="/dashboard">
                     <span class="logo-text">PlanMaster</span>
                     <span class="logo-subtitle">Plan Estratégico</span>
                 </a>
             </div>
             
             <nav class="main-nav">
-                <a href="dashboard.php" class="nav-link active">
+                <a href="/dashboard" class="nav-link active">
                     <span class="nav-icon">🏠</span>
                     Dashboard
                 </a>
-                <a href="projects.php" class="nav-link">
+                <a href="/proyectos" class="nav-link">
                     <span class="nav-icon">📊</span>
                     Proyectos
                 </a>
-                <a href="templates.php" class="nav-link">
+                <a href="/plantillas" class="nav-link">
                     <span class="nav-icon">📋</span>
                     Plantillas
                 </a>
-                <a href="reports.php" class="nav-link">
+                <a href="/reportes" class="nav-link">
                     <span class="nav-icon">📈</span>
                     Reportes
                 </a>
@@ -75,24 +75,24 @@
                     
                     <div class="dropdown-divider"></div>
                     
-                    <a href="profile.php" class="dropdown-item">
+                    <a href="/profile" class="dropdown-item">
                         <span class="dropdown-icon">👤</span>
                         Mi Perfil
                     </a>
                     
-                    <a href="settings.php" class="dropdown-item">
+                    <a href="/settings" class="dropdown-item">
                         <span class="dropdown-icon">⚙️</span>
                         Configuración
                     </a>
                     
-                    <a href="help.php" class="dropdown-item">
+                    <a href="/help" class="dropdown-item">
                         <span class="dropdown-icon">❓</span>
                         Ayuda
                     </a>
                     
                     <div class="dropdown-divider"></div>
                     
-                    <a href="../../Controllers/AuthController.php?action=logout" class="dropdown-item logout">
+                    <a href="/auth/logout" class="dropdown-item logout">
                         <span class="dropdown-icon">🚪</span>
                         Cerrar Sesión
                     </a>
@@ -104,7 +104,7 @@
     <!-- Breadcrumb (opcional) -->
     <div class="breadcrumb-container">
         <nav class="breadcrumb">
-            <a href="dashboard.php" class="breadcrumb-item">Inicio</a>
+            <a href="/dashboard" class="breadcrumb-item">Inicio</a>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-current">Dashboard</span>
         </nav>
@@ -136,8 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
     navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
-        
-        if (href === currentPage || (currentPage === '' && href === 'dashboard.php')) {
+
+        if (href === currentPage || (currentPage === '' && href === '/dashboard')) {
             link.classList.add('active');
         }
     });

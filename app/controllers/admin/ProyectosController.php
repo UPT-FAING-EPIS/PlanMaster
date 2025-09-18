@@ -1,7 +1,7 @@
 <?php
 require_once '../core/Controller.php';
 
-class DashboardController extends Controller{
+class ProyectosController extends Controller{
     
     public function __construct() {
     }
@@ -12,8 +12,7 @@ class DashboardController extends Controller{
             'email' => $_SESSION['user_email'],
             'avatar' => $_SESSION['user_avatar']
         ];
-        $this->view('users/dashboard',['user' => $user]);
-
+        $this->view('users/dashboard',['user' => $user]);    
     }
 }
 
