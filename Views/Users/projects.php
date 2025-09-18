@@ -2,19 +2,7 @@
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
 require_once __DIR__ . '/../../Controllers/ProjectController.php';
-
-// Función para obtener la URL base del proyecto
-function getBaseUrl() {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    
-    // Detectar si estamos en localhost o en Azure
-    if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
-        return $protocol . '://' . $host . '/PlanMaster';
-    } else {
-        return $protocol . '://' . $host;
-    }
-}
+require_once __DIR__ . '/../../config/url_config.php';
 
 // Verificar que el usuario esté logueado
 AuthController::requireLogin();

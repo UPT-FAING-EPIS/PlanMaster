@@ -3,6 +3,7 @@ session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
 require_once __DIR__ . '/../../Controllers/ProjectController.php';
 require_once __DIR__ . '/../../Models/Objectives.php';
+require_once __DIR__ . '/../../config/url_config.php';
 require_once __DIR__ . '/../../Models/Mission.php';
 
 // Verificar que el usuario esté logueado
