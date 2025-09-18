@@ -7,7 +7,10 @@ class AuthController extends Controller{
     public function __construct() {
         $this->user = $this->model('User');
     }
-    
+    public function index() {
+        $this->view('index');
+
+    }
     // Procesar login
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -18,13 +21,14 @@ class AuthController extends Controller{
             // Validaciones básicas
             if (empty($email) || empty($password)) {
                 $_SESSION['error'] = "Por favor completa todos los campos";
-                header("Location: ../../Views/Auth/login.php");
+
+                $this->view('auth/login');
                 exit();
             }
             
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $_SESSION['error'] = "Por favor ingresa un email válido";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
             
@@ -49,7 +53,7 @@ class AuthController extends Controller{
                 exit();
             } else {
                 $_SESSION['error'] = "Email o contraseña incorrectos";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
         }
@@ -66,32 +70,32 @@ class AuthController extends Controller{
             // Validaciones
             if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
                 $_SESSION['error'] = "Por favor completa todos los campos";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
             
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $_SESSION['error'] = "Por favor ingresa un email válido";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
             
             if (strlen($password) < 6) {
                 $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
             
             if ($password !== $confirm_password) {
                 $_SESSION['error'] = "Las contraseñas no coinciden";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
             
             // Verificar si el email ya existe
             if ($this->user->emailExists($email)) {
                 $_SESSION['error'] = "Este email ya está registrado";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
             
@@ -104,11 +108,11 @@ class AuthController extends Controller{
             
             if ($this->user->register()) {
                 $_SESSION['success'] = "¡Registro exitoso! Ahora puedes iniciar sesión";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             } else {
                 $_SESSION['error'] = "Error al registrar usuario. Intenta nuevamente";
-                header("Location: ../../Views/Auth/login.php");
+                $this->view('auth/login');
                 exit();
             }
         }
@@ -209,7 +213,8 @@ class AuthController extends Controller{
     // Requerir login (middleware)
     public static function requireLogin() {
         if (!self::isLoggedIn()) {
-            header("Location: ../../Views/Auth/login.php");
+            $auth = new self();
+            $auth->view('auth/login');
             exit();
         }
     }
@@ -246,7 +251,7 @@ if (isset($_GET['action'])) {
             $auth->logout();
             break;
         default:
-            header("Location: ../../Views/Auth/login.php");
+            $auth->view('auth/login');
             break;
     }
 }

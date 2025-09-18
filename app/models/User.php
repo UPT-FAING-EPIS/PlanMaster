@@ -19,9 +19,8 @@ class User {
     public $last_login;
     public $status;
     
-    public function __construct() {
-        $database = new Database();
-        $this->conn = $database->getConnection();
+    public function __construct($conn) {
+        $this->conn = $conn;
     }
     
     // Registrar nuevo usuario
