@@ -6,4 +6,4 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
-    container_name: php-mvc-app
+    container_name: plan-master

@@ -16,7 +16,7 @@
 </head>
 <body>
     <!-- Header -->
-    <?php include 'header.php'; ?>
+    <?php require_once '../app/views/admin/header.php'; ?>
     
     <!-- Contenido principal -->
     <main class="main-content">
@@ -185,8 +185,8 @@
     </main>
     
     <!-- Footer -->
-    <?php include 'footer.php'; ?>
-    
+    <?php require_once '../app/views/admin/footer.php'; ?>
+
     <!-- JavaScript -->
     <script src="/js/dashboard.js"></script>
 </body>

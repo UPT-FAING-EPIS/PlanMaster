@@ -12,7 +12,37 @@ class DashboardController extends Controller{
             'email' => $_SESSION['user_email'],
             'avatar' => $_SESSION['user_avatar']
         ];
-        $this->view('users/dashboard',['user' => $user]);
+        $this->view('admin/dashboard/index',['user' => $user]);
+
+    }
+    public function inicio() {
+        $user = [
+            'id' => $_SESSION['user_id'],
+            'name' => $_SESSION['user_name'],
+            'email' => $_SESSION['user_email'],
+            'avatar' => $_SESSION['user_avatar']
+        ];
+        $this->view('admin/dashboard/inicio',['user' => $user]);
+
+    }
+    public function mision() {
+        $user = [
+            'id' => $_SESSION['user_id'],
+            'name' => $_SESSION['user_name'],
+            'email' => $_SESSION['user_email'],
+            'avatar' => $_SESSION['user_avatar']
+        ];
+        $this->view('admin/dashboard/mision',['user' => $user]);
+
+    }
+    public function vision() {
+        $user = [
+            'id' => $_SESSION['user_id'],
+            'name' => $_SESSION['user_name'],
+            'email' => $_SESSION['user_email'],
+            'avatar' => $_SESSION['user_avatar']
+        ];
+        $this->view('admin/dashboard/vision',['user' => $user]);
 
     }
 }

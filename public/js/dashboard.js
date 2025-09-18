@@ -81,8 +81,8 @@ function setupEventListeners() {
 }
 
 function startNewProject() {
-    // Mostrar modal de confirmación bonito
-    showProjectModal();
+    // Redirigir directamente al primer paso del proyecto
+    window.location.href = '/dashboard/inicio';
 }
 
 function showProjectModal() {
