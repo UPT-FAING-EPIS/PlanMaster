@@ -1,19 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
-
-// Función para obtener la URL base del proyecto
-function getBaseUrl() {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    
-    // Detectar si estamos en localhost o en Azure
-    if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
-        return $protocol . '://' . $host . '/PlanMaster';
-    } else {
-        return $protocol . '://' . $host;
-    }
-}
+require_once __DIR__ . '/../../config/url_config.php';
 
 // Si ya está logueado, redirigir al dashboard
 if (AuthController::isLoggedIn()) {
@@ -191,7 +179,7 @@ if (AuthController::isLoggedIn()) {
                 if (data.success) {
                     console.log('Login exitoso:', data);
                     // Redirigir al dashboard
-                    window.location.href = '../Users/dashboard.php';
+                    window.location.href = '<?php echo getBaseUrl(); ?>/Views/Users/dashboard.php';
                 } else {
                     console.error('Error en login:', data.message);
                     alert('Error al iniciar sesión con Google: ' + data.message);
