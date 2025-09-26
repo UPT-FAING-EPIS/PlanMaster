@@ -94,21 +94,21 @@ $progress = $projectController->getProjectProgress($project_id);
                 <div class="sections-grid">
                     <?php 
                     $sections = [
-                        1 => ['title' => 'Misión', 'description' => 'Define el propósito fundamental de tu empresa', 'icon' => '🎯'],
-                        2 => ['title' => 'Visión', 'description' => 'Establece hacia dónde quiere llegar tu empresa', 'icon' => '🔮'],
-                        3 => ['title' => 'Valores', 'description' => 'Los principios que guían tu organización', 'icon' => '⭐'],
-                        4 => ['title' => 'Objetivos', 'description' => 'Metas específicas y medibles', 'icon' => '🎯'],
-                        5 => ['title' => 'Análisis Interno/Externo', 'description' => 'Evaluación del entorno empresarial', 'icon' => '🔍'],
-                        6 => ['title' => 'Cadena de Valor', 'description' => 'Actividades que generan valor', 'icon' => '⛓️'],
-                        7 => ['title' => 'Matriz BCG', 'description' => 'Análisis de cartera de productos', 'icon' => '📊'],
-                        8 => ['title' => 'Matriz de Porter', 'description' => 'Cinco fuerzas competitivas', 'icon' => '🏛️'],
-                        9 => ['title' => 'Análisis PEST', 'description' => 'Factores políticos, económicos, sociales y tecnológicos', 'icon' => '🌍'],
-                        10 => ['title' => 'Estrategias', 'description' => 'Identificación de estrategias clave', 'icon' => '🧠'],
-                        11 => ['title' => 'Matriz CAME', 'description' => 'Corregir, Afrontar, Mantener, Explotar', 'icon' => '📈']
+                        1 => ['title' => 'Misión', 'description' => 'Define el propósito fundamental de tu empresa', 'icon' => '🎯', 'key' => 'mission'],
+                        2 => ['title' => 'Visión', 'description' => 'Establece hacia dónde quiere llegar tu empresa', 'icon' => '🔮', 'key' => 'vision'],
+                        3 => ['title' => 'Valores', 'description' => 'Los principios que guían tu organización', 'icon' => '⭐', 'key' => 'values'],
+                        4 => ['title' => 'Objetivos', 'description' => 'Metas específicas y medibles', 'icon' => '🎯', 'key' => 'objectives'],
+                        5 => ['title' => 'Análisis FODA', 'description' => 'Fortalezas, Oportunidades, Debilidades, Amenazas', 'icon' => '�', 'key' => 'foda_analysis'],
+                        6 => ['title' => 'Cadena de Valor', 'description' => 'Actividades que generan valor', 'icon' => '⛓️', 'key' => 'value_chain'],
+                        7 => ['title' => 'Matriz BCG', 'description' => 'Análisis de cartera de productos', 'icon' => '�', 'key' => 'bcg_matrix'],
+                        8 => ['title' => 'Matriz de Porter', 'description' => 'Cinco fuerzas competitivas', 'icon' => '🏛️', 'key' => 'porter_matrix'],
+                        9 => ['title' => 'Análisis PEST', 'description' => 'Factores políticos, económicos, sociales y tecnológicos', 'icon' => '🌍', 'key' => 'pest_analysis'],
+                        10 => ['title' => 'Estrategias', 'description' => 'Identificación de estrategias clave', 'icon' => '🧠', 'key' => 'strategies'],
+                        11 => ['title' => 'Matriz CAME', 'description' => 'Corregir, Afrontar, Mantener, Explotar', 'icon' => '�', 'key' => 'came_matrix']
                     ];
                     
                     foreach ($sections as $number => $section): 
-                        $isCompleted = isset($progress['sections'][$number]) && $progress['sections'][$number];
+                        $isCompleted = isset($progress['sections'][$section['key']]) && $progress['sections'][$section['key']];
                         $statusClass = $isCompleted ? 'completed' : 'pending';
                         $statusIcon = $isCompleted ? '✅' : '⏳';
                     ?>

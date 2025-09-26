@@ -5,6 +5,8 @@ require_once __DIR__ . '/../Models/Mission.php';
 require_once __DIR__ . '/../Models/Vision.php';
 require_once __DIR__ . '/../Models/Values.php';
 require_once __DIR__ . '/../Models/Objectives.php';
+require_once __DIR__ . '/../Models/FodaAnalysis.php';
+require_once __DIR__ . '/../Models/ValueChain.php';
 require_once __DIR__ . '/../Controllers/AuthController.php';
 
 class ProjectController {
@@ -13,6 +15,8 @@ class ProjectController {
     private $vision;
     private $values;
     private $objectives;
+    private $fodaAnalysis;
+    private $valueChain;
     
     public function __construct() {
         $this->project = new Project();
@@ -20,6 +24,8 @@ class ProjectController {
         $this->vision = new Vision();
         $this->values = new Values();
         $this->objectives = new Objectives();
+        $this->fodaAnalysis = new FodaAnalysis();
+        $this->valueChain = new ValueChain();
     }
     
     // Crear nuevo proyecto
@@ -257,7 +263,9 @@ class ProjectController {
             'mission' => $this->mission->getByProjectId($project_id) ? true : false,
             'vision' => $this->vision->getByProjectId($project_id) ? true : false,
             'values' => count($this->values->getByProjectId($project_id)) > 0 ? true : false,
-            'objectives' => count($this->objectives->getStrategicObjectivesByProjectId($project_id)) > 0 ? true : false
+            'objectives' => count($this->objectives->getStrategicObjectivesByProjectId($project_id)) > 0 ? true : false,
+            'foda_analysis' => $this->isFodaComplete($project_id) ? true : false,
+            'value_chain' => $this->isValueChainComplete($project_id) ? true : false
         ];
         
         $completed = array_sum($progress);
@@ -271,6 +279,174 @@ class ProjectController {
             'total' => (int)$total,
             'sections' => $progress // Para compatibilidad
         ];
+    }
+    
+    // Guardar análisis FODA
+    public function saveFodaAnalysis() {
+        AuthController::requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $project_id = intval($_POST['project_id']);
+            $save_and_exit = isset($_POST['save_and_exit']);
+            
+            // Verificar que el proyecto pertenece al usuario
+            $project = $this->getProject($project_id);
+            
+            try {
+                // Limpiar análisis FODA anterior
+                $this->fodaAnalysis->deleteByProject($project_id);
+                
+                // Procesar cada tipo de análisis FODA
+                $types = ['oportunidad', 'amenaza', 'fortaleza', 'debilidad'];
+                
+                foreach ($types as $type) {
+                    $plural_type = $type . 'es'; // oportunidades, amenazas, etc.
+                    if ($type == 'oportunidad') $plural_type = 'oportunidades';
+                    if ($type == 'amenaza') $plural_type = 'amenazas';
+                    if ($type == 'fortaleza') $plural_type = 'fortalezas';
+                    if ($type == 'debilidad') $plural_type = 'debilidades';
+                    
+                    if (isset($_POST[$plural_type]) && is_array($_POST[$plural_type])) {
+                        $order = 1;
+                        foreach ($_POST[$plural_type] as $item_text) {
+                            $item_text = trim($item_text);
+                            if (!empty($item_text)) {
+                                $this->fodaAnalysis->project_id = $project_id;
+                                $this->fodaAnalysis->type = $type;
+                                $this->fodaAnalysis->item_text = $item_text;
+                                $this->fodaAnalysis->item_order = $order++;
+                                
+                                if (!$this->fodaAnalysis->create()) {
+                                    throw new Exception("Error al guardar el análisis FODA");
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                $_SESSION['success'] = "Análisis FODA guardado exitosamente";
+                
+                // Redirigir según la acción
+                if ($save_and_exit) {
+                    header("Location: ../Views/Users/projects.php");
+                } else {
+                    header("Location: ../Views/Projects/foda-analysis.php?project_id=" . $project_id);
+                }
+                exit();
+                
+            } catch (Exception $e) {
+                $_SESSION['error'] = $e->getMessage();
+                header("Location: ../Views/Projects/foda-analysis.php?project_id=" . $project_id);
+                exit();
+            }
+        }
+    }
+    
+    // Obtener análisis FODA de un proyecto
+    public function getFodaAnalysis($project_id) {
+        $allItems = $this->fodaAnalysis->getByProject($project_id);
+        
+        $foda = array(
+            'oportunidades' => array(),
+            'amenazas' => array(),
+            'fortalezas' => array(),
+            'debilidades' => array()
+        );
+        
+        foreach ($allItems as $item) {
+            switch ($item['type']) {
+                case 'oportunidad':
+                    $foda['oportunidades'][] = $item;
+                    break;
+                case 'amenaza':
+                    $foda['amenazas'][] = $item;
+                    break;
+                case 'fortaleza':
+                    $foda['fortalezas'][] = $item;
+                    break;
+                case 'debilidad':
+                    $foda['debilidades'][] = $item;
+                    break;
+            }
+        }
+        
+        return $foda;
+    }
+    
+    // Verificar si el análisis FODA está completo
+    public function isFodaComplete($project_id) {
+        $status = $this->fodaAnalysis->getCompletionStatus($project_id);
+        return $status['is_complete'];
+    }
+    
+    // Guardar respuestas de Cadena de Valor
+    public function saveValueChain() {
+        try {
+            // Verificar que el usuario esté logueado
+            if (!AuthController::isLoggedIn()) {
+                header("Location: " . getBaseUrl() . "/Views/Auth/login.php");
+                exit();
+            }
+            
+            // Validar datos
+            if (!isset($_POST['project_id']) || !isset($_POST['responses'])) {
+                throw new Exception("Datos incompletos");
+            }
+            
+            $project_id = (int)$_POST['project_id'];
+            $responses = $_POST['responses'];
+            
+            // Validar que el proyecto pertenezca al usuario
+            $user_id = $_SESSION['user_id'];
+            $project = $this->project->getById($project_id);
+            
+            if (!$project || $project['user_id'] != $user_id) {
+                throw new Exception("Proyecto no encontrado o sin permisos");
+            }
+            
+            // Validar que todas las respuestas están en el rango 0-4
+            foreach ($responses as $question_number => $rating) {
+                $rating = (int)$rating;
+                if ($rating < 0 || $rating > 4) {
+                    throw new Exception("Rating fuera del rango permitido (0-4)");
+                }
+            }
+            
+            // Guardar las respuestas
+            if ($this->valueChain->saveResponses($project_id, $responses)) {
+                // Redirigir con éxito
+                header("Location: " . getBaseUrl() . "/Views/Projects/value-chain.php?project_id=" . $project_id . "&success=1");
+                exit();
+            } else {
+                throw new Exception("Error al guardar las respuestas");
+            }
+            
+        } catch (Exception $e) {
+            // Redirigir con error
+            $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+            header("Location: " . getBaseUrl() . "/Views/Projects/value-chain.php?project_id=" . $project_id . "&error=" . urlencode($e->getMessage()));
+            exit();
+        }
+    }
+    
+    // Obtener respuestas de Cadena de Valor
+    public function getValueChain($project_id) {
+        return $this->valueChain->getByProject($project_id);
+    }
+    
+    // Obtener cálculo de mejora potencial
+    public function getValueChainImprovement($project_id) {
+        return $this->valueChain->calculatePotentialImprovement($project_id);
+    }
+    
+    // Verificar si la Cadena de Valor está completa
+    public function isValueChainComplete($project_id) {
+        return $this->valueChain->isComplete($project_id);
+    }
+    
+    // Obtener estadísticas por categorías
+    public function getValueChainStats($project_id) {
+        return $this->valueChain->getCategoryStats($project_id);
     }
 }
 
@@ -298,6 +474,50 @@ if (isset($_GET['action'])) {
             break;
         case 'save_objectives':
             $controller->saveObjectives();
+            break;
+        case 'save_foda':
+            $controller->saveFodaAnalysis();
+            break;
+        case 'save_value_chain':
+            $controller->saveValueChain();
+            break;
+        default:
+            header("Location: ../Views/Users/dashboard.php");
+            break;
+    }
+}
+
+// Manejo de rutas
+if (isset($_GET['action'])) {
+    // Iniciar sesión si no está iniciada
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    $controller = new ProjectController();
+    $action = $_GET['action'];
+    
+    switch ($action) {
+        case 'create':
+            $controller->createProject();
+            break;
+        case 'save_mission':
+            $controller->saveMission();
+            break;
+        case 'save_vision':
+            $controller->saveVision();
+            break;
+        case 'save_values':
+            $controller->saveValues();
+            break;
+        case 'save_objectives':
+            $controller->saveObjectives();
+            break;
+        case 'save_foda':
+            $controller->saveFodaAnalysis();
+            break;
+        case 'save_value_chain':
+            $controller->saveValueChain();
             break;
         default:
             header("Location: ../Views/Users/dashboard.php");

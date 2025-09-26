@@ -332,6 +332,23 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
             box-shadow: none;
         }
         
+        .btn-continue {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+        }
+        
+        .actions-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
         .navigation-hint {
             text-align: center;
             margin-top: 30px;
@@ -574,17 +591,31 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                             Volver a Valores
                         </a>
                         
-                        <button type="submit" class="btn btn-save" id="save-btn">
-                            <span class="btn-icon">💾</span>
-                            <?php echo count($existing_objectives) > 0 ? 'Actualizar Objetivos' : 'Guardar Objetivos'; ?>
-                        </button>
+                        <div class="actions-right">
+                            <button type="submit" class="btn btn-save" id="save-btn">
+                                <span class="btn-icon">💾</span>
+                                <?php echo count($existing_objectives) > 0 ? 'Actualizar Objetivos' : 'Guardar Objetivos'; ?>
+                            </button>
+                            
+                            <?php if (count($existing_objectives) > 0): ?>
+                                <a href="foda-analysis.php?project_id=<?php echo $project_id; ?>" class="btn btn-continue">
+                                    <span class="btn-icon">📊</span>
+                                    Continuar a Análisis Interno y Externo
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </form>
                 
                 <!-- Hint de navegación -->
                 <div class="navigation-hint">
                     <p>
-                        <strong>¡Felicitaciones! 🎉</strong> Una vez guardados los objetivos, habrás completado las 4 secciones básicas de tu plan estratégico.
+                        <strong>¡Excelente! 🎉</strong> Has completado los objetivos estratégicos. 
+                        <?php if (count($existing_objectives) > 0): ?>
+                            El siguiente paso es realizar un <strong>Análisis Interno y Externo</strong> para identificar las estrategias más adecuadas.
+                        <?php else: ?>
+                            Una vez guardados, podrás continuar con el Análisis Interno y Externo.
+                        <?php endif; ?>
                     </p>
                 </div>
             </div>

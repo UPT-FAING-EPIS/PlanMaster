@@ -167,7 +167,7 @@ function startSection(sectionNum) {
         '2': 'vision',
         '3': 'values',
         '4': 'objectives',
-        '5': 'analysis',
+        '5': 'foda-analysis',
         '6': 'value-chain',
         '7': 'bcg-matrix',
         '8': 'porter-matrix',
@@ -183,7 +183,16 @@ function startSection(sectionNum) {
         
         // Redirigir a la página de la sección
         setTimeout(() => {
-            window.location.href = `sections/${sectionName}.php?project_id=${projectData.id}`;
+            // Para las secciones 1-4, usar directamente el nombre del archivo
+            if (sectionNum <= 4) {
+                window.location.href = `${sectionName}.php?id=${projectData.id}`;
+            } else if (sectionName === 'foda-analysis' || sectionName === 'value-chain') {
+                // Para FODA y Cadena de Valor, usar el nombre completo del archivo
+                window.location.href = `${sectionName}.php?project_id=${projectData.id}`;
+            } else {
+                // Para las futuras secciones, usar la carpeta sections/
+                window.location.href = `sections/${sectionName}.php?project_id=${projectData.id}`;
+            }
         }, 1000);
     }
 }
