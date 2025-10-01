@@ -19,6 +19,19 @@
 CREATE DATABASE IF NOT EXISTS `railway` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `railway`;
 
+CREATE TABLE IF NOT EXISTS `project_foda_analysis` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) NOT NULL,
+  `type` enum('oportunidad','amenaza','fortaleza','debilidad') NOT NULL,
+  `item_text` text NOT NULL,
+  `item_order` int(11) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_project_foda` (`project_id`,`type`,`item_order`),
+  CONSTRAINT `project_foda_analysis_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Volcando estructura para tabla railway.project_mission
 CREATE TABLE IF NOT EXISTS `project_mission` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -88,6 +101,19 @@ INSERT INTO `project_values` (`id`, `project_id`, `value_text`, `value_order`, `
 	(1, 6, 'Integridad', 1, '2025-09-18 18:48:55', '2025-09-18 18:48:55'),
 	(2, 6, 'Compromiso', 2, '2025-09-18 18:48:55', '2025-09-18 18:48:55'),
 	(3, 6, 'Innovación', 3, '2025-09-18 18:48:55', '2025-09-18 18:48:55');
+
+CREATE TABLE IF NOT EXISTS `project_value_chain` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) NOT NULL,
+  `question_number` int(11) NOT NULL CHECK (`question_number` between 1 and 25),
+  `rating` int(11) NOT NULL DEFAULT 0 CHECK (`rating` between 0 and 4),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_project_question` (`project_id`,`question_number`),
+  KEY `idx_project_id` (`project_id`),
+  CONSTRAINT `project_value_chain_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Volcando estructura para tabla railway.project_vision
 CREATE TABLE IF NOT EXISTS `project_vision` (
