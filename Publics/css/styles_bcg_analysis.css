@@ -1,0 +1,932 @@
+/* ===== BCG ANALYSIS STYLES ===== */
+
+/* Header del proyecto */
+.project-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 0;
+}
+
+.project-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.project-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.action-buttons .btn {
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+}
+
+/* Tarjetas de sección */
+.section-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.section-header {
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0;
+}
+
+.section-content {
+    padding: 2rem;
+}
+
+/* Información de introducción */
+.info-box {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.info-box h5 {
+    color: #495057;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.info-box p {
+    margin-bottom: 0;
+    color: #6c757d;
+}
+
+/* Matriz BCG compacta */
+.bcg-matrix-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    margin: 1.5rem 0;
+}
+
+.matrix-title {
+    color: #495057;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.quadrants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.quadrant-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.quadrant-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.quadrant-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.quadrant-icon {
+    font-size: 1.5rem;
+}
+
+.quadrant-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.quadrant-criteria {
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.criteria-high {
+    background: #d4edda;
+    color: #155724;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.criteria-low {
+    background: #fff3cd;
+    color: #856404;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.quadrant-strategy {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Estilos específicos por cuadrante */
+.quadrant-item.estrella {
+    border-color: #ffc107;
+}
+
+.quadrant-item.estrella:hover {
+    border-color: #e0a800;
+    background: #fff8e1;
+}
+
+.quadrant-item.interrogante {
+    border-color: #17a2b8;
+}
+
+.quadrant-item.interrogante:hover {
+    border-color: #138496;
+    background: #e1f5fe;
+}
+
+.quadrant-item.vaca {
+    border-color: #28a745;
+}
+
+.quadrant-item.vaca:hover {
+    border-color: #1e7e34;
+    background: #e8f5e8;
+}
+
+.quadrant-item.perro {
+    border-color: #dc3545;
+}
+
+.quadrant-item.perro:hover {
+    border-color: #c82333;
+    background: #ffebee;
+}
+
+.quadrant-card h6 {
+    font-weight: 600;
+    margin: 0.5rem 0;
+    color: #495057;
+}
+
+.quadrant-card small {
+    color: #6c757d;
+    line-height: 1.2;
+}
+
+/* Mini Pasos BCG */
+.mini-step {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.mini-step-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.step-number {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.step-title {
+    flex: 1;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.btn-add-mini {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-add-mini:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.mini-step-content {
+    padding: 1.5rem;
+}
+
+/* Tabla de Previsión de Ventas */
+.sales-forecast-table {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-header {
+    background: #f8f9fa;
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 100px;
+    gap: 1px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-header > div {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #495057;
+    text-align: center;
+}
+
+.col-product {
+    text-align: left !important;
+}
+
+.product-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 100px;
+    gap: 1px;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+.product-row:last-child {
+    border-bottom: none;
+}
+
+.product-row > div {
+    padding: 0.75rem 1rem;
+}
+
+.product-input {
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.product-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.sales-total {
+    background: #e9ecef;
+    padding: 1rem;
+    text-align: right;
+    font-size: 1rem;
+    border-top: 2px solid #007bff;
+}
+
+.btn-remove {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-remove:hover {
+    background: #c82333;
+}
+
+/* Tabla TCM */
+.tcm-table {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.tcm-header {
+    background: #f8f9fa;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.tcm-header > div {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #495057;
+    text-align: center;
+}
+
+.tcm-periods {
+    min-height: 60px;
+}
+
+.period-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+.period-row:last-child {
+    border-bottom: none;
+}
+
+.period-input {
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 280px;
+}
+
+.years-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.year-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 100px;
+}
+
+.year-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6c757d;
+    text-align: center;
+    white-space: nowrap;
+    margin-bottom: 0.2rem;
+}
+
+.year-separator {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin: 0 0.5rem;
+}
+
+.year-input {
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 90px;
+    min-width: 90px;
+    text-align: center;
+}
+
+.year-input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Celdas de productos TCM */
+.product-tcm-cell {
+    padding: 0.75rem;
+    border-right: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.product-tcm-cell:last-child {
+    border-right: none;
+}
+
+.product-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #495057;
+    text-align: center;
+    margin: 0;
+}
+
+.percentage-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 80px;
+}
+
+.percentage-input {
+    width: 100%;
+    padding: 0.4rem 1.2rem 0.4rem 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.percentage-input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.percentage-symbol {
+    position: absolute;
+    right: 0.4rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.products-grid {
+    display: grid;
+    gap: 1px;
+    padding: 0.75rem 1rem;
+}
+
+/* Tabla Resumen BCG */
+.bcg-summary-table {
+    margin-top: 2rem;
+}
+
+.table-title {
+    color: #495057;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.bcg-table {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bcg-row {
+    display: grid;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+.bcg-row:last-child {
+    border-bottom: none;
+}
+
+.bcg-row.header {
+    background: linear-gradient(90deg, #6c757d 0%, #495057 100%);
+    color: white;
+    font-weight: 600;
+}
+
+.bcg-row.header > div:first-child {
+    background: #495057;
+}
+
+.bcg-row > div {
+    padding: 0.75rem 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    border-right: 1px solid #e9ecef;
+}
+
+.bcg-row > div:last-child {
+    border-right: none;
+}
+
+.bcg-row > div:first-child {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    text-align: left;
+}
+
+/* Responsive para mini pasos */
+@media (max-width: 768px) {
+    .table-header,
+    .product-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .table-header > div,
+    .product-row > div {
+        border-bottom: 1px solid #e9ecef;
+        text-align: left !important;
+    }
+    
+    .tcm-header,
+    .period-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-title {
+        font-size: 1rem;
+    }
+}
+
+.product-item .card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.product-item .card:hover {
+    border-color: #007bff;
+    box-shadow: 0 5px 20px rgba(0, 123, 255, 0.1);
+}
+
+.product-item .card-header {
+    background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.product-item .card-header h5 {
+    color: white;
+}
+
+.product-item .card-body {
+    padding: 1.5rem;
+}
+
+/* Sección de competidores */
+.competitors-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.competitors-section h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+.competitor-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+.competitor-item:hover {
+    border-color: #007bff;
+}
+
+/* Campos de formulario */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-label i {
+    color: #007bff;
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control::placeholder {
+    color: #adb5bd;
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    border: none;
+}
+
+.btn-outline-danger {
+    border: 2px solid #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-outline-primary {
+    border: 2px solid #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background: #007bff;
+    color: white;
+}
+
+/* Matriz BCG Visual */
+.bcg-matrix-container {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 15px;
+    border: 1px solid #e9ecef;
+}
+
+#bcgMatrix {
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    background: white;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Leyenda de la matriz */
+.matrix-legend {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.matrix-legend h5 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+    border-top: none;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.table td {
+    vertical-align: middle;
+    color: #495057;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-card {
+    animation: fadeIn 0.5s ease;
+}
+
+.product-item {
+    animation: fadeIn 0.6s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quadrants-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .quadrant-item {
+        padding: 0.75rem;
+    }
+    
+    .quadrant-header h5 {
+        font-size: 0.9rem;
+    }
+    
+    .quadrant-icon {
+        font-size: 1.25rem;
+    }
+    
+    .quadrant-criteria {
+        font-size: 0.8rem;
+    }
+    
+    .quadrant-strategy {
+        font-size: 0.75rem;
+    }
+    
+    .matrix-title {
+        font-size: 1.1rem;
+    }
+    
+    .competitor-item .row {
+        gap: 0.5rem;
+    }
+    
+    #bcgMatrix {
+        width: 100%;
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-item .card-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .competitor-item .row {
+        flex-direction: column;
+    }
+    
+    .competitor-item .col-md-5,
+    .competitor-item .col-md-2 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Estados de loading y éxito */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.3rem solid #f3f3f3;
+    border-top: 0.3rem solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Alertas personalizadas */
+.alert {
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Tooltips y ayuda */
+.help-tooltip {
+    cursor: help;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.help-tooltip:hover {
+    color: #007bff;
+}
+
+/* Efectos de hover adicionales */
+.section-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.form-control:hover {
+    border-color: #80bdff;
+}
+
+/* Breadcrumbs personalizados si se necesitan */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #6c757d;
+}
+
+.breadcrumb-item.active {
+    color: #007bff;
+    font-weight: 500;
+}

@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../config/url_config.php';
 AuthController::requireLogin();
 
 // Obtener el ID del proyecto
-$project_id = intval($_GET['project_id'] ?? 0);
+$project_id = intval($_GET['id'] ?? 0);
 if ($project_id === 0) {
     header("Location: " . getBaseUrl() . "/Views/Users/projects.php");
     exit();

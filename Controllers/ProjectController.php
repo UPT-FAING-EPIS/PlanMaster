@@ -7,6 +7,7 @@ require_once __DIR__ . '/../Models/Values.php';
 require_once __DIR__ . '/../Models/Objectives.php';
 require_once __DIR__ . '/../Models/FodaAnalysis.php';
 require_once __DIR__ . '/../Models/ValueChain.php';
+require_once __DIR__ . '/../Models/BCGAnalysis.php';
 require_once __DIR__ . '/../Controllers/AuthController.php';
 
 class ProjectController {
@@ -17,6 +18,7 @@ class ProjectController {
     private $objectives;
     private $fodaAnalysis;
     private $valueChain;
+    private $bcgAnalysis;
     
     public function __construct() {
         $this->project = new Project();
@@ -26,6 +28,7 @@ class ProjectController {
         $this->objectives = new Objectives();
         $this->fodaAnalysis = new FodaAnalysis();
         $this->valueChain = new ValueChain();
+        $this->bcgAnalysis = new BCGAnalysis();
     }
     
     // Crear nuevo proyecto
@@ -265,7 +268,8 @@ class ProjectController {
             'values' => count($this->values->getByProjectId($project_id)) > 0 ? true : false,
             'objectives' => count($this->objectives->getStrategicObjectivesByProjectId($project_id)) > 0 ? true : false,
             'foda_analysis' => $this->isFodaComplete($project_id) ? true : false,
-            'value_chain' => $this->isValueChainComplete($project_id) ? true : false
+            'value_chain' => $this->isValueChainComplete($project_id) ? true : false,
+            'bcg_analysis' => $this->isBCGComplete($project_id) ? true : false
         ];
         
         $completed = array_sum($progress);
@@ -448,6 +452,132 @@ class ProjectController {
     public function getValueChainStats($project_id) {
         return $this->valueChain->getCategoryStats($project_id);
     }
+    
+    // ===== MÉTODOS BCG ANALYSIS =====
+    
+    // Guardar análisis BCG
+    public function saveBCGAnalysis() {
+        try {
+            // Verificar que el usuario esté logueado
+            if (!AuthController::isLoggedIn()) {
+                header("Location: " . getBaseUrl() . "/Views/Auth/login.php");
+                exit();
+            }
+            
+            // Validar datos básicos
+            if (!isset($_POST['project_id']) || !isset($_POST['products'])) {
+                throw new Exception("Datos incompletos");
+            }
+            
+            $project_id = (int)$_POST['project_id'];
+            $products = $_POST['products'];
+            
+            // Validar que el proyecto pertenezca al usuario
+            $user_id = $_SESSION['user_id'];
+            $project = $this->project->getById($project_id);
+            
+            if (!$project || $project['user_id'] != $user_id) {
+                throw new Exception("Proyecto no encontrado o sin permisos");
+            }
+            
+            // Validar productos
+            if (!is_array($products) || count($products) < 1) {
+                throw new Exception("Debe incluir al menos un producto");
+            }
+            
+            // Validar cada producto
+            foreach ($products as $index => $product) {
+                if (empty(trim($product['name'] ?? ''))) {
+                    throw new Exception("El nombre del producto " . ($index + 1) . " es obligatorio");
+                }
+                
+                if (!is_numeric($product['sales_forecast'] ?? 0) || floatval($product['sales_forecast']) <= 0) {
+                    throw new Exception("El pronóstico de ventas del producto " . ($index + 1) . " debe ser mayor a 0");
+                }
+                
+                if (!is_numeric($product['tcm_rate'] ?? '') || floatval($product['tcm_rate']) < 0) {
+                    throw new Exception("La TCM del producto " . ($index + 1) . " debe ser mayor o igual a 0");
+                }
+            }
+            
+            // Guardar productos
+            if ($this->bcgAnalysis->saveProducts($project_id, $products)) {
+                // Procesar datos adicionales si existen (competidores, evolución mercado)
+                if (isset($_POST['market_evolution'])) {
+                    foreach ($_POST['market_evolution'] as $product_index => $market_data) {
+                        if (is_array($market_data) && count($market_data) > 0) {
+                            // Obtener el ID del producto recién guardado
+                            $saved_products = $this->bcgAnalysis->getProductsByProject($project_id);
+                            if (isset($saved_products[$product_index])) {
+                                $product_id = $saved_products[$product_index]['id'];
+                                $this->bcgAnalysis->saveMarketEvolution($product_id, $market_data);
+                            }
+                        }
+                    }
+                }
+                
+                if (isset($_POST['competitors'])) {
+                    foreach ($_POST['competitors'] as $product_index => $competitors_data) {
+                        if (is_array($competitors_data) && count($competitors_data) > 0) {
+                            // Obtener el ID del producto recién guardado
+                            $saved_products = $this->bcgAnalysis->getProductsByProject($project_id);
+                            if (isset($saved_products[$product_index])) {
+                                $product_id = $saved_products[$product_index]['id'];
+                                $this->bcgAnalysis->saveCompetitors($product_id, $competitors_data);
+                            }
+                        }
+                    }
+                }
+                
+                // Redirigir con éxito
+                $_SESSION['success'] = "Análisis BCG guardado correctamente";
+                header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
+                exit();
+            } else {
+                throw new Exception("Error al guardar el análisis BCG");
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+            $project_id = $_POST['project_id'] ?? '';
+            if (!empty($project_id)) {
+                header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
+            } else {
+                header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
+            }
+            exit();
+        }
+    }
+    
+    // Obtener datos BCG por proyecto
+    public function getBCGAnalysis($project_id) {
+        try {
+            return $this->bcgAnalysis->getProductsByProject($project_id);
+        } catch (Exception $e) {
+            error_log("BCG Analysis error: " . $e->getMessage());
+            return []; // Retornar array vacío si hay error
+        }
+    }
+    
+    // Obtener matriz BCG calculada
+    public function getBCGMatrix($project_id) {
+        try {
+            return $this->bcgAnalysis->calculateBCGMatrix($project_id);
+        } catch (Exception $e) {
+            error_log("BCG Matrix error: " . $e->getMessage());
+            return []; // Retornar array vacío si hay error
+        }
+    }
+    
+    // Verificar si el análisis BCG está completo
+    public function isBCGComplete($project_id) {
+        try {
+            return $this->bcgAnalysis->isComplete($project_id);
+        } catch (Exception $e) {
+            error_log("BCG Complete error: " . $e->getMessage());
+            return false; // Retornar false si hay error
+        }
+    }
 }
 
 // Manejo de rutas
@@ -518,6 +648,9 @@ if (isset($_GET['action'])) {
             break;
         case 'save_value_chain':
             $controller->saveValueChain();
+            break;
+        case 'save_bcg_analysis':
+            $controller->saveBCGAnalysis();
             break;
         default:
             header("Location: ../Views/Users/dashboard.php");

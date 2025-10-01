@@ -118,16 +118,10 @@ class AuthController {
     
     // Procesar login con Google (JWT Token)
     public function googleLogin() {
-        try {
-            // Configurar headers para JSON y limpiar cualquier salida anterior
-            ob_clean();
-            header('Content-Type: application/json');
-            
-            if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-                echo json_encode(['success' => false, 'message' => 'Método no permitido']);
-                exit();
-            }
-            
+        // Configurar headers para JSON
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
             $credential = $input['credential'] ?? null;
             
@@ -168,24 +162,28 @@ class AuthController {
                 exit();
             }
             
-            if ($this->user->loginWithGoogle($google_id, $email, $name, $avatar)) {
-                $_SESSION['user_id'] = $this->user->id;
-                $_SESSION['user_name'] = $this->user->name;
-                $_SESSION['user_email'] = $this->user->email;
-                $_SESSION['user_avatar'] = $this->user->avatar;
-                $_SESSION['logged_in'] = true;
-                
-                echo json_encode(['success' => true, 'message' => 'Login exitoso con Google']);
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Error al procesar el login con Google']);
+            try {
+                if ($this->user->loginWithGoogle($google_id, $email, $name, $avatar)) {
+                    $_SESSION['user_id'] = $this->user->id;
+                    $_SESSION['user_name'] = $this->user->name;
+                    $_SESSION['user_email'] = $this->user->email;
+                    $_SESSION['user_avatar'] = $this->user->avatar;
+                    $_SESSION['logged_in'] = true;
+                    
+                    echo json_encode(['success' => true, 'message' => 'Login exitoso con Google']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Error al procesar el login con Google']);
+                }
+            } catch (Exception $e) {
+                error_log('Google login error: ' . $e->getMessage());
+                echo json_encode(['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()]);
             }
             
-        } catch (Exception $e) {
-            error_log('Google login error: ' . $e->getMessage());
-            echo json_encode(['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()]);
+            exit();
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            exit();
         }
-        
-        exit();
     }
     
     // Logout

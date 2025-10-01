@@ -84,24 +84,14 @@ class User {
     
     // Login con Google
     public function loginWithGoogle($google_id, $email, $name, $avatar = null) {
-        try {
-            // Verificar conexión a la base de datos
-            if (!$this->conn || $this->conn->connect_error) {
-                throw new Exception("Error de conexión a la base de datos");
-            }
-            
-            // Verificar si el usuario ya existe
-            $query = "SELECT id, email, name, avatar, google_id, status 
-                     FROM " . $this->table_name . " 
-                     WHERE google_id = ? OR email = ?";
-            
-            $stmt = $this->conn->prepare($query);
-            if (!$stmt) {
-                throw new Exception("Error al preparar consulta: " . $this->conn->error);
-            }
-            
-            $stmt->bind_param("ss", $google_id, $email);
-            $stmt->execute();
+        // Verificar si el usuario ya existe
+        $query = "SELECT id, email, name, avatar, google_id, status 
+                 FROM " . $this->table_name . " 
+                 WHERE google_id = ? OR email = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ss", $google_id, $email);
+        $stmt->execute();
         
         $result = $stmt->get_result();
         
@@ -147,11 +137,6 @@ class User {
             }
         }
         return false;
-        
-        } catch (Exception $e) {
-            error_log("Error en loginWithGoogle: " . $e->getMessage());
-            throw new Exception("Error en autenticación con Google: " . $e->getMessage());
-        }
     }
     
     // Verificar si el email existe

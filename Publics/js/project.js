@@ -169,7 +169,7 @@ function startSection(sectionNum) {
         '4': 'objectives',
         '5': 'foda-analysis',
         '6': 'value-chain',
-        '7': 'bcg-matrix',
+        '7': 'bcg-analysis',
         '8': 'porter-matrix',
         '9': 'pest-analysis',
         '10': 'strategies',
@@ -183,16 +183,24 @@ function startSection(sectionNum) {
         
         // Redirigir a la página de la sección
         setTimeout(() => {
+            let targetUrl = '';
+            
             // Para las secciones 1-4, usar directamente el nombre del archivo
             if (sectionNum <= 4) {
-                window.location.href = `${sectionName}.php?id=${projectData.id}`;
-            } else if (sectionName === 'foda-analysis' || sectionName === 'value-chain') {
-                // Para FODA y Cadena de Valor, usar el nombre completo del archivo
-                window.location.href = `${sectionName}.php?project_id=${projectData.id}`;
+                targetUrl = `${sectionName}.php?id=${projectData.id}`;
+            } else if (sectionName === 'foda-analysis' || sectionName === 'value-chain' || sectionName === 'bcg-analysis') {
+                // Para FODA, Cadena de Valor y BCG, usar el nombre completo del archivo
+                targetUrl = `${sectionName}.php?id=${projectData.id}`;
             } else {
                 // Para las futuras secciones, usar la carpeta sections/
-                window.location.href = `sections/${sectionName}.php?project_id=${projectData.id}`;
+                targetUrl = `sections/${sectionName}.php?project_id=${projectData.id}`;
             }
+            
+            console.log('Redirigiendo a:', targetUrl);
+            console.log('Sección:', sectionName, 'Número:', sectionNum);
+            console.log('Project ID:', projectData.id);
+            
+            window.location.href = targetUrl;
         }, 1000);
     }
 }

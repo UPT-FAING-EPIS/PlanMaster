@@ -100,7 +100,7 @@ $progress = $projectController->getProjectProgress($project_id);
                         4 => ['title' => 'Objetivos', 'description' => 'Metas específicas y medibles', 'icon' => '🎯', 'key' => 'objectives'],
                         5 => ['title' => 'Análisis FODA', 'description' => 'Fortalezas, Oportunidades, Debilidades, Amenazas', 'icon' => '�', 'key' => 'foda_analysis'],
                         6 => ['title' => 'Cadena de Valor', 'description' => 'Actividades que generan valor', 'icon' => '⛓️', 'key' => 'value_chain'],
-                        7 => ['title' => 'Matriz BCG', 'description' => 'Análisis de cartera de productos', 'icon' => '�', 'key' => 'bcg_matrix'],
+                        7 => ['title' => 'Matriz BCG', 'description' => 'Análisis de cartera de productos', 'icon' => '📊', 'key' => 'bcg_analysis'],
                         8 => ['title' => 'Matriz de Porter', 'description' => 'Cinco fuerzas competitivas', 'icon' => '🏛️', 'key' => 'porter_matrix'],
                         9 => ['title' => 'Análisis PEST', 'description' => 'Factores políticos, económicos, sociales y tecnológicos', 'icon' => '🌍', 'key' => 'pest_analysis'],
                         10 => ['title' => 'Estrategias', 'description' => 'Identificación de estrategias clave', 'icon' => '🧠', 'key' => 'strategies'],

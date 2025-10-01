@@ -12,12 +12,12 @@ if (!AuthController::isLoggedIn()) {
 }
 
 // Validar parámetros
-if (!isset($_GET['project_id'])) {
+if (!isset($_GET['id'])) {
     header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
     exit();
 }
 
-$project_id = (int)$_GET['project_id'];
+$project_id = (int)$_GET['id'];
 $projectController = new ProjectController();
 
 // Verificar que el proyecto existe y pertenece al usuario
