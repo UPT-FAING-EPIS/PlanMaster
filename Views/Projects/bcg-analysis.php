@@ -687,16 +687,208 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             `;
             
             container.innerHTML = summaryHTML;
+            
+            // Actualizar las nuevas secciones cuando cambian los productos
+            updateDemandEvolution();
+            updateCompetitorsSales();
         }
 
         function updateDemandEvolution() {
             const container = document.getElementById('demand-evolution');
-            container.innerHTML = `<p class="text-muted">Tabla de evolución de demanda por implementar</p>`;
+            
+            if (products.length === 0) {
+                container.innerHTML = `<p class="text-muted">Primero agregue productos en la sección "Previsión de Ventas"</p>`;
+                return;
+            }
+
+            // Obtener todos los años únicos de los períodos
+            const periodsContainer = document.getElementById('periods-container');
+            const periodRows = periodsContainer ? periodsContainer.querySelectorAll('.period-row') : [];
+            let allYears = new Set();
+            
+            periodRows.forEach(row => {
+                const startYear = row.querySelector('input[name$="[start_year]"]')?.value;
+                const endYear = row.querySelector('input[name$="[end_year]"]')?.value;
+                
+                if (startYear) allYears.add(parseInt(startYear));
+                if (endYear) allYears.add(parseInt(endYear));
+            });
+
+            const sortedYears = Array.from(allYears).sort((a, b) => a - b);
+            
+            if (sortedYears.length === 0) {
+                container.innerHTML = `<p class="text-muted">Primero configure los períodos en la sección "Tasas de Crecimiento del Mercado"</p>`;
+                return;
+            }
+
+            let tableHTML = `
+                <div class="table-responsive">
+                    <table class="table table-bordered demand-evolution-table">
+                        <thead>
+                            <tr>
+                                <th>AÑOS</th>
+                                <th>MERCADOS (Miles de Soles)</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            // Crear fila de años
+            tableHTML += `<tr><td><strong>Año</strong></td>`;
+            sortedYears.forEach(year => {
+                tableHTML += `<td class="year-header">${year}</td>`;
+            });
+            tableHTML += `</tr>`;
+
+            // Crear una fila por cada producto
+            products.forEach((product, productIndex) => {
+                tableHTML += `<tr>
+                    <td><strong>${product.name || `Producto ${productIndex + 1}`}</strong></td>`;
+                
+                sortedYears.forEach(year => {
+                    tableHTML += `<td>
+                        <input type="number" 
+                               name="market_evolution[${productIndex}][${year}]" 
+                               class="form-control market-value-input" 
+                               placeholder="0.00" 
+                               step="0.01" 
+                               min="0"
+                               data-product="${productIndex}" 
+                               data-year="${year}">
+                    </td>`;
+                });
+                
+                tableHTML += `</tr>`;
+            });
+
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        Ingrese los valores del mercado en miles de soles para cada producto por año.
+                    </small>
+                </div>`;
+
+            container.innerHTML = tableHTML;
         }
 
         function updateCompetitorsSales() {
             const container = document.getElementById('competitors-sales');
-            container.innerHTML = `<p class="text-muted">Tabla de ventas de competidores por implementar</p>`;
+            
+            if (products.length === 0) {
+                container.innerHTML = `<p class="text-muted">Primero agregue productos en la sección "Previsión de Ventas"</p>`;
+                return;
+            }
+
+            let tableHTML = `<div class="competitors-container">`;
+
+            products.forEach((product, productIndex) => {
+                const productSales = product.sales || 0;
+                
+                tableHTML += `
+                    <div class="product-competitors-section mb-4">
+                        <h5 class="product-title">${product.name || `Producto ${productIndex + 1}`}</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered competitors-table" data-product="${productIndex}">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" class="text-center bg-primary text-white">
+                                            ${product.name || `Producto ${productIndex + 1}`}
+                                        </th>
+                                    </tr>
+                                    <tr class="company-row">
+                                        <td><strong>EMPRESA</strong></td>
+                                        <td class="company-sales">
+                                            <span class="sales-value">${parseFloat(productSales).toLocaleString('es-PE')}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Competidor</th>
+                                        <th>Ventas</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="competitors-body" data-product="${productIndex}">`;
+
+                // Generar 9 filas de competidores
+                for (let i = 1; i <= 9; i++) {
+                    tableHTML += `
+                        <tr class="competitor-row">
+                            <td>
+                                <input type="text" 
+                                       name="competitors[${productIndex}][${i}][name]" 
+                                       class="form-control competitor-name" 
+                                       placeholder="CP${productIndex + 1}-${i}"
+                                       data-product="${productIndex}"
+                                       data-competitor="${i}">
+                            </td>
+                            <td>
+                                <input type="number" 
+                                       name="competitors[${productIndex}][${i}][sales]" 
+                                       class="form-control competitor-sales" 
+                                       placeholder="0.00" 
+                                       step="0.01" 
+                                       min="0"
+                                       data-product="${productIndex}"
+                                       data-competitor="${i}"
+                                       onchange="updateMaxCompetitorSales(${productIndex})">
+                            </td>
+                        </tr>`;
+                }
+
+                tableHTML += `
+                                    <tr class="mayor-row bg-light">
+                                        <td><strong>MAYOR</strong></td>
+                                        <td>
+                                            <span class="max-competitor-sales" data-product="${productIndex}">0</span>
+                                            <input type="hidden" 
+                                                   name="competitors[${productIndex}][max_sales]" 
+                                                   class="max-sales-input" 
+                                                   data-product="${productIndex}">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>`;
+            });
+
+            tableHTML += `
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        Ingrese los nombres de los competidores y sus ventas para cada producto. 
+                        El valor "MAYOR" se calculará automáticamente con el competidor de mayores ventas.
+                    </small>
+                </div>`;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Función para actualizar el mayor competidor por producto
+        function updateMaxCompetitorSales(productIndex) {
+            const competitorInputs = document.querySelectorAll(`input[data-product="${productIndex}"].competitor-sales`);
+            let maxSales = 0;
+            
+            competitorInputs.forEach(input => {
+                const sales = parseFloat(input.value) || 0;
+                if (sales > maxSales) {
+                    maxSales = sales;
+                }
+            });
+            
+            // Actualizar la visualización del mayor
+            const maxDisplay = document.querySelector(`span[data-product="${productIndex}"].max-competitor-sales`);
+            const maxInput = document.querySelector(`input[data-product="${productIndex}"].max-sales-input`);
+            
+            if (maxDisplay) {
+                maxDisplay.textContent = maxSales.toLocaleString('es-PE');
+            }
+            if (maxInput) {
+                maxInput.value = maxSales;
+            }
         }
 
         // Validación del formulario
@@ -709,19 +901,43 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                 valid = false;
                 alert('Debe agregar al menos un producto');
             } else {
-                productRows.forEach(row => {
+                productRows.forEach((row, index) => {
                     const nameInput = row.querySelector('input[type="text"]');
                     const salesInput = row.querySelector('input[type="number"]');
                     
                     if (!nameInput.value.trim() || !salesInput.value || salesInput.value <= 0) {
                         valid = false;
+                        alert(`Por favor complete correctamente los datos del producto ${index + 1}`);
                     }
                 });
             }
             
             if (!valid) {
                 e.preventDefault();
-                alert('Por favor complete todos los campos obligatorios correctamente');
+                return;
+            }
+            
+            // Preparar datos antes del envío
+            console.log('Enviando formulario BCG...');
+            
+            // Asegurar que los datos de productos estén actualizados
+            updateSalesPercentages();
+            
+            // Validar que al menos un competidor tenga datos válidos (opcional)
+            let hasValidCompetitors = false;
+            const competitorInputs = document.querySelectorAll('.competitor-name');
+            competitorInputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    hasValidCompetitors = true;
+                }
+            });
+            
+            if (!hasValidCompetitors) {
+                const confirmSubmit = confirm('No ha ingresado competidores. ¿Desea continuar sin esta información?');
+                if (!confirmSubmit) {
+                    e.preventDefault();
+                    return;
+                }
             }
         });
     </script>
