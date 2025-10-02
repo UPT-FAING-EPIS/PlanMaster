@@ -10,141 +10,29 @@ class BCGAnalysis {
         $this->conn = $this->db->getConnection();
     }
     
-    // Crear análisis BCG para un proyecto
-    public function createAnalysis($project_id) {
-        try {
-            $query = "INSERT INTO project_bcg_analysis (project_id) VALUES (?)
-                     ON DUPLICATE KEY UPDATE updated_at = CURRENT_TIMESTAMP";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bind_param('i', $project_id);
-            return $stmt->execute();
-        } catch (Exception $e) {
-            error_log("Error creating BCG analysis: " . $e->getMessage());
-            return false;
-        }
-    }
-    
-    // Guardar productos del análisis BCG
-    public function saveProducts($project_id, $products) {
+    /**
+     * MÉTODO PRINCIPAL: Guardar análisis BCG completo
+     * Recibe todos los datos del formulario y los guarda de manera simple
+     */
+    public function saveComplete($project_id, $data) {
         try {
             $this->conn->autocommit(FALSE);
             
-            // Crear análisis si no existe
-            $this->createAnalysis($project_id);
+            // 1. Limpiar datos existentes del proyecto
+            $this->clearProjectData($project_id);
             
-            // Eliminar productos existentes
-            $this->deleteProductsByProject($project_id);
+            // 2. Crear registro principal
+            $this->createMainRecord($project_id);
             
-            // Insertar nuevos productos
-            $query = "INSERT INTO project_bcg_products (project_id, product_name, sales_forecast, tcm_rate, prm_rate, product_order) 
-                     VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $this->conn->prepare($query);
-            
-            foreach ($products as $index => $product) {
-                $product_name = $product['name'] ?? '';
-                $sales_forecast = floatval($product['sales_forecast'] ?? 0);
-                $tcm_rate = floatval($product['tcm_rate'] ?? 0);
-                $prm_rate = floatval($product['prm_rate'] ?? 0);
-                $order = $index + 1;
-                
-                $stmt->bind_param('isdddi', $project_id, $product_name, $sales_forecast, $tcm_rate, $prm_rate, $order);
-                $stmt->execute();
-            }
-            
-            $this->conn->commit();
-            $this->conn->autocommit(TRUE);
-            return true;
-            
-        } catch (Exception $e) {
-            $this->conn->rollback();
-            $this->conn->autocommit(TRUE);
-            error_log("Error saving BCG products: " . $e->getMessage());
-            return false;
-        }
-    }
-    
-    // Obtener productos por proyecto
-    public function getProductsByProject($project_id) {
-        try {
-            $query = "SELECT * FROM project_bcg_products 
-                     WHERE project_id = ? 
-                     ORDER BY product_order ASC";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bind_param('i', $project_id);
-            $stmt->execute();
-            
-            $result = $stmt->get_result();
-            $products = [];
-            
-            while ($row = $result->fetch_assoc()) {
-                $products[] = $row;
-            }
-            
-            return $products;
-            
-        } catch (Exception $e) {
-            error_log("Error getting BCG products: " . $e->getMessage());
-            return [];
-        }
-    }
-    
-    // Guardar evolución del mercado
-    public function saveMarketEvolution($product_id, $market_data) {
-        try {
-            $this->conn->autocommit(FALSE);
-            
-            // Eliminar datos existentes del producto
-            $delete_query = "DELETE FROM project_bcg_market_evolution WHERE product_id = ?";
-            $delete_stmt = $this->conn->prepare($delete_query);
-            $delete_stmt->bind_param('i', $product_id);
-            $delete_stmt->execute();
-            
-            // Insertar nuevos datos
-            $query = "INSERT INTO project_bcg_market_evolution (product_id, year, market_value) VALUES (?, ?, ?)";
-            $stmt = $this->conn->prepare($query);
-            
-            foreach ($market_data as $year => $value) {
-                $market_value = floatval($value);
-                $stmt->bind_param('iid', $product_id, $year, $market_value);
-                $stmt->execute();
-            }
-            
-            $this->conn->commit();
-            $this->conn->autocommit(TRUE);
-            return true;
-            
-        } catch (Exception $e) {
-            $this->conn->rollback();
-            $this->conn->autocommit(TRUE);
-            error_log("Error saving market evolution: " . $e->getMessage());
-            return false;
-        }
-    }
-    
-    // Guardar competidores
-    public function saveCompetitors($product_id, $competitors) {
-        try {
-            $this->conn->autocommit(FALSE);
-            
-            // Eliminar competidores existentes del producto
-            $delete_query = "DELETE FROM project_bcg_competitors WHERE product_id = ?";
-            $delete_stmt = $this->conn->prepare($delete_query);
-            $delete_stmt->bind_param('i', $product_id);
-            $delete_stmt->execute();
-            
-            // Insertar nuevos competidores
-            $query = "INSERT INTO project_bcg_competitors (product_id, competitor_name, sales_value, competitor_order) 
-                     VALUES (?, ?, ?, ?)";
-            $stmt = $this->conn->prepare($query);
-            
-            foreach ($competitors as $index => $competitor) {
-                $competitor_name = $competitor['name'] ?? '';
-                $sales_value = floatval($competitor['sales'] ?? 0);
-                $order = $index + 1;
-                
-                if (!empty(trim($competitor_name))) {
-                    $stmt->bind_param('isdi', $product_id, $competitor_name, $sales_value, $order);
-                    $stmt->execute();
+            // 3. Guardar productos
+            if (isset($data['products']) && is_array($data['products'])) {
+                foreach ($data['products'] as $index => $product) {
+                    $product_id = $this->saveProduct($project_id, $product, $index);
+                    
+                    // Guardar períodos TCM si existen
+                    if (isset($data['periods']) && isset($data['periods'][$index])) {
+                        $this->saveMarketEvolution($project_id, $product_id, $data['periods'][$index]);
+                    }
                 }
             }
             
@@ -155,156 +43,317 @@ class BCGAnalysis {
         } catch (Exception $e) {
             $this->conn->rollback();
             $this->conn->autocommit(TRUE);
-            error_log("Error saving competitors: " . $e->getMessage());
-            return false;
+            error_log("BCG Save Error: " . $e->getMessage());
+            throw $e;
         }
     }
     
-    // Obtener competidores por producto
-    public function getCompetitorsByProduct($product_id) {
-        try {
-            $query = "SELECT * FROM project_bcg_competitors 
-                     WHERE product_id = ? 
-                     ORDER BY competitor_order ASC";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bind_param('i', $product_id);
-            $stmt->execute();
+    /**
+     * Limpiar todos los datos BCG de un proyecto
+     */
+    private function clearProjectData($project_id) {
+        // Eliminar competidores
+        $query = "DELETE c FROM project_bcg_competitors c 
+                  INNER JOIN project_bcg_products p ON c.product_id = p.id 
+                  WHERE p.project_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+        
+        // Eliminar evolución de mercado
+        $query = "DELETE FROM project_bcg_market_evolution WHERE project_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+        
+        // Eliminar productos
+        $query = "DELETE FROM project_bcg_products WHERE project_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+        
+        // Eliminar registro principal
+        $query = "DELETE FROM project_bcg_analysis WHERE project_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+    }
+    
+    /**
+     * Crear registro principal del análisis BCG
+     */
+    private function createMainRecord($project_id) {
+        $query = "INSERT INTO project_bcg_analysis (project_id) VALUES (?)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+    }
+    
+    /**
+     * Guardar un producto individual
+     */
+    private function saveProduct($project_id, $product, $order) {
+        $name = trim($product['name'] ?? '');
+        $sales = floatval($product['sales_forecast'] ?? 0);
+        $tcm = floatval($product['tcm_rate'] ?? 0);
+        
+        if (empty($name) || $sales <= 0) {
+            throw new Exception("Producto #" . ($order + 1) . ": nombre y ventas son obligatorios");
+        }
+        
+        // Calcular porcentaje sobre total (se calculará después con todos los productos)
+        $query = "INSERT INTO project_bcg_products 
+                  (project_id, product_name, sales_forecast, tcm_calculated, product_order) 
+                  VALUES (?, ?, ?, ?, ?)";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('isddi', $project_id, $name, $sales, $tcm, $order);
+        $stmt->execute();
+        
+        $product_id = $this->conn->insert_id;
+        
+        // Guardar competidores si existen
+        if (isset($product['competitors']) && is_array($product['competitors'])) {
+            $this->saveProductCompetitors($project_id, $product_id, $product['competitors']);
+        }
+        
+        return $product_id;
+    }
+    
+    /**
+     * Guardar competidores de un producto
+     */
+    private function saveProductCompetitors($project_id, $product_id, $competitors) {
+        foreach ($competitors as $index => $competitor) {
+            $name = trim($competitor['name'] ?? '');
+            $sales = floatval($competitor['sales'] ?? 0);
             
-            $result = $stmt->get_result();
-            $competitors = [];
-            
-            while ($row = $result->fetch_assoc()) {
-                $competitors[] = $row;
+            if (!empty($name) && $sales > 0) {
+                $query = "INSERT INTO project_bcg_competitors 
+                          (project_id, product_id, competitor_name, competitor_sales, competitor_order) 
+                          VALUES (?, ?, ?, ?, ?)";
+                
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param('iisdi', $project_id, $product_id, $name, $sales, $index);
+                $stmt->execute();
             }
-            
-            return $competitors;
-            
-        } catch (Exception $e) {
-            error_log("Error getting competitors: " . $e->getMessage());
-            return [];
         }
     }
     
-    // Calcular datos de la matriz BCG
-    public function calculateBCGMatrix($project_id) {
-        $products = $this->getProductsByProject($project_id);
-        $bcg_data = [];
+    /**
+     * Guardar períodos TCM para un producto
+     */
+    public function saveMarketEvolution($project_id, $product_id, $periods) {
+        if (!is_array($periods)) return;
+        
+        // Eliminar períodos existentes del producto
+        $query = "DELETE FROM project_bcg_market_evolution WHERE project_id = ? AND product_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('ii', $project_id, $product_id);
+        $stmt->execute();
+        
+        // Insertar nuevos períodos
+        foreach ($periods as $index => $period) {
+            $start_year = intval($period['start_year'] ?? 0);
+            $end_year = intval($period['end_year'] ?? 0);
+            $tcm_percentage = floatval($period['tcm_percentage'] ?? 0);
+            
+            if ($start_year > 0 && $end_year > 0 && $end_year > $start_year) {
+                $query = "INSERT INTO project_bcg_market_evolution 
+                          (project_id, product_id, period_start_year, period_end_year, tcm_percentage, period_order) 
+                          VALUES (?, ?, ?, ?, ?, ?)";
+                
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param('iiiidi', $project_id, $product_id, $start_year, $end_year, $tcm_percentage, $index);
+                $stmt->execute();
+            }
+        }
+    }
+    
+    /**
+     * Obtener períodos TCM de un producto
+     */
+    public function getMarketEvolution($product_id) {
+        $query = "SELECT * FROM project_bcg_market_evolution 
+                  WHERE product_id = ? 
+                  ORDER BY period_order ASC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $product_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $periods = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $periods[] = $row;
+        }
+        
+        return $periods;
+    }
+    
+    /**
+     * Calcular TCM promedio para un producto basado en sus períodos
+     */
+    public function calculateProductTCM($product_id) {
+        $periods = $this->getMarketEvolution($product_id);
+        
+        if (count($periods) === 0) {
+            return 0;
+        }
+        
+        $total_tcm = 0;
+        foreach ($periods as $period) {
+            $total_tcm += $period['tcm_percentage'];
+        }
+        
+        return round($total_tcm / count($periods), 2);
+    }
+    
+    /**
+     * Obtener todos los productos de un proyecto con sus cálculos
+     */
+    public function getProjectAnalysis($project_id) {
+        $query = "SELECT * FROM project_bcg_products 
+                  WHERE project_id = ? 
+                  ORDER BY product_order ASC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $products = [];
         $total_sales = 0;
         
-        // Calcular total de ventas
-        foreach ($products as $product) {
-            $total_sales += $product['sales_forecast'];
+        // Obtener productos y calcular total
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+            $total_sales += $row['sales_forecast'];
         }
         
-        foreach ($products as $product) {
-            $product_id = $product['id'];
-            
+        // Calcular porcentajes, TCM real y PRM
+        foreach ($products as &$product) {
             // Calcular porcentaje sobre ventas totales
-            $sales_percentage = $total_sales > 0 ? ($product['sales_forecast'] / $total_sales) * 100 : 0;
+            $product['sales_percentage'] = $total_sales > 0 
+                ? round(($product['sales_forecast'] / $total_sales) * 100, 2)
+                : 0;
             
-            // Obtener competidores para calcular PRM
-            $competitors = $this->getCompetitorsByProduct($product_id);
+            // Calcular TCM real basado en períodos
+            $product['tcm_calculated'] = $this->calculateProductTCM($product['id']);
+            
+            // Obtener períodos TCM
+            $product['market_evolution'] = $this->getMarketEvolution($product['id']);
+            
+            // Obtener competidores y calcular PRM
+            $competitors = $this->getProductCompetitors($product['id']);
             $max_competitor_sales = 0;
             
-            foreach ($competitors as $competitor) {
-                if ($competitor['sales_value'] > $max_competitor_sales) {
-                    $max_competitor_sales = $competitor['sales_value'];
+            foreach ($competitors as $comp) {
+                if ($comp['competitor_sales'] > $max_competitor_sales) {
+                    $max_competitor_sales = $comp['competitor_sales'];
                 }
             }
             
-            // Calcular PRM (Participación Relativa del Mercado)
-            $prm = $max_competitor_sales > 0 ? $product['sales_forecast'] / $max_competitor_sales : 0;
+            $product['prm_calculated'] = $max_competitor_sales > 0 
+                ? round($product['sales_forecast'] / $max_competitor_sales, 2)
+                : 0;
             
-            // Determinar posición en la matriz BCG
-            $position = $this->determineBCGPosition($product['tcm_rate'], $prm);
+            $product['competitors'] = $competitors;
+        }
+        
+        return $products;
+    }
+    
+    /**
+     * Obtener competidores de un producto
+     */
+    public function getProductCompetitors($product_id) {
+        $query = "SELECT * FROM project_bcg_competitors 
+                  WHERE product_id = ? 
+                  ORDER BY competitor_order ASC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $product_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $competitors = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $competitors[] = $row;
+        }
+        
+        return $competitors;
+    }
+    
+    /**
+     * Verificar si el análisis está completo
+     */
+    public function isComplete($project_id) {
+        $query = "SELECT COUNT(*) as count FROM project_bcg_products 
+                  WHERE project_id = ? AND sales_forecast > 0";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('i', $project_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        
+        return $row['count'] > 0;
+    }
+    
+    /**
+     * Calcular matriz BCG con posiciones
+     */
+    public function calculateMatrix($project_id) {
+        $products = $this->getProjectAnalysis($project_id);
+        $matrix = [];
+        
+        foreach ($products as $product) {
+            $tcm = $product['tcm_calculated'];
+            $prm = $product['prm_calculated'];
             
-            $bcg_data[] = [
+            // Determinar posición BCG
+            // TCM alto >= 10%, PRM alto >= 1.0
+            if ($tcm >= 10 && $prm >= 1.0) {
+                $position = 'estrella';
+            } elseif ($tcm >= 10 && $prm < 1.0) {
+                $position = 'interrogante';
+            } elseif ($tcm < 10 && $prm >= 1.0) {
+                $position = 'vaca';
+            } else {
+                $position = 'perro';
+            }
+            
+            $matrix[] = [
                 'product_name' => $product['product_name'],
                 'sales_forecast' => $product['sales_forecast'],
-                'sales_percentage' => round($sales_percentage, 2),
-                'tcm_rate' => $product['tcm_rate'],
-                'prm_rate' => round($prm, 2),
-                'position' => $position,
-                'x_coordinate' => $prm, // Para el gráfico
-                'y_coordinate' => $product['tcm_rate'], // Para el gráfico
-                'bubble_size' => $sales_percentage // Tamaño de la burbuja basado en ventas
+                'sales_percentage' => $product['sales_percentage'],
+                'tcm_rate' => $tcm,
+                'prm_rate' => $prm,
+                'position' => $position
             ];
         }
         
-        return $bcg_data;
+        return $matrix;
     }
     
-    // Determinar posición en matriz BCG
-    private function determineBCGPosition($tcm_rate, $prm_rate) {
-        // TCM alto: >= 10%, TCM bajo: < 10%
-        // PRM alto: >= 1.0, PRM bajo: < 1.0
-        
-        if ($tcm_rate >= 10 && $prm_rate >= 1.0) {
-            return 'estrella';
-        } elseif ($tcm_rate >= 10 && $prm_rate < 1.0) {
-            return 'interrogante';
-        } elseif ($tcm_rate < 10 && $prm_rate >= 1.0) {
-            return 'vaca';
-        } else {
-            return 'perro';
-        }
-    }
-    
-    // Verificar si el análisis BCG está completo
-    public function isComplete($project_id) {
-        $products = $this->getProductsByProject($project_id);
-        
-        if (count($products) < 1) {
-            return false;
-        }
-        
-        // Verificar que todos los productos tengan datos básicos
-        foreach ($products as $product) {
-            if (empty($product['product_name']) || 
-                $product['sales_forecast'] <= 0 || 
-                $product['tcm_rate'] < 0) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-    
-    // Eliminar productos por proyecto
-    private function deleteProductsByProject($project_id) {
-        try {
-            $query = "DELETE FROM project_bcg_products WHERE project_id = ?";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bind_param('i', $project_id);
-            return $stmt->execute();
-        } catch (Exception $e) {
-            error_log("Error deleting BCG products: " . $e->getMessage());
-            return false;
-        }
-    }
-    
-    // Eliminar análisis completo por proyecto
+    /**
+     * Eliminar análisis completo de un proyecto
+     */
     public function deleteByProject($project_id) {
         try {
             $this->conn->autocommit(FALSE);
-            
-            // Eliminar en orden correcto debido a foreign keys
-            $this->deleteProductsByProject($project_id);
-            
-            $query = "DELETE FROM project_bcg_analysis WHERE project_id = ?";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bind_param('i', $project_id);
-            $stmt->execute();
-            
+            $this->clearProjectData($project_id);
             $this->conn->commit();
             $this->conn->autocommit(TRUE);
             return true;
-            
         } catch (Exception $e) {
             $this->conn->rollback();
             $this->conn->autocommit(TRUE);
-            error_log("Error deleting BCG analysis: " . $e->getMessage());
-            return false;
+            throw $e;
         }
     }
 }

@@ -27,12 +27,16 @@ if (!$project || $project['user_id'] != $_SESSION['user_id']) {
     exit();
 }
 
-// Obtener datos del usuario
+// Obtener datos del usuario para el header
 $user = AuthController::getCurrentUser();
 
 // Obtener datos BCG existentes
 $bcg_products = $projectController->getBCGAnalysis($project_id);
 $bcg_matrix = $projectController->getBCGMatrix($project_id);
+
+// Preparar datos para JavaScript
+$bcg_data_json = json_encode($bcg_products);
+$bcg_matrix_json = json_encode($bcg_matrix);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -47,6 +51,7 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?php echo getBaseUrl(); ?>/Resources/favicon.ico">
@@ -99,266 +104,188 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
     <main class="main-content">
         <div class="container">
 
-    <!-- Introducción -->
-    <div class="content-section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="section-icon">📖</i>
-                ¿Qué es la Matriz BCG?
-            </h2>
-        </div>
-        <div class="section-content">
-                <p class="text-muted mb-4">
-                    Toda empresa debe analizar de forma periódica su cartera de productos y servicios.
-                </p>
-                <div class="alert alert-info mb-4">
-                    <p class="mb-2">
-                        <strong>La Matriz de crecimiento - participación (Matriz BCG)</strong> es un método gráfico de análisis de cartera de negocios desarrollado por <em>The Boston Consulting Group</em> en la década de 1970.
-                    </p>
-                    <p class="mb-2">
-                        Su finalidad es ayudar a <strong>priorizar recursos</strong> entre distintas áreas de negocios o Unidades Estratégicas de Análisis (UEA), determinando en qué negocios invertir, desinvertir o incluso abandonar.
-                    </p>
-                    <p class="mb-0">
-                        Se trata de una matriz con <strong>cuatro cuadrantes</strong>, cada uno propone una estrategia diferente. El <strong>eje vertical</strong> define el crecimiento en el mercado, y el <strong>horizontal</strong> la cuota de mercado.
+            <!-- Introducción -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        ¿Qué es la Matriz BCG?
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <p class="text-muted mb-4">
+                        Toda empresa debe analizar de forma periódica su cartera de productos y servicios.
+                        La matriz BCG es una herramienta de análisis estratégico que evalúa los productos según su participación relativa en el mercado y la tasa de crecimiento del mercado.
                     </p>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="info-box mb-3">
-                            <h5><i class="fas fa-trending-up text-success me-2"></i>Tasa de Crecimiento del Mercado (TCM)</h5>
-                            <p class="small">Mide qué tan rápido está creciendo el mercado del producto. Se calcula como el porcentaje de crecimiento anual del mercado.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="info-box mb-3">
-                            <h5><i class="fas fa-chart-pie text-info me-2"></i>Participación Relativa del Mercado (PRM)</h5>
-                            <p class="small">Compara las ventas del producto con las del competidor más fuerte. PRM = Ventas del producto / Ventas del mayor competidor.</p>
-                        </div>
-                    </div>
+            </div>
+
+            <!-- Mensajes -->
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
                 </div>
+            <?php endif; ?>
 
-                <div class="bcg-matrix-info">
-                    <h4 class="matrix-title">Los Cuatro Cuadrantes de la Matriz BCG</h4>
-                    <div class="quadrants-grid">
-                        <div class="quadrant-item estrella">
-                            <div class="quadrant-header">
-                                <span class="quadrant-icon">⭐</span>
-                                <h5>Estrellas</h5>
-                            </div>
-                            <div class="quadrant-criteria">
-                                <span class="criteria-high">Alto TCM</span> + <span class="criteria-high">Alto PRM</span>
-                            </div>
-                            <p class="quadrant-strategy">Invertir para mantener liderazgo</p>
-                        </div>
-
-                        <div class="quadrant-item interrogante">
-                            <div class="quadrant-header">
-                                <span class="quadrant-icon">❓</span>
-                                <h5>Interrogantes</h5>
-                            </div>
-                            <div class="quadrant-criteria">
-                                <span class="criteria-high">Alto TCM</span> + <span class="criteria-low">Bajo PRM</span>
-                            </div>
-                            <p class="quadrant-strategy">Análisis cuidadoso - Invertir o Desinvertir</p>
-                        </div>
-
-                        <div class="quadrant-item vaca">
-                            <div class="quadrant-header">
-                                <span class="quadrant-icon">🐄</span>
-                                <h5>Vacas Lecheras</h5>
-                            </div>
-                            <div class="quadrant-criteria">
-                                <span class="criteria-low">Bajo TCM</span> + <span class="criteria-high">Alto PRM</span>
-                            </div>
-                            <p class="quadrant-strategy">Maximizar generación de efectivo</p>
-                        </div>
-
-                        <div class="quadrant-item perro">
-                            <div class="quadrant-header">
-                                <span class="quadrant-icon">🐕</span>
-                                <h5>Perros</h5>
-                            </div>
-                            <div class="quadrant-criteria">
-                                <span class="criteria-low">Bajo TCM</span> + <span class="criteria-low">Bajo PRM</span>
-                            </div>
-                            <p class="quadrant-strategy">Desinversión o eliminación</p>
-                        </div>
-                    </div>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
                 </div>
-            </div>
-        </div>
+            <?php endif; ?>
 
-    </div>
+            <!-- Formulario Principal con 4 Mini Pasos -->
+            <form id="bcgForm" method="POST" action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_bcg_analysis" class="step-form">
+                <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
 
-    <!-- Formulario Principal con 4 Mini Pasos -->
-    <form id="bcgForm" method="POST" action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_bcg_analysis" class="step-form">
-        <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
-
-        <!-- Mini Paso 1: PREVISIÓN DE VENTAS -->
-        <div class="mini-step">
-            <div class="mini-step-header">
-                <div class="step-number">1</div>
-                <h3 class="step-title">PREVISIÓN DE VENTAS</h3>
-                <button type="button" class="btn-add-mini" onclick="addProduct()">
-                    <i class="icon-plus"></i> Agregar Producto
-                </button>
-            </div>
-            
-            <div class="mini-step-content">
-                <div class="sales-forecast-table">
-                    <div class="table-header">
-                        <div class="col-product">PRODUCTOS</div>
-                        <div class="col-sales">VENTAS</div>
-                        <div class="col-percentage">% S/ TOTAL</div>
-                        <div class="col-actions">ACCIONES</div>
+                <!-- Mini Paso 1: PREVISIÓN DE VENTAS -->
+                <div class="mini-step">
+                    <div class="mini-step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">PREVISIÓN DE VENTAS</h3>
+                        <button type="button" class="btn-add-mini" onclick="addProduct()">
+                            <i class="icon-plus"></i> Agregar Producto
+                        </button>
                     </div>
-                    <div id="products-container">
-                        <!-- Productos se agregan dinámicamente aquí -->
-                    </div>
-                    <div class="sales-total">
-                        <strong>TOTAL: <span id="total-sales">0.00</span></strong>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mini Paso 2: TASAS DE CRECIMIENTO DEL MERCADO (TCM) -->
-        <div class="mini-step">
-            <div class="mini-step-header">
-                <div class="step-number">2</div>
-                <h3 class="step-title">TASAS DE CRECIMIENTO DEL MERCADO (TCM)</h3>
-                <button type="button" class="btn-add-mini" onclick="addPeriod()">
-                    <i class="icon-plus"></i> Agregar Período
-                </button>
-            </div>
-            
-            <div class="mini-step-content">
-                <div class="tcm-table">
-                    <div class="tcm-header">
-                        <div class="col-periods">PERÍODOS</div>
-                        <div class="col-markets">MERCADOS</div>
-                    </div>
-                    <div class="tcm-periods" id="periods-container">
-                        <!-- Períodos se agregan dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- Tabla Resumen BCG -->
-                <div class="bcg-summary-table">
-                    <h4 class="table-title">Resumen BCG</h4>
-                    <div class="bcg-table" id="bcg-summary">
-                        <!-- Se genera automáticamente -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mini Paso 3: EVOLUCIÓN DE LA DEMANDA GLOBAL SECTOR -->
-        <div class="mini-step">
-            <div class="mini-step-header">
-                <div class="step-number">3</div>
-                <h3 class="step-title">EVOLUCIÓN DE LA DEMANDA GLOBAL SECTOR (en miles de soles)</h3>
-            </div>
-            
-            <div class="mini-step-content">
-                <div class="demand-evolution-table" id="demand-evolution">
-                    <!-- Tabla de evolución de demanda -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Mini Paso 4: NIVELES DE VENTA DE LOS COMPETIDORES -->
-        <div class="mini-step">
-            <div class="mini-step-header">
-                <div class="step-number">4</div>
-                <h3 class="step-title">NIVELES DE VENTA DE LOS COMPETIDORES DE CADA PRODUCTO</h3>
-            </div>
-            
-            <div class="mini-step-content">
-                <div class="competitors-sales-table" id="competitors-sales">
-                    <!-- Tabla de ventas de competidores por producto -->
-                </div>
-            </div>
-        </div>
-
-            <!-- Botones de navegación -->
-            <div class="form-navigation">
-                <div class="nav-buttons">
-                    <a href="project.php?id=<?php echo $project_id; ?>" class="btn-secondary">
-                        <i class="icon-arrow-left"></i>
-                        Volver al Proyecto
-                    </a>
                     
-                    <div class="nav-buttons-right">
-                        <button type="submit" name="save_and_exit" class="btn-outline">
-                            <i class="icon-save"></i>
-                            Guardar y Salir
-                        </button>
-                        
-                        <button type="submit" class="btn-primary">
-                            <i class="icon-arrow-right"></i>
-                            Guardar y Continuar
-                        </button>
+                    <div class="mini-step-content">
+                        <div class="sales-forecast-table">
+                            <div class="table-header">
+                                <div class="col-product">PRODUCTOS</div>
+                                <div class="col-sales">VENTAS</div>
+                                <div class="col-percentage">% S/ TOTAL</div>
+                                <div class="col-actions">ACCIONES</div>
+                            </div>
+                            <div id="products-container">
+                                <!-- Productos se agregan dinámicamente aquí -->
+                            </div>
+                            <div class="sales-total">
+                                <strong>TOTAL: <span id="total-sales">0.00</span></strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
 
-        <!-- Matriz BCG Visual (solo mostrar si hay datos) -->
-        <?php if (count($bcg_matrix) > 0): ?>
-        <div class="section-card mt-5">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-chart-area me-2"></i>
-                    Matriz BCG Visual
-                </h2>
-            </div>
-            <div class="section-content">
-                <div class="bcg-matrix-container">
-                    <canvas id="bcgMatrix" width="600" height="600"></canvas>
+                <!-- Mini Paso 2: TASAS DE CRECIMIENTO DEL MERCADO (TCM) -->
+                <div class="mini-step">
+                    <div class="mini-step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">TASAS DE CRECIMIENTO DEL MERCADO (TCM)</h3>
+                        <button type="button" class="btn-add-mini" onclick="addPeriod()">
+                            <i class="icon-plus"></i> Agregar Período
+                        </button>
+                    </div>
+                    
+                    <div class="mini-step-content">
+                        <div class="tcm-table">
+                            <div class="tcm-header">
+                                <div class="col-periods">PERÍODOS</div>
+                                <div class="col-markets">MERCADOS</div>
+                            </div>
+                            <div class="tcm-periods" id="periods-container">
+                                <!-- Períodos se agregan dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Tabla Resumen BCG -->
+                        <div class="bcg-summary-table">
+                            <h4 class="table-title">Resumen BCG</h4>
+                            <div class="bcg-table" id="bcg-summary">
+                                <!-- Se genera automáticamente -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="matrix-legend mt-4">
-                    <h5>Resumen de Productos:</h5>
+
+                <!-- Mini Paso 3: EVOLUCIÓN DE LA DEMANDA GLOBAL SECTOR -->
+                <div class="mini-step">
+                    <div class="mini-step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">EVOLUCIÓN DE LA DEMANDA GLOBAL SECTOR (en miles de soles)</h3>
+                        <button type="button" class="btn-add-mini" onclick="updateDemandEvolution()">
+                            <i class="icon-refresh"></i> Actualizar
+                        </button>
+                    </div>
+                    
+                    <div class="mini-step-content">
+                        <div class="demand-evolution-table" id="demand-evolution">
+                            <!-- Tabla de evolución de demanda -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini Paso 4: NIVELES DE VENTA DE LOS COMPETIDORES -->
+                <div class="mini-step">
+                    <div class="mini-step-header">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">NIVELES DE VENTA DE LOS COMPETIDORES DE CADA PRODUCTO</h3>
+                        <button type="button" class="btn-add-mini" onclick="updateCompetitorsSales()">
+                            <i class="icon-refresh"></i> Actualizar
+                        </button>
+                    </div>
+                    
+                    <div class="mini-step-content">
+                        <div class="competitors-sales-table" id="competitors-sales">
+                            <!-- Tabla de ventas de competidores por producto -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de navegación -->
+                <div class="form-navigation">
+                    <div class="nav-buttons">
+                        <a href="project.php?id=<?php echo $project_id; ?>" class="btn-secondary">
+                            <i class="icon-arrow-left"></i>
+                            Volver al Proyecto
+                        </a>
+                        
+                        <div class="nav-buttons-right">
+                            <button type="submit" name="save_and_exit" class="btn-outline">
+                                <i class="icon-save"></i>
+                                Guardar y Salir
+                            </button>
+                            
+                            <button type="submit" class="btn-primary">
+                                <i class="icon-arrow-right"></i>
+                                Guardar y Continuar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Matriz BCG Visual (solo mostrar si hay datos) -->
+            <?php if (count($bcg_matrix) > 0): ?>
+            <div class="section-card mt-5">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Matriz BCG Calculada
+                    </h2>
+                </div>
+                <div class="section-content">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Producto</th>
-                                    <th>Ventas Pronosticadas</th>
-                                    <th>% sobre Total</th>
-                                    <th>TCM (%)</th>
+                                    <th>Ventas</th>
+                                    <th>% Ventas</th>
+                                    <th>TCM</th>
                                     <th>PRM</th>
                                     <th>Posición</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($bcg_matrix as $product): ?>
+                                <?php foreach ($bcg_matrix as $item): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($product['product_name']); ?></td>
-                                    <td>$<?php echo number_format($product['sales_forecast'], 2); ?></td>
-                                    <td><?php echo $product['sales_percentage']; ?>%</td>
-                                    <td><?php echo $product['tcm_rate']; ?>%</td>
-                                    <td><?php echo $product['prm_rate']; ?></td>
-                                    <td>
-                                        <span class="badge bg-<?php 
-                                            echo $product['position'] == 'estrella' ? 'warning' : 
-                                                ($product['position'] == 'interrogante' ? 'info' : 
-                                                ($product['position'] == 'vaca' ? 'success' : 'danger')); 
-                                        ?>">
-                                            <?php 
-                                            $positions = [
-                                                'estrella' => 'Estrella',
-                                                'interrogante' => 'Interrogante', 
-                                                'vaca' => 'Vaca Lechera',
-                                                'perro' => 'Perro'
-                                            ];
-                                            echo $positions[$product['position']];
-                                            ?>
-                                        </span>
-                                    </td>
+                                    <td><?php echo htmlspecialchars($item['product_name']); ?></td>
+                                    <td>$<?php echo number_format($item['sales_forecast'], 2); ?></td>
+                                    <td><?php echo $item['sales_percentage']; ?>%</td>
+                                    <td><?php echo $item['tcm_rate']; ?>%</td>
+                                    <td><?php echo $item['prm_rate']; ?></td>
+                                    <td><strong><?php echo ucfirst($item['position']); ?></strong></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -366,14 +293,10 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                     </div>
                 </div>
             </div>
-        </div>
-        <?php endif; ?>
+            <?php endif; ?>
 
         </div> <!-- container -->
     </main> <!-- main-content -->
-
-    <!-- Footer -->
-    <?php include __DIR__ . '/../Users/footer.php'; ?>
 
     <!-- JavaScript -->
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/dashboard.js"></script>
@@ -381,6 +304,12 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
         let productCount = 0;
         let periodCount = 0;
         let products = [];
+        
+        // Datos existentes del servidor
+        const existingBCGData = <?php echo $bcg_data_json; ?>;
+        const existingBCGMatrix = <?php echo $bcg_matrix_json; ?>;
+        
+        console.log('Datos BCG existentes:', existingBCGData);
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -388,14 +317,98 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
         });
 
         function initializeBCG() {
-            addProduct();
+            // Si hay datos existentes, cargarlos
+            if (existingBCGData && existingBCGData.length > 0) {
+                loadExistingData();
+            } else {
+                // Si no hay datos, inicializar con un producto vacío
+                addProduct();
+            }
+            
             addPeriod();
             updateBCGSummary();
+            
+            // Inicializar mini pasos 3 y 4 solo al cargar la página
+            setTimeout(() => {
+                initializeDemandEvolution();
+                initializeCompetitorsSales();
+            }, 100);
+        }
+        
+        function loadExistingData() {
+            console.log('Cargando datos existentes...');
+            
+            existingBCGData.forEach((product, index) => {
+                products.push({
+                    id: product.id,
+                    name: product.product_name,
+                    sales: parseFloat(product.sales_forecast),
+                    tcm: parseFloat(product.tcm_calculated || 0),
+                    percentage: parseFloat(product.sales_percentage || 0),
+                    competitors: product.competitors || []
+                });
+            });
+            
+            // Usar la función rebuildProductsList para crear los elementos DOM
+            rebuildProductsList();
+            
+            // Cargar períodos TCM si existen
+            loadExistingMarketEvolution();
+            
+            // Cargar competidores si existen
+            loadExistingCompetitors();
+            
+            // Forzar recálculo de porcentajes después de un pequeño delay
+            setTimeout(() => {
+                updateSalesPercentages();
+                updateTCMPeriods();
+                updateDemandEvolution();
+                updateCompetitorsSales();
+                updateBCGSummary();
+            }, 100);
+        }
+
+        function loadExistingMarketEvolution() {
+            existingBCGData.forEach((product, productIndex) => {
+                if (product.market_evolution && product.market_evolution.length > 0) {
+                    product.market_evolution.forEach(evolution => {
+                        // Cargar datos de evolución del mercado
+                        // Esta funcionalidad se implementaría para cargar períodos específicos
+                    });
+                }
+            });
+        }
+
+        function loadExistingCompetitors() {
+            existingBCGData.forEach((product, productIndex) => {
+                if (product.competitors && product.competitors.length > 0) {
+                    // Los competidores ya están en el array products, 
+                    // se cargarán automáticamente cuando se llame updateCompetitorsSales
+                    console.log(`Producto ${productIndex} tiene ${product.competitors.length} competidores`);
+                }
+            });
+        }
+
+        // Función para inicializar solo al cargar (no regenera si ya existe contenido)
+        function initializeDemandEvolution() {
+            const container = document.getElementById('demand-evolution');
+            if (container && (container.innerHTML.trim() === '' || container.innerHTML.includes('Primero configure'))) {
+                updateDemandEvolution();
+            }
+        }
+
+        // Función para inicializar solo al cargar (no regenera si ya existe contenido)
+        function initializeCompetitorsSales() {
+            const container = document.getElementById('competitors-sales');
+            if (container && (container.innerHTML.trim() === '' || container.innerHTML.includes('Tabla de ventas de competidores por implementar'))) {
+                updateCompetitorsSales();
+            }
         }
 
         function addProduct() {
-            productCount++;
-            const productName = `Producto ${productCount}`;
+            const productIndex = products.length; // Usar el tamaño actual del array
+            const productName = `Producto ${productIndex + 1}`;
+            
             products.push({
                 name: productName,
                 sales: 0,
@@ -405,20 +418,34 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             const container = document.getElementById('products-container');
             const productRow = document.createElement('div');
             productRow.className = 'product-row';
-            productRow.setAttribute('data-product-id', productCount);
+            productRow.setAttribute('data-product-index', productIndex);
             
             productRow.innerHTML = `
                 <div>
-                    <input type="text" class="product-input" placeholder="Nombre del producto" 
-                           value="${productName}" onchange="updateProductName(${productCount}, this.value)">
+                    <input type="text" 
+                           name="products[${productIndex}][name]"
+                           class="product-input" 
+                           placeholder="Nombre del producto" 
+                           value="${productName}" 
+                           onchange="updateProductName(${productIndex}, this.value)">
                 </div>
                 <div>
-                    <input type="number" class="product-input" placeholder="0.00" step="0.01" 
-                           onchange="updateProductSales(${productCount}, this.value)">
+                    <input type="number" 
+                           name="products[${productIndex}][sales_forecast]"
+                           class="product-input" 
+                           placeholder="0.00" 
+                           step="0.01" 
+                           min="0"
+                           onchange="updateProductSales(${productIndex}, this.value)"
+                           oninput="updateProductSales(${productIndex}, this.value)">
+                    <input type="hidden" 
+                           name="products[${productIndex}][tcm_rate]"
+                           class="tcm-hidden-input"
+                           value="0">
                 </div>
                 <div class="percentage-display">0%</div>
                 <div>
-                    <button type="button" class="btn-remove" onclick="removeProduct(${productCount})">
+                    <button type="button" class="btn-remove" onclick="removeProduct(${productIndex})">
                         Eliminar
                     </button>
                 </div>
@@ -426,58 +453,132 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             
             container.appendChild(productRow);
             updateTCMTable();
-            updateDemandEvolution();
-            updateCompetitorsSales();
         }
 
-        function removeProduct(productId) {
+        function removeProduct(productIndex) {
             if (products.length <= 1) {
                 alert('Debe mantener al menos un producto');
                 return;
             }
-
-            const productRow = document.querySelector(`[data-product-id="${productId}"]`);
-            if (productRow) {
-                productRow.remove();
-            }
-
-            products = products.filter((_, index) => index + 1 !== productId);
+            
+            // Eliminar del array
+            products.splice(productIndex, 1);
+            
+            // Recrear toda la lista para mantener índices correctos
+            rebuildProductsList();
             updateSalesPercentages();
             updateTCMTable();
             updateBCGSummary();
         }
+        
+        function rebuildProductsList() {
+            const container = document.getElementById('products-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            products.forEach((product, index) => {
+                const productRow = document.createElement('div');
+                productRow.className = 'product-row';
+                productRow.setAttribute('data-product-index', index);
+                
+                productRow.innerHTML = `
+                    <div>
+                        <input type="text" 
+                               name="products[${index}][name]"
+                               class="product-input" 
+                               placeholder="Nombre del producto" 
+                               value="${product.name}" 
+                               onchange="updateProductName(${index}, this.value)">
+                    </div>
+                    <div>
+                        <input type="number" 
+                               name="products[${index}][sales_forecast]"
+                               class="product-input" 
+                               placeholder="0.00" 
+                               step="0.01" 
+                               min="0"
+                               value="${product.sales || ''}"
+                               onchange="updateProductSales(${index}, this.value)"
+                               oninput="updateProductSales(${index}, this.value)">
+                        <input type="hidden" 
+                               name="products[${index}][tcm_rate]"
+                               class="tcm-hidden-input"
+                               value="0">
+                    </div>
+                    <div class="percentage-display">${product.percentage || 0}%</div>
+                    <div>
+                        <button type="button" class="btn-remove" onclick="removeProduct(${index})">
+                            Eliminar
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(productRow);
+            });
+        }
 
-        function updateProductName(productId, name) {
-            if (products[productId - 1]) {
-                products[productId - 1].name = name;
+        function updateProductName(productIndex, name) {
+            if (products[productIndex]) {
+                products[productIndex].name = name;
                 updateTCMTable();
                 updateBCGSummary();
             }
         }
 
-        function updateProductSales(productId, sales) {
-            if (products[productId - 1]) {
-                products[productId - 1].sales = parseFloat(sales) || 0;
-                updateSalesPercentages();
+        function updateProductSales(productIndex, sales) {
+            console.log(`Actualizando ventas del producto ${productIndex}: ${sales}`);
+            if (products[productIndex]) {
+                products[productIndex].sales = parseFloat(sales) || 0;
             }
+            // Llamar inmediatamente a la función de actualización de porcentajes
+            updateSalesPercentages();
         }
 
         function updateSalesPercentages() {
-            const totalSales = products.reduce((sum, product) => sum + product.sales, 0);
+            console.log('Actualizando porcentajes de ventas...');
             
-            products.forEach((product, index) => {
-                const percentage = totalSales > 0 ? ((product.sales / totalSales) * 100).toFixed(1) : 0;
-                product.percentage = percentage;
+            // Obtener valores reales de los inputs de ventas
+            const salesInputs = document.querySelectorAll('input[name*="[sales_forecast]"]');
+            let totalSales = 0;
+            const salesValues = [];
+            
+            salesInputs.forEach((input, index) => {
+                const sales = parseFloat(input.value) || 0;
+                salesValues[index] = sales;
+                totalSales += sales;
                 
-                const productRow = document.querySelector(`[data-product-id="${index + 1}"]`);
+                // Actualizar también el array products
+                if (products[index]) {
+                    products[index].sales = sales;
+                }
+            });
+            
+            console.log('Total de ventas:', totalSales);
+            console.log('Valores de ventas:', salesValues);
+            
+            // Calcular y actualizar porcentajes
+            salesInputs.forEach((input, index) => {
+                const sales = salesValues[index] || 0;
+                const percentage = totalSales > 0 ? ((sales / totalSales) * 100) : 0;
+                
+                // Actualizar el array products
+                if (products[index]) {
+                    products[index].percentage = percentage.toFixed(1);
+                }
+                
+                // Buscar y actualizar la visualización del porcentaje
+                const productRow = document.querySelector(`[data-product-index="${index}"]`);
                 if (productRow) {
                     const percentageDisplay = productRow.querySelector('.percentage-display');
                     if (percentageDisplay) {
-                        percentageDisplay.textContent = percentage + '%';
+                        percentageDisplay.textContent = percentage.toFixed(1) + '%';
+                        console.log(`Producto ${index + 1}: ${sales} (${percentage.toFixed(1)}%)`);
                     }
                 }
             });
 
+            // Actualizar el total
             const totalElement = document.getElementById('total-sales');
             if (totalElement) {
                 totalElement.textContent = totalSales.toFixed(2);
@@ -486,15 +587,18 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             updateBCGSummary();
         }
 
+        // Mini Paso 2: Funciones de períodos TCM
         function addPeriod() {
             periodCount++;
             const container = document.getElementById('periods-container');
+            
+            if (!container) return;
             
             const periodRow = document.createElement('div');
             periodRow.className = 'period-row';
             periodRow.setAttribute('data-period-id', periodCount);
             
-            // Crear grid de productos con porcentajes
+            // Crear grid de productos con inputs TCM
             let productsGrid = '';
             products.forEach((product, index) => {
                 productsGrid += `
@@ -502,11 +606,14 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                         <label class="product-label">${product.name}</label>
                         <div class="percentage-input-wrapper">
                             <input type="number" 
+                                   name="periods[${index}][${periodCount}][tcm_percentage]"
                                    placeholder="0.0" 
                                    step="0.1" 
                                    min="0" 
                                    max="100"
                                    class="product-input percentage-input" 
+                                   data-product="${index}"
+                                   data-period="${periodCount}"
                                    onchange="calculateTCM(${periodCount}, ${index}, this.value)">
                             <span class="percentage-symbol">%</span>
                         </div>
@@ -520,22 +627,27 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                         <div class="year-group">
                             <label>Año inicial:</label>
                             <input type="number" 
+                                   name="periods[${periodCount}][start_year]"
                                    placeholder="2020" 
                                    min="2000" 
                                    max="2030" 
-                                   class="year-input" 
+                                   class="year-input start-year" 
                                    onchange="autoFillEndYear(this, ${periodCount})">
                         </div>
                         <span class="year-separator">-</span>
                         <div class="year-group">
                             <label>Año final:</label>
                             <input type="number" 
+                                   name="periods[${periodCount}][end_year]"
                                    placeholder="2021" 
                                    min="2000" 
                                    max="2030" 
-                                   class="year-input" 
+                                   class="year-input end-year" 
                                    readonly>
                         </div>
+                        <button type="button" class="btn-remove-period" onclick="removePeriod(${periodCount})">
+                            Eliminar Período
+                        </button>
                     </div>
                 </div>
                 <div class="products-grid" style="grid-template-columns: repeat(${Math.max(1, products.length)}, 1fr);">
@@ -544,6 +656,15 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             `;
             
             container.appendChild(periodRow);
+            updateBCGSummary();
+        }
+
+        function removePeriod(periodId) {
+            const periodRow = document.querySelector(`[data-period-id="${periodId}"]`);
+            if (periodRow) {
+                periodRow.remove();
+                updateBCGSummary();
+            }
         }
 
         // Auto completar año final
@@ -551,7 +672,7 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             const startYear = parseInt(startYearInput.value);
             if (startYear && startYear >= 2000) {
                 const periodRow = document.querySelector(`[data-period-id="${periodId}"]`);
-                const endYearInput = periodRow.querySelector('.year-input[readonly]');
+                const endYearInput = periodRow.querySelector('.end-year');
                 if (endYearInput) {
                     endYearInput.value = startYear + 1;
                 }
@@ -560,7 +681,6 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
 
         // Calcular TCM basado en los datos ingresados
         function calculateTCM(periodId, productIndex, percentage) {
-            // Validar el valor ingresado
             const value = parseFloat(percentage) || 0;
             if (value < 0 || value > 100) {
                 alert('El porcentaje debe estar entre 0 y 100');
@@ -574,87 +694,91 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
         }
 
         function updateTCMTable() {
-            const periodsContainer = document.getElementById('periods-container');
-            const periods = periodsContainer.querySelectorAll('.period-row');
+            console.log('Actualizando tabla TCM...');
             
+            // Regenerar productos en todos los períodos existentes
+            const periods = document.querySelectorAll('.period-row');
             periods.forEach(period => {
+                const periodId = period.getAttribute('data-period-id');
                 const productsGrid = period.querySelector('.products-grid');
-                productsGrid.style.gridTemplateColumns = `repeat(${Math.max(1, products.length)}, 1fr)`;
                 
-                // Guardar valores existentes
-                const existingInputs = period.querySelectorAll('.percentage-input');
-                const existingValues = Array.from(existingInputs).map(input => input.value);
-                
-                // Recrear grid de productos con los nombres actualizados
-                let productsHTML = '';
-                products.forEach((product, index) => {
-                    const periodId = period.getAttribute('data-period-id');
-                    const savedValue = existingValues[index] || '';
-                    
-                    productsHTML += `
-                        <div class="product-tcm-cell">
-                            <label class="product-label">${product.name}</label>
-                            <div class="percentage-input-wrapper">
-                                <input type="number" 
-                                       placeholder="0.0" 
-                                       step="0.1" 
-                                       min="0" 
-                                       max="100"
-                                       value="${savedValue}"
-                                       class="product-input percentage-input" 
-                                       onchange="calculateTCM(${periodId}, ${index}, this.value)">
-                                <span class="percentage-symbol">%</span>
+                if (productsGrid) {
+                    let productsHTML = '';
+                    products.forEach((product, index) => {
+                        // Buscar valor existente si hay
+                        const existingInput = period.querySelector(`input[data-product="${index}"]`);
+                        const existingValue = existingInput ? existingInput.value : '';
+                        
+                        productsHTML += `
+                            <div class="product-tcm-cell">
+                                <label class="product-label">${product.name}</label>
+                                <div class="percentage-input-wrapper">
+                                    <input type="number" 
+                                           name="periods[${index}][${periodId}][tcm_percentage]"
+                                           value="${existingValue}"
+                                           placeholder="0.0" 
+                                           step="0.1" 
+                                           min="0" 
+                                           max="100"
+                                           class="product-input percentage-input" 
+                                           data-product="${index}"
+                                           data-period="${periodId}"
+                                           onchange="calculateTCM(${periodId}, ${index}, this.value)">
+                                    <span class="percentage-symbol">%</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-                
-                productsGrid.innerHTML = productsHTML;
+                        `;
+                    });
+                    
+                    productsGrid.innerHTML = productsHTML;
+                    productsGrid.style.gridTemplateColumns = `repeat(${Math.max(1, products.length)}, 1fr)`;
+                }
             });
         }
 
         function updateBCGSummary() {
             const container = document.getElementById('bcg-summary');
+            if (!container) return;
             
             if (products.length === 0) {
                 container.innerHTML = '<p class="text-muted">Agregue productos para ver el resumen BCG</p>';
                 return;
             }
             
+            // Calcular TCM por producto basado en los períodos
+            const tcmValues = products.map((product, productIndex) => {
+                const periodsContainer = document.getElementById('periods-container');
+                const periods = periodsContainer ? periodsContainer.querySelectorAll('.period-row') : [];
+                
+                let tcmSum = 0;
+                let totalPeriods = 0;
+                
+                periods.forEach(period => {
+                    const productInput = period.querySelector(`input[data-product="${productIndex}"]`);
+                    if (productInput && productInput.value) {
+                        const value = parseFloat(productInput.value) || 0;
+                        if (value > 0) {
+                            tcmSum += value;
+                            totalPeriods++;
+                        }
+                    }
+                });
+                
+                const averageTCM = totalPeriods > 0 ? tcmSum / totalPeriods : 0;
+                
+                // Actualizar el campo oculto con el valor TCM
+                const hiddenInput = document.querySelector(`input[name="products[${productIndex}][tcm_rate]"]`);
+                if (hiddenInput) {
+                    hiddenInput.value = averageTCM.toFixed(2);
+                }
+                
+                return averageTCM.toFixed(2);
+            });
+            
             let headerColumns = 'auto';
             for (let i = 0; i < products.length; i++) {
                 headerColumns += ' 1fr';
             }
-            
-            // Calcular TCM por producto basado en los datos ingresados
-            const tcmValues = products.map((product, productIndex) => {
-                const periodsContainer = document.getElementById('periods-container');
-                const periods = periodsContainer.querySelectorAll('.period-row');
-                
-                let tcmSum = 0;
-                let totalPeriods = periods.length;
-                
-                periods.forEach(period => {
-                    const productInputs = period.querySelectorAll('.percentage-input');
-                    if (productInputs[productIndex]) {
-                        const value = parseFloat(productInputs[productIndex].value) || 0;
-                        tcmSum += value / 100; // Convertir porcentaje a decimal
-                    }
-                });
-                
-                // Implementar fórmula Excel: =SI(SUMA(E23:E27)/5>0.2;0.2;SUMA(E23:E27)/5)
-                // Dividir entre 5 como en la fórmula original de Excel
-                const divisor = 5;
-                const averageTCM = tcmSum / divisor;
-                
-                // Si el promedio es mayor a 0.2 (20%), limitar a 0.2
-                const finalTCM = averageTCM > 0.2 ? 0.2 : averageTCM;
-                
-                // Debug para verificar cálculos
-                console.log(`Producto ${productIndex + 1}: suma=${(tcmSum * 100).toFixed(2)}%, promedio=${(averageTCM * 100).toFixed(2)}%, final=${(finalTCM * 100).toFixed(2)}%`);
-                
-                return (finalTCM * 100).toFixed(2); // Convertir de vuelta a porcentaje
-            });
             
             let summaryHTML = `
                 <div class="bcg-row header" style="grid-template-columns: ${headerColumns};">
@@ -668,158 +792,241 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                 <div class="bcg-row" style="grid-template-columns: ${headerColumns};">
                     <div>PRM</div>
                     ${products.map((product, index) => {
-                        // Calcular PRM básico: Ventas del producto / Ventas del competidor más fuerte
-                        // Por ahora usamos un cálculo simple basado en participación de mercado
-                        const productSales = product.sales || 0;
-                        const maxCompetitorSales = Math.max(...products.map(p => p.sales || 0));
-                        const prm = maxCompetitorSales > 0 ? (productSales / maxCompetitorSales) : 0;
-                        
-                        // Aplicar fórmula Excel: =SI(C57=0;0;SI(D13/C57>2;2;D13/C57))
-                        const finalPRM = prm > 2 ? 2 : prm;
-                        
-                        return `<div>${finalPRM.toFixed(2)}</div>`;
+                        // Calcular PRM basado en competidores
+                        const prm = calculateProductPRM(index);
+                        const hiddenInput = document.querySelector(`input[name="products[${index}][prm_rate]"]`);
+                        if (hiddenInput) {
+                            hiddenInput.value = prm.toFixed(2);
+                        }
+                        return `<div>${prm.toFixed(2)}</div>`;
                     }).join('')}
                 </div>
                 <div class="bcg-row" style="grid-template-columns: ${headerColumns};">
                     <div>% S/VTAS</div>
-                    ${products.map(product => `<div>${product.percentage}%</div>`).join('')}
+                    ${products.map(product => `<div>${(product.percentage || 0)}%</div>`).join('')}
                 </div>
             `;
             
             container.innerHTML = summaryHTML;
-            
-            // Actualizar las nuevas secciones cuando cambian los productos
-            updateDemandEvolution();
-            updateCompetitorsSales();
         }
 
+        // Calcular PRM (Participación Relativa del Mercado) para un producto
+        function calculateProductPRM(productIndex) {
+            // PRM = Ventas de nuestro producto / Ventas del mayor competidor
+            
+            // Obtener las ventas de nuestro producto del primer paso
+            const productSales = parseFloat(products[productIndex].sales) || 0;
+            
+            // Obtener las ventas del mayor competidor
+            const maxCompetitorInput = document.querySelector(`input[data-product="${productIndex}"].max-sales-input`);
+            const maxCompetitorSales = parseFloat(maxCompetitorInput?.value) || 0;
+            
+            // Si no hay datos de competidores o ventas, retornar 0
+            if (maxCompetitorSales === 0 || productSales === 0) {
+                return 0;
+            }
+            
+            // Calcular PRM
+            const prm = productSales / maxCompetitorSales;
+            return prm;
+        }
+
+        // Mini Paso 3: Evolución de la Demanda Global del Sector
         function updateDemandEvolution() {
             const container = document.getElementById('demand-evolution');
+            if (!container) return;
             
             if (products.length === 0) {
                 container.innerHTML = `<p class="text-muted">Primero agregue productos en la sección "Previsión de Ventas"</p>`;
                 return;
             }
 
-            // Obtener todos los años únicos de los períodos
+            // Obtener todos los años únicos de los períodos TCM
             const periodsContainer = document.getElementById('periods-container');
-            const periodRows = periodsContainer ? periodsContainer.querySelectorAll('.period-row') : [];
-            let allYears = new Set();
+            const periods = periodsContainer ? periodsContainer.querySelectorAll('.period-row') : [];
+            const years = new Set();
             
-            periodRows.forEach(row => {
-                const startYear = row.querySelector('input[name$="[start_year]"]')?.value;
-                const endYear = row.querySelector('input[name$="[end_year]"]')?.value;
+            periods.forEach(period => {
+                const startYearInput = period.querySelector('.start-year');
+                const endYearInput = period.querySelector('.end-year');
                 
-                if (startYear) allYears.add(parseInt(startYear));
-                if (endYear) allYears.add(parseInt(endYear));
+                if (startYearInput && startYearInput.value) {
+                    years.add(parseInt(startYearInput.value));
+                }
+                if (endYearInput && endYearInput.value) {
+                    years.add(parseInt(endYearInput.value));
+                }
             });
-
-            const sortedYears = Array.from(allYears).sort((a, b) => a - b);
             
-            if (sortedYears.length === 0) {
-                container.innerHTML = `<p class="text-muted">Primero configure los períodos en la sección "Tasas de Crecimiento del Mercado"</p>`;
+            // Si no hay períodos definidos, usar años por defecto
+            if (years.size === 0) {
+                const currentYear = new Date().getFullYear();
+                for (let i = currentYear - 2; i <= currentYear + 2; i++) {
+                    years.add(i);
+                }
+            }
+            
+            const sortedYears = Array.from(years).sort((a, b) => a - b);
+            
+            // Crear tabla de evolución de demanda
+            let tableHTML = `
+                <div class="demand-evolution-table">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>PRODUCTOS / AÑOS</th>
+                                    ${sortedYears.map(year => `<th>${year}</th>`).join('')}
+                                    <th>TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            // Agregar fila para cada producto
+            products.forEach((product, productIndex) => {
+                tableHTML += `
+                    <tr>
+                        <td><strong>${product.name}</strong></td>
+                        ${sortedYears.map(year => `
+                            <td>
+                                <input type="number" 
+                                       name="demand_evolution[${productIndex}][${year}]"
+                                       class="form-control demand-input" 
+                                       placeholder="0" 
+                                       step="0.01" 
+                                       min="0"
+                                       data-product="${productIndex}"
+                                       data-year="${year}"
+                                       onchange="calculateDemandTotal(${productIndex})">
+                            </td>
+                        `).join('')}
+                        <td>
+                            <span class="demand-total" data-product="${productIndex}">0.00</span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            // Fila de totales por año
+            tableHTML += `
+                    <tr class="table-info">
+                        <td><strong>TOTAL POR AÑO</strong></td>
+                        ${sortedYears.map(year => `
+                            <td>
+                                <span class="year-total" data-year="${year}">0.00</span>
+                            </td>
+                        `).join('')}
+                        <td>
+                            <span class="grand-total">0.00</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i>
+                Los años se generan automáticamente basándose en los períodos TCM definidos. 
+                Ingrese la demanda global del sector para cada producto por año (en miles de soles).
+            </small>
+        </div>
+    </div>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        function calculateDemandTotal(productIndex) {
+            // Calcular total por producto
+            const productInputs = document.querySelectorAll(`input[data-product="${productIndex}"]`);
+            let productTotal = 0;
+            
+            productInputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                productTotal += value;
+            });
+            
+            const productTotalSpan = document.querySelector(`span[data-product="${productIndex}"]`);
+            if (productTotalSpan) {
+                productTotalSpan.textContent = productTotal.toFixed(2);
+            }
+            
+            // Recalcular totales por año
+            calculateYearTotals();
+        }
+
+        function calculateYearTotals() {
+            const yearTotalSpans = document.querySelectorAll('.year-total');
+            let grandTotal = 0;
+            
+            yearTotalSpans.forEach(span => {
+                const year = span.getAttribute('data-year');
+                const yearInputs = document.querySelectorAll(`input[data-year="${year}"]`);
+                let yearTotal = 0;
+                
+                yearInputs.forEach(input => {
+                    const value = parseFloat(input.value) || 0;
+                    yearTotal += value;
+                });
+                
+                span.textContent = yearTotal.toFixed(2);
+                grandTotal += yearTotal;
+            });
+            
+            const grandTotalSpan = document.querySelector('.grand-total');
+            if (grandTotalSpan) {
+                grandTotalSpan.textContent = grandTotal.toFixed(2);
+            }
+        }
+
+        // Mini Paso 4: Niveles de Venta de los Competidores
+        function updateCompetitorsSales() {
+            const container = document.getElementById('competitors-sales');
+            if (!container) return;
+            
+            if (products.length === 0) {
+                container.innerHTML = '<p class="text-muted">Primero agregue productos en la sección "Previsión de Ventas"</p>';
                 return;
             }
 
             let tableHTML = `
-                <div class="table-responsive">
-                    <table class="table table-bordered demand-evolution-table">
-                        <thead>
-                            <tr>
-                                <th>AÑOS</th>
-                                <th>MERCADOS (Miles de Soles)</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
-            // Crear fila de años
-            tableHTML += `<tr><td><strong>Año</strong></td>`;
-            sortedYears.forEach(year => {
-                tableHTML += `<td class="year-header">${year}</td>`;
-            });
-            tableHTML += `</tr>`;
-
-            // Crear una fila por cada producto
-            products.forEach((product, productIndex) => {
-                tableHTML += `<tr>
-                    <td><strong>${product.name || `Producto ${productIndex + 1}`}</strong></td>`;
-                
-                sortedYears.forEach(year => {
-                    tableHTML += `<td>
-                        <input type="number" 
-                               name="market_evolution[${productIndex}][${year}]" 
-                               class="form-control market-value-input" 
-                               placeholder="0.00" 
-                               step="0.01" 
-                               min="0"
-                               data-product="${productIndex}" 
-                               data-year="${year}">
-                    </td>`;
-                });
-                
-                tableHTML += `</tr>`;
-            });
-
-            tableHTML += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3">
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle"></i>
-                        Ingrese los valores del mercado en miles de soles para cada producto por año.
-                    </small>
-                </div>`;
-
-            container.innerHTML = tableHTML;
-        }
-
-        function updateCompetitorsSales() {
-            const container = document.getElementById('competitors-sales');
-            
-            if (products.length === 0) {
-                container.innerHTML = `<p class="text-muted">Primero agregue productos en la sección "Previsión de Ventas"</p>`;
-                return;
-            }
-
-            let tableHTML = `<div class="competitors-container">`;
+                <div class="competitors-sales-container">
+            `;
 
             products.forEach((product, productIndex) => {
-                const productSales = product.sales || 0;
+                // Obtener competidores existentes o crear por defecto
+                const existingCompetitors = product.competitors || [];
                 
                 tableHTML += `
-                    <div class="product-competitors-section mb-4">
-                        <h5 class="product-title">${product.name || `Producto ${productIndex + 1}`}</h5>
-                        <div class="table-responsive">
-                            <table class="table table-bordered competitors-table" data-product="${productIndex}">
+                    <div class="product-competitors-section">
+                        <h5 class="product-title">${product.name}</h5>
+                        <div class="competitors-table">
+                            <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th colspan="2" class="text-center bg-primary text-white">
-                                            ${product.name || `Producto ${productIndex + 1}`}
-                                        </th>
-                                    </tr>
-                                    <tr class="company-row">
-                                        <td><strong>EMPRESA</strong></td>
-                                        <td class="company-sales">
-                                            <span class="sales-value">${parseFloat(productSales).toLocaleString('es-PE')}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Competidor</th>
-                                        <th>Ventas</th>
+                                        <th>COMPETIDORES</th>
+                                        <th>VENTAS (miles de soles)</th>
                                     </tr>
                                 </thead>
-                                <tbody class="competitors-body" data-product="${productIndex}">`;
-
-                // Generar 9 filas de competidores
-                for (let i = 1; i <= 9; i++) {
+                                <tbody data-product="${productIndex}">`;
+                
+                // Crear filas para competidores existentes o mínimo 2 por defecto
+                const minCompetitors = Math.max(2, existingCompetitors.length);
+                for (let i = 0; i < minCompetitors; i++) {
+                    const competitor = existingCompetitors[i] || {};
+                    const competitorName = competitor.competitor_name || '';
+                    const competitorSales = competitor.competitor_sales || '';
+                    
                     tableHTML += `
                         <tr class="competitor-row">
                             <td>
                                 <input type="text" 
                                        name="competitors[${productIndex}][${i}][name]" 
                                        class="form-control competitor-name" 
-                                       placeholder="CP${productIndex + 1}-${i}"
+                                       placeholder="Competidor ${i + 1}"
+                                       value="${competitorName}"
                                        data-product="${productIndex}"
                                        data-competitor="${i}">
                             </td>
@@ -830,28 +1037,45 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                                        placeholder="0.00" 
                                        step="0.01" 
                                        min="0"
+                                       value="${competitorSales}"
                                        data-product="${productIndex}"
                                        data-competitor="${i}"
                                        onchange="updateMaxCompetitorSales(${productIndex})">
+                                ${i >= 2 ? `
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-danger ms-2 remove-competitor-btn" 
+                                        onclick="removeCompetitor(this, ${productIndex})" 
+                                        title="Eliminar competidor">
+                                    <i class="fas fa-times"></i>
+                                </button>` : ''}
                             </td>
                         </tr>`;
                 }
-
+                
                 tableHTML += `
-                                    <tr class="mayor-row bg-light">
+                                    <tr class="mayor-row table-info">
                                         <td><strong>MAYOR</strong></td>
                                         <td>
                                             <span class="max-competitor-sales" data-product="${productIndex}">0</span>
                                             <input type="hidden" 
                                                    name="competitors[${productIndex}][max_sales]" 
                                                    class="max-sales-input" 
-                                                   data-product="${productIndex}">
+                                                   data-product="${productIndex}"
+                                                   value="0">
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <div class="add-competitor-btn-container mt-2">
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-primary add-competitor-btn" 
+                                        onclick="addCompetitor(${productIndex})">
+                                    <i class="fas fa-plus"></i> Agregar Competidor
+                                </button>
+                            </div>
                         </div>
-                    </div>`;
+                    </div>
+                `;
             });
 
             tableHTML += `
@@ -861,10 +1085,77 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
                         <i class="fas fa-info-circle"></i>
                         Ingrese los nombres de los competidores y sus ventas para cada producto. 
                         El valor "MAYOR" se calculará automáticamente con el competidor de mayores ventas.
+                        Esta información es opcional pero ayuda a calcular el PRM (Participación Relativa del Mercado).
                     </small>
                 </div>`;
 
             container.innerHTML = tableHTML;
+            
+            // Calcular los máximos iniciales para cada producto después de cargar datos existentes
+            setTimeout(() => {
+                products.forEach((product, productIndex) => {
+                    updateMaxCompetitorSales(productIndex);
+                });
+            }, 100);
+        }
+
+        // Función para agregar competidor
+        function addCompetitor(productIndex) {
+            const competitorsBody = document.querySelector(`tbody[data-product="${productIndex}"]`);
+            const mayorRow = competitorsBody.querySelector('.mayor-row');
+            
+            // Contar competidores existentes
+            const existingRows = competitorsBody.querySelectorAll('.competitor-row');
+            const competitorNumber = existingRows.length;
+            
+            // Crear nueva fila de competidor
+            const newRow = document.createElement('tr');
+            newRow.className = 'competitor-row';
+            newRow.innerHTML = `
+                <td>
+                    <input type="text" 
+                           name="competitors[${productIndex}][${competitorNumber}][name]" 
+                           class="form-control competitor-name" 
+                           placeholder="Competidor ${competitorNumber + 1}"
+                           data-product="${productIndex}"
+                           data-competitor="${competitorNumber}">
+                </td>
+                <td>
+                    <input type="number" 
+                           name="competitors[${productIndex}][${competitorNumber}][sales]" 
+                           class="form-control competitor-sales" 
+                           placeholder="0.00" 
+                           step="0.01" 
+                           min="0"
+                           data-product="${productIndex}"
+                           data-competitor="${competitorNumber}"
+                           onchange="updateMaxCompetitorSales(${productIndex})">
+                    <button type="button" 
+                            class="btn btn-sm btn-outline-danger ms-2 remove-competitor-btn" 
+                            onclick="removeCompetitor(this, ${productIndex})" 
+                            title="Eliminar competidor">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </td>
+            `;
+            
+            // Insertar antes de la fila MAYOR
+            competitorsBody.insertBefore(newRow, mayorRow);
+        }
+
+        // Función para eliminar competidor
+        function removeCompetitor(button, productIndex) {
+            const row = button.closest('.competitor-row');
+            const competitorsBody = row.closest('tbody');
+            const remainingRows = competitorsBody.querySelectorAll('.competitor-row');
+            
+            if (remainingRows.length <= 2) {
+                alert('Debe mantener al menos 2 competidores por producto');
+                return;
+            }
+            
+            row.remove();
+            updateMaxCompetitorSales(productIndex);
         }
 
         // Función para actualizar el mayor competidor por producto
@@ -889,12 +1180,15 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             if (maxInput) {
                 maxInput.value = maxSales;
             }
+            
+            // Actualizar PRM en el resumen BCG
+            updateBCGSummary();
         }
 
         // Validación del formulario
         document.getElementById('bcgForm').addEventListener('submit', function(e) {
             const productsContainer = document.getElementById('products-container');
-            const productRows = productsContainer.querySelectorAll('.product-row');
+            const productRows = productsContainer ? productsContainer.querySelectorAll('.product-row') : [];
             let valid = true;
             
             if (productRows.length === 0) {
@@ -923,23 +1217,12 @@ $bcg_matrix = $projectController->getBCGMatrix($project_id);
             // Asegurar que los datos de productos estén actualizados
             updateSalesPercentages();
             
-            // Validar que al menos un competidor tenga datos válidos (opcional)
-            let hasValidCompetitors = false;
-            const competitorInputs = document.querySelectorAll('.competitor-name');
-            competitorInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    hasValidCompetitors = true;
-                }
-            });
-            
-            if (!hasValidCompetitors) {
-                const confirmSubmit = confirm('No ha ingresado competidores. ¿Desea continuar sin esta información?');
-                if (!confirmSubmit) {
-                    e.preventDefault();
-                    return;
-                }
-            }
+            // Los competidores son opcionales - no validar
+            console.log('Formulario válido, enviando datos...');
         });
     </script>
+
+    <!-- Footer -->
+    <?php include __DIR__ . '/../Users/footer.php'; ?>
 </body>
 </html>

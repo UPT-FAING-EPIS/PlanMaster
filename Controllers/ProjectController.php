@@ -455,90 +455,82 @@ class ProjectController {
     
     // ===== MÉTODOS BCG ANALYSIS =====
     
-    // Guardar análisis BCG
+    // Guardar análisis BCG - NUEVA IMPLEMENTACIÓN COMPLETA
     public function saveBCGAnalysis() {
         try {
-            // Verificar que el usuario esté logueado
+            // Log de inicio
+            error_log("=== INICIO GUARDADO BCG ===");
+            error_log("POST completo: " . print_r($_POST, true));
+            
+            // Verificar sesión
             if (!AuthController::isLoggedIn()) {
-                header("Location: " . getBaseUrl() . "/Views/Auth/login.php");
-                exit();
+                throw new Exception("Usuario no logueado");
             }
             
-            // Validar datos básicos
-            if (!isset($_POST['project_id']) || !isset($_POST['products'])) {
-                throw new Exception("Datos incompletos");
+            // Validar parámetros básicos
+            if (!isset($_POST['project_id'])) {
+                throw new Exception("ID de proyecto no especificado");
             }
             
             $project_id = (int)$_POST['project_id'];
-            $products = $_POST['products'];
-            
-            // Validar que el proyecto pertenezca al usuario
             $user_id = $_SESSION['user_id'];
-            $project = $this->project->getById($project_id);
             
+            // Verificar permisos del proyecto
+            $project = $this->project->getById($project_id);
             if (!$project || $project['user_id'] != $user_id) {
                 throw new Exception("Proyecto no encontrado o sin permisos");
             }
             
-            // Validar productos
-            if (!is_array($products) || count($products) < 1) {
-                throw new Exception("Debe incluir al menos un producto");
-            }
+            // Preparar datos para guardar
+            $products = $_POST['products'] ?? [];
+            $competitors = $_POST['competitors'] ?? [];
+            $market_evolution = $_POST['market_evolution'] ?? [];
             
-            // Validar cada producto
-            foreach ($products as $index => $product) {
-                if (empty(trim($product['name'] ?? ''))) {
-                    throw new Exception("El nombre del producto " . ($index + 1) . " es obligatorio");
-                }
-                
-                if (!is_numeric($product['sales_forecast'] ?? 0) || floatval($product['sales_forecast']) <= 0) {
-                    throw new Exception("El pronóstico de ventas del producto " . ($index + 1) . " debe ser mayor a 0");
-                }
-                
-                if (!is_numeric($product['tcm_rate'] ?? '') || floatval($product['tcm_rate']) < 0) {
-                    throw new Exception("La TCM del producto " . ($index + 1) . " debe ser mayor o igual a 0");
-                }
-            }
-            
-            // Guardar productos
-            if ($this->bcgAnalysis->saveProducts($project_id, $products)) {
-                // Procesar datos adicionales si existen (competidores, evolución mercado)
-                if (isset($_POST['market_evolution'])) {
-                    foreach ($_POST['market_evolution'] as $product_index => $market_data) {
-                        if (is_array($market_data) && count($market_data) > 0) {
-                            // Obtener el ID del producto recién guardado
-                            $saved_products = $this->bcgAnalysis->getProductsByProject($project_id);
-                            if (isset($saved_products[$product_index])) {
-                                $product_id = $saved_products[$product_index]['id'];
-                                $this->bcgAnalysis->saveMarketEvolution($product_id, $market_data);
+            // Reorganizar datos: asociar competidores con productos
+            if (is_array($products)) {
+                foreach ($products as $index => &$product) {
+                    // Agregar competidores del producto si existen
+                    if (isset($competitors[$index]) && is_array($competitors[$index])) {
+                        $product['competitors'] = [];
+                        foreach ($competitors[$index] as $comp_index => $competitor) {
+                            // Solo agregar competidores con nombre y ventas válidas
+                            if (!empty($competitor['name']) && !empty($competitor['sales']) && $competitor['sales'] > 0) {
+                                $product['competitors'][] = $competitor;
                             }
                         }
                     }
                 }
-                
-                if (isset($_POST['competitors'])) {
-                    foreach ($_POST['competitors'] as $product_index => $competitors_data) {
-                        if (is_array($competitors_data) && count($competitors_data) > 0) {
-                            // Obtener el ID del producto recién guardado
-                            $saved_products = $this->bcgAnalysis->getProductsByProject($project_id);
-                            if (isset($saved_products[$product_index])) {
-                                $product_id = $saved_products[$product_index]['id'];
-                                $this->bcgAnalysis->saveCompetitors($product_id, $competitors_data);
-                            }
-                        }
-                    }
-                }
-                
-                // Redirigir con éxito
-                $_SESSION['success'] = "Análisis BCG guardado correctamente";
-                header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
-                exit();
+            }
+            
+            $bcg_data = [
+                'products' => $products,
+                'market_evolution' => $market_evolution
+            ];
+            
+            error_log("Datos procesados: " . print_r($bcg_data, true));
+            
+            // Validar que hay al menos un producto
+            if (empty($bcg_data['products']) || !is_array($bcg_data['products'])) {
+                throw new Exception("Debe agregar al menos un producto");
+            }
+            
+            // Guardar usando el nuevo modelo
+            $result = $this->bcgAnalysis->saveComplete($project_id, $bcg_data);
+            
+            if ($result) {
+                $_SESSION['success'] = "Análisis BCG guardado exitosamente";
+                error_log("BCG guardado correctamente para proyecto $project_id");
             } else {
-                throw new Exception("Error al guardar el análisis BCG");
+                throw new Exception("Error interno al guardar");
             }
+            
+            header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
+            exit();
             
         } catch (Exception $e) {
-            $_SESSION['error'] = $e->getMessage();
+            error_log("ERROR BCG: " . $e->getMessage());
+            $_SESSION['error'] = "Error al guardar BCG: " . $e->getMessage();
+            
             $project_id = $_POST['project_id'] ?? '';
             if (!empty($project_id)) {
                 header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
@@ -549,33 +541,33 @@ class ProjectController {
         }
     }
     
-    // Obtener datos BCG por proyecto
+    // Obtener datos BCG por proyecto - NUEVA IMPLEMENTACIÓN
     public function getBCGAnalysis($project_id) {
         try {
-            return $this->bcgAnalysis->getProductsByProject($project_id);
+            return $this->bcgAnalysis->getProjectAnalysis($project_id);
         } catch (Exception $e) {
             error_log("BCG Analysis error: " . $e->getMessage());
-            return []; // Retornar array vacío si hay error
+            return [];
         }
     }
     
-    // Obtener matriz BCG calculada
+    // Obtener matriz BCG calculada - NUEVA IMPLEMENTACIÓN
     public function getBCGMatrix($project_id) {
         try {
-            return $this->bcgAnalysis->calculateBCGMatrix($project_id);
+            return $this->bcgAnalysis->calculateMatrix($project_id);
         } catch (Exception $e) {
             error_log("BCG Matrix error: " . $e->getMessage());
-            return []; // Retornar array vacío si hay error
+            return [];
         }
     }
     
-    // Verificar si el análisis BCG está completo
+    // Verificar si el análisis BCG está completo - NUEVA IMPLEMENTACIÓN
     public function isBCGComplete($project_id) {
         try {
             return $this->bcgAnalysis->isComplete($project_id);
         } catch (Exception $e) {
             error_log("BCG Complete error: " . $e->getMessage());
-            return false; // Retornar false si hay error
+            return false;
         }
     }
 }
