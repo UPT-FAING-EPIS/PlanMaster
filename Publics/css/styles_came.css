@@ -1,0 +1,332 @@
+/* Estilos específicos para Matriz CAME - PlanMaster */
+
+/* Estructura general */
+.main-content {
+    min-height: calc(100vh - 160px);
+    padding: 2rem 0;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Header del proyecto */
+.project-header {
+    background: linear-gradient(135deg, #1a567a 0%, #2d7a9e 100%);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(26, 86, 122, 0.25);
+}
+
+.project-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.project-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+/* Sección de descripción */
+.came-description {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-left: 5px solid #1a567a;
+}
+
+.came-description p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #374151;
+    margin-bottom: 1.5rem;
+}
+
+.came-reflection-box {
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 0;
+    text-align: center;
+    font-weight: 500;
+    color: #1a567a;
+    border: 2px solid #bae6fd;
+    box-shadow: 0 2px 10px rgba(26, 86, 122, 0.1);
+}
+
+.came-reflection-box::before {
+    content: "💡 ";
+    font-size: 1.3rem;
+    margin-right: 0.5rem;
+}
+
+/* Sección de la tabla CAME */
+.came-matrix-table {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+/* Tabla CAME */
+.came-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #e5e7eb;
+}
+
+.came-table thead tr {
+    background: linear-gradient(135deg, #1a567a 0%, #2d7a9e 100%);
+}
+
+.came-table thead th {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    vertical-align: middle;
+}
+
+.came-table thead th:last-child {
+    border-right: none;
+}
+
+.came-table thead th span {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    letter-spacing: 2px;
+}
+
+/* Colores específicos para cada columna del encabezado */
+.came-table thead th:nth-child(2) {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.came-table thead th:nth-child(3) {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+.came-table thead th:nth-child(4) {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+}
+
+.came-table thead th:nth-child(5) {
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+/* Filas del cuerpo */
+.came-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.3s ease;
+}
+
+.came-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.came-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Celdas del número de acción */
+.came-table tbody td:first-child {
+    text-align: center;
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    font-weight: 700;
+    color: #1a567a;
+    font-size: 1.1rem;
+    padding: 1rem;
+    border-right: 2px solid #bae6fd;
+    width: 60px;
+}
+
+/* Celdas de contenido */
+.came-table tbody td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-right: 1px solid #e5e7eb;
+}
+
+.came-table tbody td:last-child {
+    border-right: none;
+}
+
+/* Textareas */
+.came-table textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background: #fff;
+    color: #374151;
+    min-height: 60px;
+}
+
+.came-table textarea:focus {
+    outline: none;
+    border-color: #1a567a;
+    box-shadow: 0 0 0 3px rgba(26, 86, 122, 0.1);
+    background: #fafbfc;
+}
+
+.came-table textarea:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+}
+
+/* Colores de borde para cada columna */
+.came-table tbody td:nth-child(2) textarea:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.came-table tbody td:nth-child(3) textarea:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.came-table tbody td:nth-child(4) textarea:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.came-table tbody td:nth-child(5) textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Navegación */
+.came-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+}
+
+.btn-main {
+    background: linear-gradient(135deg, #1a567a 0%, #2d7a9e 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(26, 86, 122, 0.25);
+    min-width: 220px;
+}
+
+.btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 86, 122, 0.35);
+    background: linear-gradient(135deg, #2d7a9e 0%, #1a567a 100%);
+}
+
+.btn-main:active {
+    transform: translateY(0);
+}
+
+/* Indicadores de sección activa */
+.section-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.section-c { background: #dc2626; }
+.section-a { background: #f59e0b; }
+.section-m { background: #10b981; }
+.section-e { background: #3b82f6; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 100%;
+    }
+    
+    .came-table thead th {
+        padding: 1rem 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .project-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .came-navigation {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn-main {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .came-table {
+        font-size: 0.85rem;
+    }
+    
+    .came-table thead th {
+        padding: 0.75rem 0.25rem;
+        font-size: 0.8rem;
+    }
+    
+    .came-table tbody td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .came-table textarea {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.came-matrix-table {
+    animation: fadeInUp 0.6s ease-out;
+}

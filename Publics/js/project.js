@@ -188,7 +188,7 @@ function startSection(sectionNum) {
             // Para las secciones 1-4, usar directamente el nombre del archivo
             if (sectionNum <= 4) {
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
-            } else if (sectionName === 'foda-analysis' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'strategies') {
+            } else if (sectionName === 'foda-analysis' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
                 // Para FODA, Cadena de Valor, BCG y Estrategias, usar el nombre completo del archivo
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
             } else {
