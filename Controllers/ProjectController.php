@@ -570,6 +570,247 @@ class ProjectController {
             return false;
         }
     }
+    
+    // ======= MÉTODOS PARA ESTRATEGIAS =======
+    
+    // Guardar estrategias
+    public function saveStrategies() {
+        AuthController::requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $project_id = intval($_POST['project_id']);
+            
+            // Verificar que el proyecto pertenece al usuario
+            $project = $this->getProject($project_id);
+            
+            try {
+                // Procesar datos de estrategias
+                $strategiesData = $this->processStrategiesData($_POST);
+                
+                // Validar datos
+                $this->validateStrategiesData($strategiesData);
+                
+                // Guardar en base de datos
+                $success = $this->saveStrategiesData($project_id, $strategiesData);
+                
+                if ($success) {
+                    $_SESSION['success'] = "Estrategias guardadas exitosamente";
+                    
+                    // Responder con JSON si es AJAX
+                    if (isset($_POST['ajax']) || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                        header('Content-Type: application/json');
+                        echo json_encode([
+                            'success' => true,
+                            'message' => 'Estrategias guardadas correctamente',
+                            'redirect' => '../Projects/project.php?id=' . $project_id
+                        ]);
+                        exit();
+                    }
+                    
+                    header("Location: ../Projects/project.php?id=" . $project_id);
+                    exit();
+                } else {
+                    throw new Exception("Error al guardar las estrategias en la base de datos");
+                }
+                
+            } catch (Exception $e) {
+                $_SESSION['error'] = "Error al guardar estrategias: " . $e->getMessage();
+                error_log("Error guardando estrategias: " . $e->getMessage());
+                
+                // Responder con JSON si es AJAX
+                if (isset($_POST['ajax']) || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => false,
+                        'message' => $e->getMessage()
+                    ]);
+                    exit();
+                }
+                
+                header("Location: ../Projects/strategies.php?id=" . $project_id);
+                exit();
+            }
+        }
+    }
+    
+    // Guardado automático de estrategias
+    public function saveStrategiesAuto() {
+        AuthController::requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['auto_save'])) {
+            $project_id = intval($_POST['project_id']);
+            
+            try {
+                // Verificar que el proyecto pertenece al usuario
+                $project = $this->getProject($project_id);
+                
+                // Procesar y guardar datos
+                $strategiesData = $this->processStrategiesData($_POST);
+                $success = $this->saveStrategiesData($project_id, $strategiesData);
+                
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => $success,
+                    'message' => $success ? 'Guardado automático exitoso' : 'Error en guardado automático',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+                exit();
+                
+            } catch (Exception $e) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Error en guardado automático: ' . $e->getMessage()
+                ]);
+                exit();
+            }
+        }
+    }
+    
+    // Obtener estrategias por proyecto
+    public function getStrategiesAnalysis($project_id) {
+        try {
+            AuthController::requireLogin();
+            
+            // Verificar que el proyecto pertenece al usuario
+            $project = $this->getProject($project_id);
+            
+            $strategies = [];
+            $categories = ['competitive', 'growth', 'innovation', 'differentiation'];
+            
+            foreach ($categories as $category) {
+                $strategies[$category] = $this->getStrategiesByCategory($project_id, $category);
+            }
+            
+            return $strategies;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo estrategias: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    // Procesar datos de estrategias del formulario
+    private function processStrategiesData($postData) {
+        $strategiesData = [];
+        $categories = ['competitive', 'growth', 'innovation', 'differentiation'];
+        
+        foreach ($categories as $category) {
+            $names = $postData[$category . '_name'] ?? [];
+            $descriptions = $postData[$category . '_description'] ?? [];
+            $priorities = $postData[$category . '_priority'] ?? [];
+            
+            $strategiesData[$category] = [];
+            
+            for ($i = 0; $i < count($names); $i++) {
+                if (!empty(trim($names[$i])) && !empty(trim($descriptions[$i]))) {
+                    $strategiesData[$category][] = [
+                        'name' => trim($names[$i]),
+                        'description' => trim($descriptions[$i]),
+                        'priority' => $priorities[$i] ?? 'media'
+                    ];
+                }
+            }
+        }
+        
+        return $strategiesData;
+    }
+    
+    // Validar datos de estrategias
+    private function validateStrategiesData($strategiesData) {
+        $totalStrategies = 0;
+        
+        foreach ($strategiesData as $category => $strategies) {
+            $totalStrategies += count($strategies);
+            
+            foreach ($strategies as $strategy) {
+                if (strlen($strategy['name']) < 3) {
+                    throw new Exception("El nombre de la estrategia debe tener al menos 3 caracteres");
+                }
+                
+                if (strlen($strategy['description']) < 10) {
+                    throw new Exception("La descripción de la estrategia debe tener al menos 10 caracteres");
+                }
+                
+                if (!in_array($strategy['priority'], ['alta', 'media', 'baja'])) {
+                    throw new Exception("Prioridad inválida");
+                }
+            }
+        }
+        
+        if ($totalStrategies === 0) {
+            throw new Exception("Debe agregar al menos una estrategia");
+        }
+        
+        if ($totalStrategies > 20) {
+            throw new Exception("No puede agregar más de 20 estrategias en total");
+        }
+    }
+    
+    // Guardar estrategias en base de datos
+    private function saveStrategiesData($project_id, $strategiesData) {
+        try {
+            // Conectar a base de datos
+            require_once __DIR__ . '/../config/database.php';
+            $database = new Database();
+            $db = $database->getConnection();
+            
+            // Iniciar transacción
+            $db->beginTransaction();
+            
+            // Limpiar estrategias anteriores
+            $deleteQuery = "DELETE FROM project_strategies WHERE project_id = ?";
+            $deleteStmt = $db->prepare($deleteQuery);
+            $deleteStmt->execute([$project_id]);
+            
+            // Insertar nuevas estrategias
+            $insertQuery = "INSERT INTO project_strategies (project_id, category, name, description, priority, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
+            $insertStmt = $db->prepare($insertQuery);
+            
+            foreach ($strategiesData as $category => $strategies) {
+                foreach ($strategies as $strategy) {
+                    $insertStmt->execute([
+                        $project_id,
+                        $category,
+                        $strategy['name'],
+                        $strategy['description'],
+                        $strategy['priority']
+                    ]);
+                }
+            }
+            
+            // Confirmar transacción
+            $db->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            // Revertir transacción en caso de error
+            if (isset($db)) {
+                $db->rollBack();
+            }
+            error_log("Error guardando estrategias en DB: " . $e->getMessage());
+            throw $e;
+        }
+    }
+    
+    // Obtener estrategias por categoría
+    private function getStrategiesByCategory($project_id, $category) {
+        try {
+            require_once __DIR__ . '/../config/database.php';
+            $database = new Database();
+            $db = $database->getConnection();
+            
+            $query = "SELECT * FROM project_strategies WHERE project_id = ? AND category = ? ORDER BY created_at ASC";
+            $stmt = $db->prepare($query);
+            $stmt->execute([$project_id, $category]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo estrategias por categoría: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 
 // Manejo de rutas
@@ -643,6 +884,12 @@ if (isset($_GET['action'])) {
             break;
         case 'save_bcg_analysis':
             $controller->saveBCGAnalysis();
+            break;
+        case 'save_strategies':
+            $controller->saveStrategies();
+            break;
+        case 'save_strategies_auto':
+            $controller->saveStrategiesAuto();
             break;
         default:
             header("Location: ../Views/Users/dashboard.php");
