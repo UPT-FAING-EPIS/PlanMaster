@@ -1,6 +1,6 @@
 # Estudiantes: 
 - Sebastián Nicolás Fuentes Avalos 
-- Cesar Nikolas Camac Melendez
+- Cesar Nikolás Camac Melendez
 - Gabriela Luzkalid Gutierrez Mamani
 
 # PlanMaster - Sistema PETI para Planes Estratégicos
