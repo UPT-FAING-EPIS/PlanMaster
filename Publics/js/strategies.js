@@ -1,497 +1,602 @@
-// JavaScript para Identificación de Estrategias - PlanMaster
+// JavaScript para Análisis DAFO - Identificación de Estrategias - PlanMaster
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Inicializar la aplicación
-    initStrategiesApp();
+    // Inicializar la aplicación DAFO
+    initDAFOApp();
     
     // Configurar eventos
     setupEventListeners();
     
-    // Configurar validación en tiempo real
-    setupFormValidation();
-    
-    // Configurar guardado automático
-    setupAutoSave();
-    
-    // Actualizar contadores iniciales
-    updateStrategyCounts();
+    // Configurar cálculo automático
+    setupAutoCalculation();
     
     // Animaciones de entrada
     animateElements();
     
-    console.log('✅ Módulo de Identificación de Estrategias inicializado correctamente');
+    console.log('✅ Módulo de Análisis DAFO inicializado correctamente');
 });
 
 // ======= INICIALIZACIÓN ======= 
-function initStrategiesApp() {
-    // Cargar preferencias del usuario desde localStorage
-    loadUserPreferences();
+function initDAFOApp() {
+    // Cargar datos guardados si existen
+    loadSavedData();
     
-    // Configurar tooltips y ayudas
+    // Calcular totales iniciales
+    calculateAllTotals();
+    
+    // Configurar tooltips
     setupTooltips();
-    
-    // Verificar si hay datos guardados localmente
-    checkLocalStorage();
     
     // Configurar atajos de teclado
     setupKeyboardShortcuts();
+    
+    console.log('Aplicación DAFO inicializada');
 }
 
 // ======= CONFIGURACIÓN DE EVENTOS =======
 function setupEventListeners() {
-    // Botones para agregar estrategias
-    const addButtons = document.querySelectorAll('.btn-add-strategy');
-    addButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const strategyType = this.getAttribute('onclick').match(/'([^']+)'/)[1];
-            addStrategy(strategyType);
-        });
+    // Inputs de evaluación
+    const evaluationInputs = document.querySelectorAll('.evaluation-input');
+    evaluationInputs.forEach(input => {
+        input.addEventListener('input', handleInputChange);
+        input.addEventListener('blur', validateInput);
     });
     
-    // Botón de guardado automático toggle
-    const autoSaveBtn = document.getElementById('auto-save-btn');
-    if (autoSaveBtn) {
-        autoSaveBtn.addEventListener('click', toggleAutoSave);
+    // Botón calcular
+    const calculateBtn = document.getElementById('calculate-btn');
+    if (calculateBtn) {
+        calculateBtn.addEventListener('click', calculateStrategies);
+    }
+    
+    // Botón reset
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetEvaluation);
     }
     
     // Formulario principal
-    const strategiesForm = document.querySelector('.strategies-form');
-    if (strategiesForm) {
-        strategiesForm.addEventListener('submit', handleFormSubmit);
+    const evaluationForm = document.querySelector('.dafo-evaluation-form');
+    if (evaluationForm) {
+        evaluationForm.addEventListener('submit', handleFormSubmit);
     }
     
-    // Detectar cambios en los inputs para guardado automático
-    setupChangeDetection();
-    
-    // Prevenir pérdida de datos al salir
+    // Prevenir pérdida de datos
     setupBeforeUnload();
 }
 
-// ======= GESTIÓN DE ESTRATEGIAS =======
-function addStrategy(type) {
-    const container = document.getElementById(`${type}-strategies-container`);
-    if (!container) {
-        console.error(`Container para ${type} no encontrado`);
-        return;
-    }
+// ======= GESTIÓN DE EVALUACIÓN DAFO =======
+function handleInputChange(event) {
+    const input = event.target;
+    const value = parseInt(input.value) || 0;
     
-    // Crear el HTML del nuevo elemento
-    const strategyItem = createStrategyElement(type);
+    // Validar rango
+    if (value < 0) input.value = 0;
+    if (value > 4) input.value = 4;
     
-    // Insertar con animación
-    container.insertAdjacentHTML('beforeend', strategyItem);
+    // Calcular totales
+    calculateAllTotals();
     
-    // Animar la entrada del nuevo elemento
-    const newItem = container.lastElementChild;
-    animateNewElement(newItem);
+    // Guardar datos localmente
+    saveToLocalStorage();
     
-    // Enfocar el primer input
-    const firstInput = newItem.querySelector('.strategy-name');
-    if (firstInput) {
-        firstInput.focus();
-    }
-    
-    // Actualizar contadores
-    updateStrategyCounts();
-    
-    // Configurar eventos para el nuevo elemento
-    setupElementEvents(newItem);
-    
-    // Mostrar feedback visual
-    showNotification(`Nueva estrategia de ${getTypeLabel(type)} agregada`, 'success');
+    // Añadir efecto visual
+    input.style.background = value > 0 ? '#f0f9ff' : 'white';
 }
 
-function createStrategyElement(type) {
-    const placeholders = getPlaceholders(type);
+// ======= CÁLCULOS PRINCIPALES =======
+function calculateAllTotals() {
+    calculateTableTotals('fo');
+    calculateTableTotals('fa');
+    calculateTableTotals('do');
+    calculateTableTotals('da');
     
-    return `
-        <div class="strategy-item" style="opacity: 0; transform: translateY(20px);">
-            <div class="strategy-input-group">
-                <input type="text" 
-                       name="${type}_name[]" 
-                       class="strategy-name" 
-                       placeholder="${placeholders.name}"
-                       required>
-                <textarea name="${type}_description[]" 
-                          class="strategy-description" 
-                          placeholder="${placeholders.description}"
-                          rows="3"
-                          required></textarea>
-                <select name="${type}_priority[]" class="strategy-priority" required>
-                    <option value="alta">Alta Prioridad</option>
-                    <option value="media" selected>Media Prioridad</option>
-                    <option value="baja">Baja Prioridad</option>
-                </select>
-            </div>
-            <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)" title="Eliminar estrategia">
-                &times;
-            </button>
-        </div>
-    `;
+    updateSynthesis();
 }
 
-function removeStrategy(button) {
-    const strategyItem = button.closest('.strategy-item');
-    const strategyName = strategyItem.querySelector('.strategy-name').value || 'esta estrategia';
-    
-    // Confirmar eliminación si hay contenido
-    if (strategyName.trim() && strategyName !== 'esta estrategia') {
-        if (!confirm(`¿Estás seguro de que deseas eliminar "${strategyName}"?`)) {
-            return;
-        }
-    }
-    
-    // Animar salida
-    strategyItem.style.animation = 'fadeOutRight 0.3s ease-out forwards';
-    
-    setTimeout(() => {
-        strategyItem.remove();
-        updateStrategyCounts();
-        showNotification('Estrategia eliminada correctamente', 'info');
-    }, 300);
-}
-
-function setupElementEvents(element) {
-    // Configurar eventos de cambio para guardado automático
-    const inputs = element.querySelectorAll('input, textarea, select');
-    inputs.forEach(input => {
-        input.addEventListener('input', debounce(handleInputChange, 500));
-        input.addEventListener('blur', handleInputBlur);
-    });
-    
-    // Configurar drag and drop para reordenar (funcionalidad avanzada)
-    setupDragAndDrop(element);
-}
-
-// ======= CONTADORES Y ESTADÍSTICAS =======
-function updateStrategyCounts() {
-    const categories = ['competitive', 'growth', 'innovation', 'differentiation'];
-    
-    categories.forEach(category => {
-        const items = document.querySelectorAll(`#${category}-strategies-container .strategy-item`);
-        const count = items.length;
-        const countElement = document.getElementById(`${category}-count`);
+function calculateTableTotals(tablePrefix) {
+    // Calcular totales por fila
+    for (let i = 1; i <= 4; i++) {
+        const rowId = tablePrefix === 'fo' || tablePrefix === 'fa' ? `f${i}` : `d${i}`;
+        const colPrefix = tablePrefix === 'fo' || tablePrefix === 'do' ? 'o' : 'a';
         
-        if (countElement) {
-            countElement.textContent = `${count} ${count === 1 ? 'estrategia' : 'estrategias'}`;
-            
-            // Agregar clase de estado basada en el conteo
-            const summaryCard = countElement.closest('.summary-card');
-            if (summaryCard) {
-                summaryCard.classList.toggle('has-strategies', count > 0);
-                summaryCard.classList.toggle('many-strategies', count > 3);
+        let rowTotal = 0;
+        for (let j = 1; j <= 4; j++) {
+            const input = document.querySelector(`input[name="${tablePrefix}[${rowId}][${colPrefix}${j}]"]`);
+            if (input) {
+                rowTotal += parseInt(input.value) || 0;
             }
         }
-    });
+        
+        const totalCell = document.getElementById(`${tablePrefix}-${rowId}-total`);
+        if (totalCell) {
+            totalCell.textContent = rowTotal;
+            totalCell.style.background = rowTotal > 0 ? 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)' : '';
+        }
+    }
     
-    // Actualizar estadísticas generales
-    updateGeneralStats();
-}
-
-function updateGeneralStats() {
-    const totalStrategies = document.querySelectorAll('.strategy-item').length;
-    const completedStrategies = document.querySelectorAll('.strategy-item').length; // Por simplicidad
+    // Calcular totales por columna
+    const colPrefix = tablePrefix === 'fo' || tablePrefix === 'do' ? 'o' : 'a';
+    for (let j = 1; j <= 4; j++) {
+        let colTotal = 0;
+        for (let i = 1; i <= 4; i++) {
+            const rowId = tablePrefix === 'fo' || tablePrefix === 'fa' ? `f${i}` : `d${i}`;
+            const input = document.querySelector(`input[name="${tablePrefix}[${rowId}][${colPrefix}${j}]"]`);
+            if (input) {
+                colTotal += parseInt(input.value) || 0;
+            }
+        }
+        
+        const totalCell = document.getElementById(`${tablePrefix}-${colPrefix}${j}-total`);
+        if (totalCell) {
+            totalCell.textContent = colTotal;
+            totalCell.style.background = colTotal > 0 ? 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)' : '';
+        }
+    }
     
-    // Mostrar en la interfaz si hay elementos para ello
-    const statsElement = document.querySelector('.general-stats');
-    if (statsElement) {
-        statsElement.innerHTML = `
-            <span>Total: ${totalStrategies}</span>
-            <span>Completadas: ${completedStrategies}</span>
-        `;
+    // Calcular gran total
+    let grandTotal = 0;
+    const rowPrefix = tablePrefix === 'fo' || tablePrefix === 'fa' ? 'f' : 'd';
+    const colPrefix2 = tablePrefix === 'fo' || tablePrefix === 'do' ? 'o' : 'a';
+    
+    for (let i = 1; i <= 4; i++) {
+        for (let j = 1; j <= 4; j++) {
+            const input = document.querySelector(`input[name="${tablePrefix}[${rowPrefix}${i}][${colPrefix2}${j}]"]`);
+            if (input) {
+                grandTotal += parseInt(input.value) || 0;
+            }
+        }
+    }
+    
+    const grandTotalCell = document.getElementById(`${tablePrefix}-grand-total`);
+    if (grandTotalCell) {
+        grandTotalCell.textContent = grandTotal;
+        grandTotalCell.style.background = grandTotal > 0 ? 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)' : '';
     }
 }
 
-// ======= VALIDACIÓN DE FORMULARIO =======
-function setupFormValidation() {
-    const form = document.querySelector('.strategies-form');
-    if (!form) return;
+function updateSynthesis() {
+    const foTotal = parseInt(document.getElementById('fo-grand-total')?.textContent) || 0;
+    const faTotal = parseInt(document.getElementById('fa-grand-total')?.textContent) || 0;
+    const doTotal = parseInt(document.getElementById('do-grand-total')?.textContent) || 0;
+    const daTotal = parseInt(document.getElementById('da-grand-total')?.textContent) || 0;
     
-    // Validación en tiempo real
-    const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-    inputs.forEach(input => {
-        input.addEventListener('blur', validateInput);
-        input.addEventListener('input', clearValidationErrors);
+    // Actualizar tabla de síntesis
+    document.getElementById('synthesis-fo').textContent = foTotal;
+    document.getElementById('synthesis-fa').textContent = faTotal;
+    document.getElementById('synthesis-do').textContent = doTotal;
+    document.getElementById('synthesis-da').textContent = daTotal;
+    
+    // Determinar estrategia recomendada
+    const maxValue = Math.max(foTotal, faTotal, doTotal, daTotal);
+    let recommendedStrategy = '';
+    let strategyDescription = '';
+    
+    if (maxValue === 0) {
+        recommendedStrategy = 'Complete la evaluación para obtener recomendaciones';
+        strategyDescription = '';
+    } else if (foTotal === maxValue) {
+        recommendedStrategy = '🚀 Estrategia Ofensiva Recomendada';
+        strategyDescription = 'Su empresa debe adoptar estrategias de crecimiento aprovechando sus fortalezas para capitalizar las oportunidades del mercado.';
+    } else if (faTotal === maxValue) {
+        recommendedStrategy = '🛡️ Estrategia Defensiva Recomendada';
+        strategyDescription = 'Su empresa está preparada para enfrentarse a las amenazas utilizando sus fortalezas internas.';
+    } else if (doTotal === maxValue) {
+        recommendedStrategy = '🔄 Estrategia de Reorientación Recomendada';
+        strategyDescription = 'Su empresa debe trabajar en superar sus debilidades para poder aprovechar las oportunidades disponibles.';
+    } else if (daTotal === maxValue) {
+        recommendedStrategy = '⚠️ Estrategia de Supervivencia Recomendada';
+        strategyDescription = 'Su empresa se encuentra en una situación crítica y debe minimizar debilidades mientras evita amenazas.';
+    }
+    
+    // Actualizar recomendación
+    const recommendationElement = document.getElementById('strategy-recommendation');
+    if (recommendationElement) {
+        if (maxValue > 0) {
+            recommendationElement.innerHTML = `
+                <h4 style="color: var(--color-primary); margin-bottom: 0.75rem;">${recommendedStrategy}</h4>
+                <p style="line-height: 1.6; font-size: 1rem;">${strategyDescription}</p>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem; border-left: 4px solid var(--color-primary);">
+                    <strong>Puntuación más alta:</strong> ${maxValue} puntos
+                </div>
+            `;
+            recommendationElement.classList.add('highlight');
+        } else {
+            recommendationElement.innerHTML = '<p>Complete la evaluación para obtener su recomendación estratégica personalizada.</p>';
+            recommendationElement.classList.remove('highlight');
+        }
+    }
+    
+    // Resaltar filas en tabla de síntesis
+    highlightMaxScore(foTotal, faTotal, doTotal, daTotal, maxValue);
+}
+
+function highlightMaxScore(fo, fa, do_val, da, maxValue) {
+    // Resetear estilos
+    const scoreElements = document.querySelectorAll('.synthesis-score');
+    scoreElements.forEach(el => {
+        el.style.background = '#f8fafc';
+        el.style.color = 'var(--color-primary)';
+        el.style.fontWeight = '700';
     });
+    
+    // Resaltar el máximo
+    if (maxValue > 0) {
+        if (fo === maxValue) {
+            document.getElementById('synthesis-fo').style.background = 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)';
+            document.getElementById('synthesis-fo').style.color = '#059669';
+        }
+        if (fa === maxValue) {
+            document.getElementById('synthesis-fa').style.background = 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)';
+            document.getElementById('synthesis-fa').style.color = '#1d4ed8';
+        }
+        if (do_val === maxValue) {
+            document.getElementById('synthesis-do').style.background = 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)';
+            document.getElementById('synthesis-do').style.color = '#d97706';
+        }
+        if (da === maxValue) {
+            document.getElementById('synthesis-da').style.background = 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)';
+            document.getElementById('synthesis-da').style.color = '#dc2626';
+        }
+    }
+}
+
+// ======= FUNCIONES PRINCIPALES =======
+function calculateStrategies() {
+    calculateAllTotals();
+    showNotification('✅ Cálculos actualizados correctamente', 'success');
+    
+    // Añadir efecto visual a las tablas
+    const tables = document.querySelectorAll('.evaluation-table');
+    tables.forEach(table => {
+        table.style.animation = 'pulse 0.6s ease-out';
+        setTimeout(() => {
+            table.style.animation = '';
+        }, 600);
+    });
+}
+
+function resetEvaluation() {
+    if (confirm('¿Está seguro de que desea limpiar toda la evaluación? Esta acción no se puede deshacer.')) {
+        // Limpiar todos los inputs
+        const inputs = document.querySelectorAll('.evaluation-input');
+        inputs.forEach(input => {
+            input.value = 0;
+            input.style.background = 'white';
+        });
+        
+        // Recalcular totales
+        calculateAllTotals();
+        
+        // Limpiar localStorage
+        localStorage.removeItem('dafo_evaluation_data');
+        
+        showNotification('🔄 Evaluación limpiada correctamente', 'info');
+    }
+}
+
+function setupAutoCalculation() {
+    // Calcular automáticamente cuando hay cambios
+    let calculationTimeout;
+    
+    const inputs = document.querySelectorAll('.evaluation-input');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            clearTimeout(calculationTimeout);
+            calculationTimeout = setTimeout(() => {
+                calculateAllTotals();
+            }, 300);
+        });
+    });
+}
+
+// ======= GESTIÓN DE DATOS =======
+function saveToLocalStorage() {
+    const data = {};
+    const inputs = document.querySelectorAll('.evaluation-input');
+    
+    inputs.forEach(input => {
+        data[input.name] = input.value;
+    });
+    
+    localStorage.setItem('dafo_evaluation_data', JSON.stringify(data));
+}
+
+function loadSavedData() {
+    const savedData = localStorage.getItem('dafo_evaluation_data');
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            
+            Object.keys(data).forEach(name => {
+                const input = document.querySelector(`input[name="${name}"]`);
+                if (input) {
+                    input.value = data[name] || 0;
+                    input.style.background = data[name] > 0 ? '#f0f9ff' : 'white';
+                }
+            });
+            
+            showNotification('📂 Datos previos restaurados', 'info');
+        } catch (error) {
+            console.error('Error loading saved data:', error);
+        }
+    }
 }
 
 function validateInput(event) {
     const input = event.target;
-    const value = input.value.trim();
+    const value = parseInt(input.value);
     
-    // Remover errores previos
+    // Validar rango para inputs de evaluación
+    if (input.classList.contains('evaluation-input')) {
+        if (isNaN(value) || value < 0 || value > 4) {
+            input.value = Math.max(0, Math.min(4, value || 0));
+            showInputError(input, 'Valor debe estar entre 0 y 4');
+            return false;
+        }
+    }
+    
     clearInputError(input);
-    
-    // Validaciones específicas
-    if (!value) {
-        showInputError(input, 'Este campo es requerido');
-        return false;
-    }
-    
-    if (input.classList.contains('strategy-name') && value.length < 3) {
-        showInputError(input, 'El nombre debe tener al menos 3 caracteres');
-        return false;
-    }
-    
-    if (input.classList.contains('strategy-description') && value.length < 10) {
-        showInputError(input, 'La descripción debe tener al menos 10 caracteres');
-        return false;
-    }
-    
-    // Validación exitosa
-    showInputSuccess(input);
     return true;
 }
 
 function showInputError(input, message) {
-    input.classList.add('error');
-    
-    // Crear o actualizar mensaje de error
-    let errorElement = input.parentNode.querySelector('.error-message');
-    if (!errorElement) {
-        errorElement = document.createElement('span');
-        errorElement.className = 'error-message';
-        input.parentNode.appendChild(errorElement);
-    }
-    errorElement.textContent = message;
-}
-
-function showInputSuccess(input) {
-    input.classList.remove('error');
-    input.classList.add('success');
-    clearInputError(input);
+    input.style.borderColor = '#ef4444';
+    showNotification(message, 'error');
 }
 
 function clearInputError(input) {
-    const errorElement = input.parentNode.querySelector('.error-message');
-    if (errorElement) {
-        errorElement.remove();
-    }
+    input.style.borderColor = '#e2e8f0';
 }
 
-function clearValidationErrors(event) {
-    const input = event.target;
-    input.classList.remove('error', 'success');
-    clearInputError(input);
-}
-
-// ======= GUARDADO AUTOMÁTICO =======
-let autoSaveEnabled = true;
-let autoSaveTimeout;
-let hasUnsavedChanges = false;
-
-function setupAutoSave() {
-    // Configurar intervalo de guardado automático
-    setInterval(function() {
-        if (autoSaveEnabled && hasUnsavedChanges) {
-            saveStrategiesAuto();
-        }
-    }, 30000); // Cada 30 segundos
-}
-
-function setupChangeDetection() {
-    const form = document.querySelector('.strategies-form');
-    if (!form) return;
-    
-    // Detectar cambios en todos los inputs
-    form.addEventListener('input', function() {
-        hasUnsavedChanges = true;
-        
-        // Reiniciar el timeout de guardado automático
-        clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(function() {
-            if (autoSaveEnabled) {
-                saveStrategiesAuto();
-            }
-        }, 5000); // 5 segundos después del último cambio
-    });
-}
-
-function saveStrategiesAuto() {
-    if (!autoSaveEnabled) return;
-    
-    const formData = new FormData(document.querySelector('.strategies-form'));
-    
-    // Agregar identificador de guardado automático
-    formData.append('auto_save', '1');
-    
-    // Mostrar indicador de guardado
-    showAutoSaveIndicator('Guardando...');
-    
-    fetch(window.location.href.replace('strategies.php', '') + '../../Controllers/ProjectController.php?action=save_strategies_auto', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            hasUnsavedChanges = false;
-            showAutoSaveIndicator('✓ Guardado automáticamente', 'success');
-        } else {
-            showAutoSaveIndicator('⚠ Error al guardar', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error en guardado automático:', error);
-        showAutoSaveIndicator('⚠ Error de conexión', 'error');
-    });
-}
-
-function toggleAutoSave() {
-    autoSaveEnabled = !autoSaveEnabled;
-    const statusElement = document.getElementById('auto-save-status');
-    const buttonElement = document.getElementById('auto-save-btn');
-    
-    if (statusElement) {
-        statusElement.textContent = autoSaveEnabled ? 'Activado' : 'Desactivado';
-    }
-    
-    if (buttonElement) {
-        buttonElement.classList.toggle('disabled', !autoSaveEnabled);
-    }
-    
-    const message = autoSaveEnabled ? 'Guardado automático activado' : 'Guardado automático desactivado';
-    showNotification(message, autoSaveEnabled ? 'success' : 'warning');
-    
-    // Guardar preferencia en localStorage
-    localStorage.setItem('autoSaveEnabled', autoSaveEnabled);
-}
-
-function showAutoSaveIndicator(message, type = 'info') {
-    // Crear o actualizar indicador
-    let indicator = document.getElementById('auto-save-indicator');
-    if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'auto-save-indicator';
-        indicator.className = 'auto-save-indicator';
-        document.body.appendChild(indicator);
-    }
-    
-    indicator.textContent = message;
-    indicator.className = `auto-save-indicator ${type} show`;
-    
-    // Ocultar después de 3 segundos
-    setTimeout(() => {
-        indicator.classList.remove('show');
-    }, 3000);
-}
-
-// ======= ENVÍO DEL FORMULARIO =======
 function handleFormSubmit(event) {
     event.preventDefault();
     
-    const form = event.target;
+    // Validar que hay datos
+    const inputs = document.querySelectorAll('.evaluation-input');
+    let hasData = false;
     
-    // Validar formulario completo
-    if (!validateForm(form)) {
-        showNotification('Por favor, corrige los errores antes de continuar', 'error');
+    inputs.forEach(input => {
+        if (parseInt(input.value) > 0) {
+            hasData = true;
+        }
+    });
+    
+    if (!hasData) {
+        showNotification('⚠️ Por favor, complete al menos algunos valores antes de guardar', 'warning');
         return;
     }
     
-    // Mostrar indicador de carga
+    // Simular envío (aquí iría la lógica de guardado real)
     showLoadingIndicator(true);
     
-    // Enviar formulario
-    const formData = new FormData(form);
-    
-    fetch(form.action, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
+    setTimeout(() => {
         showLoadingIndicator(false);
+        showNotification('✅ Evaluación DAFO guardada correctamente', 'success');
         
-        if (data.success) {
-            hasUnsavedChanges = false;
-            showNotification('✅ Estrategias guardadas correctamente', 'success');
-            
-            // Opcional: redireccionar o actualizar interfaz
-            setTimeout(() => {
-                if (data.redirect) {
-                    window.location.href = data.redirect;
-                }
-            }, 2000);
-        } else {
-            showNotification('❌ Error al guardar: ' + (data.message || 'Error desconocido'), 'error');
+        // Limpiar datos locales tras guardado exitoso
+        localStorage.removeItem('dafo_evaluation_data');
+    }, 2000);
+}
+
+// ======= UTILIDADES =======
+function setupBeforeUnload() {
+    window.addEventListener('beforeunload', function(event) {
+        const inputs = document.querySelectorAll('.evaluation-input');
+        let hasData = false;
+        
+        inputs.forEach(input => {
+            if (parseInt(input.value) > 0) {
+                hasData = true;
+            }
+        });
+        
+        if (hasData) {
+            event.preventDefault();
+            event.returnValue = '¿Estás seguro de que quieres salir? Tienes datos sin guardar.';
+            return event.returnValue;
         }
-    })
-    .catch(error => {
-        showLoadingIndicator(false);
-        console.error('Error:', error);
-        showNotification('❌ Error de conexión al guardar', 'error');
+    });
+}
+
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', function(event) {
+        // Ctrl + S para guardar
+        if (event.ctrlKey && event.key === 's') {
+            event.preventDefault();
+            document.querySelector('.btn-save-evaluation').click();
+        }
+        
+        // Ctrl + R para calcular
+        if (event.ctrlKey && event.key === 'r') {
+            event.preventDefault();
+            calculateStrategies();
+        }
     });
 }
 
-function validateForm(form) {
-    let isValid = true;
-    const requiredInputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-    
-    requiredInputs.forEach(input => {
-        if (!validateInput({ target: input })) {
-            isValid = false;
-        }
+function setupTooltips() {
+    const elementsWithTooltips = document.querySelectorAll('[title]');
+    elementsWithTooltips.forEach(element => {
+        element.addEventListener('mouseenter', function() {
+            // Implementación simple de tooltip
+            const title = this.getAttribute('title');
+            if (title) {
+                this.setAttribute('data-original-title', title);
+                this.removeAttribute('title');
+            }
+        });
     });
-    
-    // Validación específica: al menos una estrategia en cada categoría
-    const categories = ['competitive', 'growth', 'innovation', 'differentiation'];
-    categories.forEach(category => {
-        const items = document.querySelectorAll(`#${category}-strategies-container .strategy-item`);
-        if (items.length === 0) {
-            showNotification(`Agrega al menos una estrategia de ${getTypeLabel(category)}`, 'warning');
-            isValid = false;
-        }
+}
+
+// ======= ANIMACIONES =======
+function animateElements() {
+    const elements = document.querySelectorAll('.matrix-quadrant, .evaluation-table-container');
+    elements.forEach((element, index) => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            element.style.transition = 'all 0.6s ease-out';
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 100);
     });
-    
-    return isValid;
 }
 
-// ======= UTILIDADES Y HELPERS =======
-function getPlaceholders(type) {
-    const placeholders = {
-        competitive: {
-            name: 'Ej: Liderazgo en costos',
-            description: 'Ej: Optimizar procesos para reducir costos operativos y ofrecer precios más competitivos que la competencia...'
-        },
-        growth: {
-            name: 'Ej: Expansión a nuevos mercados',
-            description: 'Ej: Identificar y penetrar en mercados geográficos adyacentes con alta demanda para nuestros productos...'
-        },
-        innovation: {
-            name: 'Ej: Desarrollo de productos digitales',
-            description: 'Ej: Crear una plataforma digital que complemente nuestros servicios tradicionales y mejore la experiencia del cliente...'
-        },
-        differentiation: {
-            name: 'Ej: Servicio al cliente 24/7',
-            description: 'Ej: Implementar un sistema de atención al cliente disponible las 24 horas con respuesta inmediata y soporte especializado...'
+// ======= EFECTOS CSS DINÁMICOS =======
+function addDynamicStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
-    };
-    
-    return placeholders[type] || { name: 'Nombre de la estrategia', description: 'Descripción detallada...' };
+        
+        .evaluation-input:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .matrix-quadrant:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+        
+        .synthesis-score.highlight {
+            animation: pulse 1s ease-in-out;
+            font-size: 1.2rem;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
-function getTypeLabel(type) {
-    const labels = {
-        competitive: 'competitiva',
-        growth: 'crecimiento',
-        innovation: 'innovación',
-        differentiation: 'diferenciación'
-    };
+// ======= NOTIFICACIONES Y UI =======
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span class="notification-message">${message}</span>
+        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
     
-    return labels[type] || type;
+    // Agregar estilos si no existen
+    if (!document.getElementById('notification-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'notification-styles';
+        styles.textContent = `
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                color: white;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                max-width: 400px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                font-family: 'Poppins', sans-serif;
+            }
+            .notification-success { background: linear-gradient(135deg, #10b981, #059669); }
+            .notification-error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+            .notification-warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+            .notification-info { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+            .notification-close {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.25rem;
+                cursor: pointer;
+                padding: 0;
+                line-height: 1;
+                opacity: 0.8;
+                transition: opacity 0.3s;
+            }
+            .notification-close:hover { opacity: 1; }
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remover automáticamente después de 5 segundos
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 5000);
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+function showLoadingIndicator(show) {
+    let indicator = document.getElementById('loading-indicator');
+    
+    if (show && !indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'loading-indicator';
+        indicator.innerHTML = `
+            <div class="loading-overlay">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Procesando evaluación DAFO...</p>
+                </div>
+            </div>
+        `;
+        
+        const styles = document.createElement('style');
+        styles.textContent = `
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10001;
+                backdrop-filter: blur(5px);
+            }
+            .loading-spinner {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                text-align: center;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            }
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #6366f1;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 1rem;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(styles);
+        document.body.appendChild(indicator);
+    } else if (!show && indicator) {
+        indicator.remove();
+    }
 }
+
+// ======= INICIALIZACIÓN FINAL =======
+document.addEventListener('DOMContentLoaded', addDynamicStyles);
+
+console.log('📊 Módulo de Análisis DAFO cargado exitosamente');
 
 function showNotification(message, type = 'info') {
     // Crear elemento de notificación

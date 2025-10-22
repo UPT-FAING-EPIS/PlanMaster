@@ -160,18 +160,420 @@
     line-height: 1.6;
 }
 
-/* ======= FORMULARIO DE ESTRATEGIAS ======= */
-.strategies-form {
+/* ======= MATRIZ DAFO VISUAL ======= */
+.dafo-matrix-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.matrix-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.matrix-quadrant {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.matrix-quadrant::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.quadrant-fo::before {
+    background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+}
+
+.quadrant-fa::before {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, #1d4ed8 100%);
+}
+
+.quadrant-do::before {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%);
+}
+
+.quadrant-da::before {
+    background: linear-gradient(135deg, var(--color-danger) 0%, #dc2626 100%);
+}
+
+.matrix-quadrant h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.quadrant-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.quadrant-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.matrix-quadrant:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+}
+
+/* ======= FORMULARIO DE EVALUACIÓN DAFO ======= */
+.dafo-evaluation-form {
     background: var(--bg-white);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     overflow: hidden;
 }
 
-.strategies-container {
+/* ======= LEYENDA DE ESCALA ======= */
+.scale-legend {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    padding: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.scale-legend h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.scale-items {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.scale-item {
+    background: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+}
+
+/* ======= TABLAS DE EVALUACIÓN ======= */
+.evaluation-tables {
     padding: 2rem;
     display: grid;
     gap: 2.5rem;
+}
+
+.evaluation-table-container {
+    background: #f8fafc;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+.table-title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fo-title {
+    color: var(--color-success);
+}
+
+.fa-title {
+    color: var(--color-secondary);
+}
+
+.do-title {
+    color: var(--color-warning);
+}
+
+.da-title {
+    color: var(--color-danger);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.evaluation-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 0.9rem;
+}
+
+.evaluation-table th,
+.evaluation-table td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.evaluation-table th {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.evaluation-input {
+    width: 60px;
+    padding: 0.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.evaluation-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.evaluation-input:hover {
+    border-color: var(--color-secondary);
+}
+
+.total-cell {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: var(--color-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.grand-total {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.total-row th {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+.total-column {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: var(--color-secondary);
+}
+
+/* ======= SÍNTESIS DE RESULTADOS ======= */
+.synthesis-section {
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.synthesis-table-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.synthesis-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.synthesis-table th,
+.synthesis-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.synthesis-table th {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+}
+
+.relation-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.synthesis-score {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+    background: #f8fafc;
+    border-radius: var(--radius-sm);
+}
+
+.synthesis-note {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-warning);
+}
+
+.synthesis-note p {
+    margin: 0;
+    color: #92400e;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ======= TIPOLOGÍA DE ESTRATEGIAS ======= */
+.typology-section {
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.typology-table-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.typology-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.typology-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+}
+
+.typology-table tr:last-child td {
+    border-bottom: none;
+}
+
+.strategy-type {
+    width: 250px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.strategy-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f1f5f9;
+}
+
+.strategy-offensive .strategy-icon {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+}
+
+.strategy-defensive .strategy-icon {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.strategy-reorientation .strategy-icon {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.strategy-survival .strategy-icon {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.strategy-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* ======= RECOMENDACIÓN ESTRATÉGICA ======= */
+.strategic-recommendation {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 2px solid var(--color-info);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.strategic-recommendation h3 {
+    color: var(--color-info);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.recommendation-content {
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.recommendation-content.highlight {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-warning);
 }
 
 /* ======= SECCIONES DE ESTRATEGIAS ======= */
@@ -429,7 +831,7 @@
     align-items: center;
 }
 
-.btn-save-strategies {
+.btn-save-evaluation {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     color: white;
     border: none;
@@ -445,12 +847,12 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.btn-save-strategies:hover {
+.btn-save-evaluation:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
-.btn-auto-save {
+.btn-calculate {
     background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
     color: white;
     border: none;
@@ -466,7 +868,28 @@
     font-family: 'Poppins', sans-serif;
 }
 
-.btn-auto-save:hover {
+.btn-calculate:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-reset {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #d97706 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-reset:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -563,20 +986,33 @@
         gap: 0.5rem;
     }
     
-    .strategies-container {
+    .matrix-2x2 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .matrix-quadrant {
+        padding: 1.5rem;
+    }
+    
+    .scale-items {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .evaluation-tables {
         padding: 1rem;
         gap: 1.5rem;
     }
     
-    .strategy-item {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
+    .evaluation-table-container {
+        padding: 1rem;
     }
     
-    .btn-remove-strategy {
-        align-self: flex-end;
-        margin-top: 0;
+    .evaluation-input {
+        width: 50px;
+        padding: 0.375rem;
     }
     
     .form-actions {
@@ -584,22 +1020,34 @@
         gap: 0.75rem;
     }
     
-    .btn-save-strategies,
-    .btn-auto-save,
+    .btn-save-evaluation,
+    .btn-calculate,
+    .btn-reset,
     .btn-back {
         width: 100%;
         justify-content: center;
-    }
-    
-    .summary-grid {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
     }
     
     .hero-icon {
         font-size: 3rem;
         text-align: center;
         margin-top: 1rem;
+    }
+    
+    .synthesis-table th,
+    .synthesis-table td {
+        padding: 0.75rem;
+    }
+    
+    .typology-table td {
+        padding: 1rem;
+    }
+    
+    .strategy-type {
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
     }
 }
 
