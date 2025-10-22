@@ -8,6 +8,7 @@ require_once __DIR__ . '/../Models/Objectives.php';
 require_once __DIR__ . '/../Models/FodaAnalysis.php';
 require_once __DIR__ . '/../Models/ValueChain.php';
 require_once __DIR__ . '/../Models/BCGAnalysis.php';
+require_once __DIR__ . '/../Models/PestAnalysis.php';
 require_once __DIR__ . '/../Controllers/AuthController.php';
 
 class ProjectController {
@@ -19,6 +20,7 @@ class ProjectController {
     private $fodaAnalysis;
     private $valueChain;
     private $bcgAnalysis;
+    private $pestAnalysis;
     
     public function __construct() {
         $this->project = new Project();
@@ -29,6 +31,7 @@ class ProjectController {
         $this->fodaAnalysis = new FodaAnalysis();
         $this->valueChain = new ValueChain();
         $this->bcgAnalysis = new BCGAnalysis();
+        $this->pestAnalysis = new PestAnalysis();
     }
     
     // Crear nuevo proyecto
@@ -811,6 +814,82 @@ class ProjectController {
             return [];
         }
     }
+
+    // ===== MÉTODOS PEST ANALYSIS =====
+    
+    // Guardar respuestas de PEST Analysis
+    public function savePestAnalysis() {
+        try {
+            AuthController::requireLogin();
+            
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Método no permitido');
+            }
+            
+            $project_id = intval($_POST['project_id'] ?? 0);
+            $responses = $_POST['responses'] ?? [];
+            
+            // Validar proyecto
+            $project = $this->getProject($project_id);
+            if (!$project) {
+                throw new Exception('Proyecto no encontrado');
+            }
+            
+            // Validar respuestas
+            if (empty($responses) || count($responses) != 25) {
+                throw new Exception('Debe responder todas las 25 preguntas');
+            }
+            
+            // Validar rango de respuestas (0-4)
+            foreach ($responses as $question => $rating) {
+                $rating_value = intval($rating);
+                if ($rating_value < 0 || $rating_value > 4) {
+                    throw new Exception("La respuesta para la pregunta $question debe estar entre 0 y 4");
+                }
+            }
+            
+            // Guardar respuestas
+            $success = $this->pestAnalysis->saveResponses($project_id, $responses);
+            
+            if ($success) {
+                // Redirigir con éxito
+                require_once __DIR__ . '/../config/url_config.php';
+                $baseUrl = getBaseUrl();
+                header("Location: {$baseUrl}/Views/Projects/pest-analysis.php?id={$project_id}&success=1");
+                exit();
+            } else {
+                throw new Exception('Error al guardar las respuestas');
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error in savePestAnalysis: " . $e->getMessage());
+            require_once __DIR__ . '/../config/url_config.php';
+            $baseUrl = getBaseUrl();
+            $project_id = intval($_POST['project_id'] ?? 0);
+            header("Location: {$baseUrl}/Views/Projects/pest-analysis.php?id={$project_id}&error=" . urlencode($e->getMessage()));
+            exit();
+        }
+    }
+    
+    // Obtener respuestas de PEST Analysis
+    public function getPestAnalysis($project_id) {
+        return $this->pestAnalysis->getByProject($project_id);
+    }
+    
+    // Obtener resumen del análisis PEST
+    public function getPestSummary($project_id) {
+        return $this->pestAnalysis->calculateSummary($project_id);
+    }
+    
+    // Obtener estadísticas por categorías PEST
+    public function getPestCategoryStats($project_id) {
+        return $this->pestAnalysis->getCategoryStats($project_id);
+    }
+    
+    // Verificar si el análisis PEST está completo
+    public function isPestComplete($project_id) {
+        return $this->pestAnalysis->isComplete($project_id);
+    }
 }
 
 // Manejo de rutas
@@ -843,6 +922,9 @@ if (isset($_GET['action'])) {
             break;
         case 'save_value_chain':
             $controller->saveValueChain();
+            break;
+        case 'save_pest_analysis':
+            $controller->savePestAnalysis();
             break;
         default:
             header("Location: ../Views/Users/dashboard.php");
@@ -881,6 +963,9 @@ if (isset($_GET['action'])) {
             break;
         case 'save_value_chain':
             $controller->saveValueChain();
+            break;
+        case 'save_pest_analysis':
+            $controller->savePestAnalysis();
             break;
         case 'save_bcg_analysis':
             $controller->saveBCGAnalysis();
