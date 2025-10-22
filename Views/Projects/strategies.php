@@ -66,7 +66,7 @@ $strategiesData = $projectController->getStrategiesAnalysis($project_id);
                         
                         <h1 class="hero-title">
                             <span class="step-number">10.</span>
-                            Identificación de Estrategias
+                            IDENTIFICACIÓN DE ESTRATEGIAS
                         </h1>
                         
                         <div class="project-info">
@@ -93,254 +93,430 @@ $strategiesData = $projectController->getStrategiesAnalysis($project_id);
     <!-- Contenido principal -->
     <main class="main-content">
         <div class="container">
-            <!-- Contexto de identificación de estrategias -->
+            <!-- Contexto del análisis DAFO -->
             <div class="context-box">
-                <h3>🎯 Identificación de Estrategias</h3>
-                <p>Basándose en los análisis previos (FODA, BCG, Porter y PEST), identifiquemos las estrategias más efectivas para su organización.</p>
-                <p><strong>En esta sección definiremos:</strong></p>
+                <h3>🎯 Análisis DAFO para Identificación de Estrategias</h3>
+                <p>A partir del análisis FODA previo, ahora evaluaremos las relaciones entre factores internos y externos para identificar las estrategias más apropiadas para su organización.</p>
+                <p><strong>Este análisis le permitirá determinar:</strong></p>
                 <ul>
-                    <li><strong>Estrategias Competitivas:</strong> Cómo competir en el mercado</li>
-                    <li><strong>Estrategias de Crecimiento:</strong> Planes de expansión y desarrollo</li>
-                    <li><strong>Estrategias de Innovación:</strong> Mejoras en productos/servicios</li>
-                    <li><strong>Estrategias de Diferenciación:</strong> Ventajas competitivas únicas</li>
+                    <li><strong>Estrategias Ofensivas (FO):</strong> Aprovechar fortalezas para capitalizar oportunidades</li>
+                    <li><strong>Estrategias Defensivas (FA):</strong> Usar fortalezas para enfrentar amenazas</li>
+                    <li><strong>Estrategias de Reorientación (DO):</strong> Superar debilidades aprovechando oportunidades</li>
+                    <li><strong>Estrategias de Supervivencia (DA):</strong> Minimizar debilidades y evitar amenazas</li>
                 </ul>
             </div>
 
-            <!-- Formulario de identificación de estrategias -->
-            <form action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_strategies" method="POST" class="strategies-form">
+            <!-- Matriz DAFO Visual -->
+            <div class="dafo-matrix-container">
+                <h2 class="section-title">📊 Matriz DAFO Estratégica</h2>
+                
+                <div class="matrix-2x2">
+                    <div class="matrix-quadrant quadrant-fo">
+                        <h3>🚀 Estrategias Ofensivas</h3>
+                        <p class="quadrant-subtitle">(Fortalezas + Oportunidades)</p>
+                        <div class="quadrant-content">
+                            <p>Aprovechar las fortalezas internas para capitalizar las oportunidades externas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="matrix-quadrant quadrant-fa">
+                        <h3>🛡️ Estrategias Defensivas</h3>
+                        <p class="quadrant-subtitle">(Fortalezas + Amenazas)</p>
+                        <div class="quadrant-content">
+                            <p>Utilizar las fortalezas para enfrentar y neutralizar las amenazas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="matrix-quadrant quadrant-do">
+                        <h3>🔄 Estrategias de Reorientación</h3>
+                        <p class="quadrant-subtitle">(Debilidades + Oportunidades)</p>
+                        <div class="quadrant-content">
+                            <p>Superar las debilidades aprovechando las oportunidades del entorno</p>
+                        </div>
+                    </div>
+                    
+                    <div class="matrix-quadrant quadrant-da">
+                        <h3>⚠️ Estrategias de Supervivencia</h3>
+                        <p class="quadrant-subtitle">(Debilidades + Amenazas)</p>
+                        <div class="quadrant-content">
+                            <p>Minimizar debilidades y evitar amenazas para asegurar la supervivencia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de evaluación DAFO -->
+            <form action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_strategies" method="POST" class="dafo-evaluation-form">
                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
                 
-                <div class="strategies-container">
-                    <!-- ESTRATEGIAS COMPETITIVAS -->
-                    <div class="strategy-section competitive">
-                        <h3>⚔️ Estrategias Competitivas</h3>
-                        <p class="section-description">
-                            Define cómo tu organización competirá en el mercado y se posicionará frente a la competencia.
-                        </p>
-                        <div id="competitive-strategies-container">
-                            <?php if (!empty($strategiesData['competitive'])): ?>
-                                <?php foreach ($strategiesData['competitive'] as $index => $strategy): ?>
-                                    <div class="strategy-item">
-                                        <div class="strategy-input-group">
-                                            <input type="text" name="competitive_name[]" class="strategy-name" 
-                                                   placeholder="Nombre de la estrategia"
-                                                   value="<?php echo htmlspecialchars($strategy['name']); ?>">
-                                            <textarea name="competitive_description[]" class="strategy-description" 
-                                                      placeholder="Descripción detallada de la estrategia..."
-                                                      rows="3"><?php echo htmlspecialchars($strategy['description']); ?></textarea>
-                                            <select name="competitive_priority[]" class="strategy-priority">
-                                                <option value="alta" <?php echo $strategy['priority'] == 'alta' ? 'selected' : ''; ?>>Alta Prioridad</option>
-                                                <option value="media" <?php echo $strategy['priority'] == 'media' ? 'selected' : ''; ?>>Media Prioridad</option>
-                                                <option value="baja" <?php echo $strategy['priority'] == 'baja' ? 'selected' : ''; ?>>Baja Prioridad</option>
-                                            </select>
-                                        </div>
-                                        <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="strategy-item">
-                                    <div class="strategy-input-group">
-                                        <input type="text" name="competitive_name[]" class="strategy-name" 
-                                               placeholder="Ej: Liderazgo en costos">
-                                        <textarea name="competitive_description[]" class="strategy-description" 
-                                                  placeholder="Ej: Optimizar procesos para reducir costos operativos y ofrecer precios más competitivos..."
-                                                  rows="3"></textarea>
-                                        <select name="competitive_priority[]" class="strategy-priority">
-                                            <option value="alta">Alta Prioridad</option>
-                                            <option value="media">Media Prioridad</option>
-                                            <option value="baja">Baja Prioridad</option>
-                                        </select>
-                                    </div>
-                                    <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn-add-strategy" onclick="addStrategy('competitive')">
-                            + Agregar Estrategia Competitiva
-                        </button>
-                    </div>
-
-                    <!-- ESTRATEGIAS DE CRECIMIENTO -->
-                    <div class="strategy-section growth">
-                        <h3>📈 Estrategias de Crecimiento</h3>
-                        <p class="section-description">
-                            Planes para expandir la organización, aumentar ingresos y captar nuevos mercados.
-                        </p>
-                        <div id="growth-strategies-container">
-                            <?php if (!empty($strategiesData['growth'])): ?>
-                                <?php foreach ($strategiesData['growth'] as $index => $strategy): ?>
-                                    <div class="strategy-item">
-                                        <div class="strategy-input-group">
-                                            <input type="text" name="growth_name[]" class="strategy-name" 
-                                                   placeholder="Nombre de la estrategia"
-                                                   value="<?php echo htmlspecialchars($strategy['name']); ?>">
-                                            <textarea name="growth_description[]" class="strategy-description" 
-                                                      placeholder="Descripción detallada de la estrategia..."
-                                                      rows="3"><?php echo htmlspecialchars($strategy['description']); ?></textarea>
-                                            <select name="growth_priority[]" class="strategy-priority">
-                                                <option value="alta" <?php echo $strategy['priority'] == 'alta' ? 'selected' : ''; ?>>Alta Prioridad</option>
-                                                <option value="media" <?php echo $strategy['priority'] == 'media' ? 'selected' : ''; ?>>Media Prioridad</option>
-                                                <option value="baja" <?php echo $strategy['priority'] == 'baja' ? 'selected' : ''; ?>>Baja Prioridad</option>
-                                            </select>
-                                        </div>
-                                        <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="strategy-item">
-                                    <div class="strategy-input-group">
-                                        <input type="text" name="growth_name[]" class="strategy-name" 
-                                               placeholder="Ej: Expansión a nuevos mercados">
-                                        <textarea name="growth_description[]" class="strategy-description" 
-                                                  placeholder="Ej: Identificar y penetrar en mercados geográficos adyacentes con alta demanda..."
-                                                  rows="3"></textarea>
-                                        <select name="growth_priority[]" class="strategy-priority">
-                                            <option value="alta">Alta Prioridad</option>
-                                            <option value="media">Media Prioridad</option>
-                                            <option value="baja">Baja Prioridad</option>
-                                        </select>
-                                    </div>
-                                    <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn-add-strategy" onclick="addStrategy('growth')">
-                            + Agregar Estrategia de Crecimiento
-                        </button>
-                    </div>
-
-                    <!-- ESTRATEGIAS DE INNOVACIÓN -->
-                    <div class="strategy-section innovation">
-                        <h3>💡 Estrategias de Innovación</h3>
-                        <p class="section-description">
-                            Iniciativas para mejorar productos, servicios o procesos mediante la innovación.
-                        </p>
-                        <div id="innovation-strategies-container">
-                            <?php if (!empty($strategiesData['innovation'])): ?>
-                                <?php foreach ($strategiesData['innovation'] as $index => $strategy): ?>
-                                    <div class="strategy-item">
-                                        <div class="strategy-input-group">
-                                            <input type="text" name="innovation_name[]" class="strategy-name" 
-                                                   placeholder="Nombre de la estrategia"
-                                                   value="<?php echo htmlspecialchars($strategy['name']); ?>">
-                                            <textarea name="innovation_description[]" class="strategy-description" 
-                                                      placeholder="Descripción detallada de la estrategia..."
-                                                      rows="3"><?php echo htmlspecialchars($strategy['description']); ?></textarea>
-                                            <select name="innovation_priority[]" class="strategy-priority">
-                                                <option value="alta" <?php echo $strategy['priority'] == 'alta' ? 'selected' : ''; ?>>Alta Prioridad</option>
-                                                <option value="media" <?php echo $strategy['priority'] == 'media' ? 'selected' : ''; ?>>Media Prioridad</option>
-                                                <option value="baja" <?php echo $strategy['priority'] == 'baja' ? 'selected' : ''; ?>>Baja Prioridad</option>
-                                            </select>
-                                        </div>
-                                        <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="strategy-item">
-                                    <div class="strategy-input-group">
-                                        <input type="text" name="innovation_name[]" class="strategy-name" 
-                                               placeholder="Ej: Desarrollo de productos digitales">
-                                        <textarea name="innovation_description[]" class="strategy-description" 
-                                                  placeholder="Ej: Crear una plataforma digital que complemente nuestros servicios tradicionales..."
-                                                  rows="3"></textarea>
-                                        <select name="innovation_priority[]" class="strategy-priority">
-                                            <option value="alta">Alta Prioridad</option>
-                                            <option value="media">Media Prioridad</option>
-                                            <option value="baja">Baja Prioridad</option>
-                                        </select>
-                                    </div>
-                                    <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn-add-strategy" onclick="addStrategy('innovation')">
-                            + Agregar Estrategia de Innovación
-                        </button>
-                    </div>
-
-                    <!-- ESTRATEGIAS DE DIFERENCIACIÓN -->
-                    <div class="strategy-section differentiation">
-                        <h3>🎨 Estrategias de Diferenciación</h3>
-                        <p class="section-description">
-                            Elementos únicos que distinguen a tu organización de la competencia.
-                        </p>
-                        <div id="differentiation-strategies-container">
-                            <?php if (!empty($strategiesData['differentiation'])): ?>
-                                <?php foreach ($strategiesData['differentiation'] as $index => $strategy): ?>
-                                    <div class="strategy-item">
-                                        <div class="strategy-input-group">
-                                            <input type="text" name="differentiation_name[]" class="strategy-name" 
-                                                   placeholder="Nombre de la estrategia"
-                                                   value="<?php echo htmlspecialchars($strategy['name']); ?>">
-                                            <textarea name="differentiation_description[]" class="strategy-description" 
-                                                      placeholder="Descripción detallada de la estrategia..."
-                                                      rows="3"><?php echo htmlspecialchars($strategy['description']); ?></textarea>
-                                            <select name="differentiation_priority[]" class="strategy-priority">
-                                                <option value="alta" <?php echo $strategy['priority'] == 'alta' ? 'selected' : ''; ?>>Alta Prioridad</option>
-                                                <option value="media" <?php echo $strategy['priority'] == 'media' ? 'selected' : ''; ?>>Media Prioridad</option>
-                                                <option value="baja" <?php echo $strategy['priority'] == 'baja' ? 'selected' : ''; ?>>Baja Prioridad</option>
-                                            </select>
-                                        </div>
-                                        <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="strategy-item">
-                                    <div class="strategy-input-group">
-                                        <input type="text" name="differentiation_name[]" class="strategy-name" 
-                                               placeholder="Ej: Servicio al cliente 24/7">
-                                        <textarea name="differentiation_description[]" class="strategy-description" 
-                                                  placeholder="Ej: Implementar un sistema de atención al cliente disponible las 24 horas con respuesta inmediata..."
-                                                  rows="3"></textarea>
-                                        <select name="differentiation_priority[]" class="strategy-priority">
-                                            <option value="alta">Alta Prioridad</option>
-                                            <option value="media">Media Prioridad</option>
-                                            <option value="baja">Baja Prioridad</option>
-                                        </select>
-                                    </div>
-                                    <button type="button" class="btn-remove-strategy" onclick="removeStrategy(this)">&times;</button>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <button type="button" class="btn-add-strategy" onclick="addStrategy('differentiation')">
-                            + Agregar Estrategia de Diferenciación
-                        </button>
+                <!-- Leyenda de escala -->
+                <div class="scale-legend">
+                    <h3>📏 Escala de Evaluación</h3>
+                    <div class="scale-items">
+                        <span class="scale-item"><strong>0</strong> = En total desacuerdo</span>
+                        <span class="scale-item"><strong>1</strong> = No está de acuerdo</span>
+                        <span class="scale-item"><strong>2</strong> = Está de acuerdo</span>
+                        <span class="scale-item"><strong>3</strong> = Bastante de acuerdo</span>
+                        <span class="scale-item"><strong>4</strong> = En total acuerdo</span>
                     </div>
                 </div>
 
-                <!-- Resumen de estrategias -->
-                <div class="strategies-summary">
-                    <h3>📋 Resumen de Estrategias</h3>
-                    <div class="summary-grid">
-                        <div class="summary-card competitive-summary">
-                            <h4>⚔️ Competitivas</h4>
-                            <p class="strategy-count" id="competitive-count">0 estrategias</p>
+                <!-- Tablas de evaluación -->
+                <div class="evaluation-tables">
+                    <!-- Tabla FO (Fortalezas-Oportunidades) -->
+                    <div class="evaluation-table-container">
+                        <h3 class="table-title fo-title">🚀 Tabla FO (Fortalezas-Oportunidades)</h3>
+                        <div class="table-wrapper">
+                            <table class="evaluation-table fo-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>O1</th>
+                                        <th>O2</th>
+                                        <th>O3</th>
+                                        <th>O4</th>
+                                        <th class="total-column">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>F1</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o4]" value="0"></td>
+                                        <td class="total-cell" id="fo-f1-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>F2</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o4]" value="0"></td>
+                                        <td class="total-cell" id="fo-f2-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>F3</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o4]" value="0"></td>
+                                        <td class="total-cell" id="fo-f3-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>F4</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o4]" value="0"></td>
+                                        <td class="total-cell" id="fo-f4-total">0</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <th>Total</th>
+                                        <td class="total-cell" id="fo-o1-total">0</td>
+                                        <td class="total-cell" id="fo-o2-total">0</td>
+                                        <td class="total-cell" id="fo-o3-total">0</td>
+                                        <td class="total-cell" id="fo-o4-total">0</td>
+                                        <td class="grand-total" id="fo-grand-total">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="summary-card growth-summary">
-                            <h4>📈 Crecimiento</h4>
-                            <p class="strategy-count" id="growth-count">0 estrategias</p>
+                    </div>
+
+                    <!-- Tabla FA (Fortalezas-Amenazas) -->
+                    <div class="evaluation-table-container">
+                        <h3 class="table-title fa-title">🛡️ Tabla FA (Fortalezas-Amenazas)</h3>
+                        <div class="table-wrapper">
+                            <table class="evaluation-table fa-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>A1</th>
+                                        <th>A2</th>
+                                        <th>A3</th>
+                                        <th>A4</th>
+                                        <th class="total-column">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>F1</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a4]" value="0"></td>
+                                        <td class="total-cell" id="fa-f1-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>F2</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a4]" value="0"></td>
+                                        <td class="total-cell" id="fa-f2-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>F3</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a4]" value="0"></td>
+                                        <td class="total-cell" id="fa-f3-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>F4</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a4]" value="0"></td>
+                                        <td class="total-cell" id="fa-f4-total">0</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <th>Total</th>
+                                        <td class="total-cell" id="fa-a1-total">0</td>
+                                        <td class="total-cell" id="fa-a2-total">0</td>
+                                        <td class="total-cell" id="fa-a3-total">0</td>
+                                        <td class="total-cell" id="fa-a4-total">0</td>
+                                        <td class="grand-total" id="fa-grand-total">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="summary-card innovation-summary">
-                            <h4>💡 Innovación</h4>
-                            <p class="strategy-count" id="innovation-count">0 estrategias</p>
+                    </div>
+
+                    <!-- Tabla DO (Debilidades-Oportunidades) -->
+                    <div class="evaluation-table-container">
+                        <h3 class="table-title do-title">🔄 Tabla DO (Debilidades-Oportunidades)</h3>
+                        <div class="table-wrapper">
+                            <table class="evaluation-table do-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>O1</th>
+                                        <th>O2</th>
+                                        <th>O3</th>
+                                        <th>O4</th>
+                                        <th class="total-column">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>D1</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o4]" value="0"></td>
+                                        <td class="total-cell" id="do-d1-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>D2</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o4]" value="0"></td>
+                                        <td class="total-cell" id="do-d2-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>D3</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o4]" value="0"></td>
+                                        <td class="total-cell" id="do-d3-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>D4</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o4]" value="0"></td>
+                                        <td class="total-cell" id="do-d4-total">0</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <th>Total</th>
+                                        <td class="total-cell" id="do-o1-total">0</td>
+                                        <td class="total-cell" id="do-o2-total">0</td>
+                                        <td class="total-cell" id="do-o3-total">0</td>
+                                        <td class="total-cell" id="do-o4-total">0</td>
+                                        <td class="grand-total" id="do-grand-total">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="summary-card differentiation-summary">
-                            <h4>🎨 Diferenciación</h4>
-                            <p class="strategy-count" id="differentiation-count">0 estrategias</p>
+                    </div>
+
+                    <!-- Tabla DA (Debilidades-Amenazas) -->
+                    <div class="evaluation-table-container">
+                        <h3 class="table-title da-title">⚠️ Tabla DA (Debilidades-Amenazas)</h3>
+                        <div class="table-wrapper">
+                            <table class="evaluation-table da-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>A1</th>
+                                        <th>A2</th>
+                                        <th>A3</th>
+                                        <th>A4</th>
+                                        <th class="total-column">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>D1</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a4]" value="0"></td>
+                                        <td class="total-cell" id="da-d1-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>D2</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a4]" value="0"></td>
+                                        <td class="total-cell" id="da-d2-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>D3</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a4]" value="0"></td>
+                                        <td class="total-cell" id="da-d3-total">0</td>
+                                    </tr>
+                                    <tr>
+                                        <th>D4</th>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a1]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a2]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a3]" value="0"></td>
+                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a4]" value="0"></td>
+                                        <td class="total-cell" id="da-d4-total">0</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <th>Total</th>
+                                        <td class="total-cell" id="da-a1-total">0</td>
+                                        <td class="total-cell" id="da-a2-total">0</td>
+                                        <td class="total-cell" id="da-a3-total">0</td>
+                                        <td class="total-cell" id="da-a4-total">0</td>
+                                        <td class="grand-total" id="da-grand-total">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Síntesis de Resultados -->
+                <div class="synthesis-section">
+                    <h2 class="section-title">📈 Síntesis de Resultados</h2>
+                    
+                    <div class="synthesis-table-container">
+                        <table class="synthesis-table">
+                            <thead>
+                                <tr>
+                                    <th>Relaciones</th>
+                                    <th>Puntuación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="relation-name">FO (Fortalezas-Oportunidades)</td>
+                                    <td class="synthesis-score" id="synthesis-fo">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="relation-name">FA (Fortalezas-Amenazas)</td>
+                                    <td class="synthesis-score" id="synthesis-fa">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="relation-name">DO (Debilidades-Oportunidades)</td>
+                                    <td class="synthesis-score" id="synthesis-do">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="relation-name">DA (Debilidades-Amenazas)</td>
+                                    <td class="synthesis-score" id="synthesis-da">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="synthesis-note">
+                            <p><strong>Nota:</strong> La puntuación mayor le indica la estrategia que deberá llevar a cabo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Tipología de Estrategias -->
+                <div class="typology-section">
+                    <h2 class="section-title">🎯 Tipología de Estrategias</h2>
+                    
+                    <div class="typology-table-container">
+                        <table class="typology-table">
+                            <tbody>
+                                <tr class="strategy-offensive">
+                                    <td class="strategy-type">
+                                        <div class="strategy-icon">🚀</div>
+                                        <strong>Estrategia Ofensiva</strong>
+                                    </td>
+                                    <td class="strategy-description">
+                                        Deberá adoptar estrategias de crecimiento
+                                    </td>
+                                </tr>
+                                <tr class="strategy-defensive">
+                                    <td class="strategy-type">
+                                        <div class="strategy-icon">�️</div>
+                                        <strong>Estrategia Defensiva</strong>
+                                    </td>
+                                    <td class="strategy-description">
+                                        La empresa está preparada para enfrentarse a las amenazas
+                                    </td>
+                                </tr>
+                                <tr class="strategy-reorientation">
+                                    <td class="strategy-type">
+                                        <div class="strategy-icon">🔄</div>
+                                        <strong>Estrategia de Reorientación</strong>
+                                    </td>
+                                    <td class="strategy-description">
+                                        La empresa no puede aprovechar las oportunidades
+                                    </td>
+                                </tr>
+                                <tr class="strategy-survival">
+                                    <td class="strategy-type">
+                                        <div class="strategy-icon">⚠️</div>
+                                        <strong>Estrategia de Supervivencia</strong>
+                                    </td>
+                                    <td class="strategy-description">
+                                        Se enfrenta a amenazas externas sin las fortalezas necesarias
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recomendación estratégica -->
+                <div class="strategic-recommendation">
+                    <h3>🎯 Recomendación Estratégica</h3>
+                    <div class="recommendation-content" id="strategy-recommendation">
+                        <p>Complete la evaluación para obtener su recomendación estratégica personalizada.</p>
                     </div>
                 </div>
 
                 <!-- Botones de acción -->
                 <div class="form-actions">
-                    <button type="submit" class="btn-save-strategies">
+                    <button type="submit" class="btn-save-evaluation">
                         <span class="btn-icon">💾</span>
-                        Guardar Estrategias
+                        Guardar Evaluación
                     </button>
                     
-                    <button type="button" class="btn-auto-save" id="auto-save-btn">
-                        <span class="btn-icon">⚡</span>
-                        Guardado Automático: <span id="auto-save-status">Activado</span>
+                    <button type="button" class="btn-calculate" id="calculate-btn">
+                        <span class="btn-icon">🧮</span>
+                        Calcular Estrategias
+                    </button>
+                    
+                    <button type="button" class="btn-reset" id="reset-btn">
+                        <span class="btn-icon">🔄</span>
+                        Limpiar Evaluación
                     </button>
                     
                     <a href="project.php?id=<?php echo $project_id; ?>" class="btn-back">
