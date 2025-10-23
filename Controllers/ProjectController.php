@@ -6,7 +6,6 @@ require_once __DIR__ . '/../Models/Vision.php';
 require_once __DIR__ . '/../Models/Values.php';
 require_once __DIR__ . '/../Models/Objectives.php';
 require_once __DIR__ . '/../Models/FodaAnalysis.php';
-require_once __DIR__ . '/../Models/analisis-interno-externo.php';
 require_once __DIR__ . '/../Models/ValueChain.php';
 require_once __DIR__ . '/../Models/BCGAnalysis.php';
 require_once __DIR__ . '/../Models/PestAnalysis.php';
@@ -19,7 +18,6 @@ class ProjectController {
     private $values;
     private $objectives;
     private $fodaAnalysis;
-    private $analisisInternoExterno;
     private $valueChain;
     private $bcgAnalysis;
     private $pestAnalysis;
@@ -31,7 +29,6 @@ class ProjectController {
         $this->values = new Values();
         $this->objectives = new Objectives();
         $this->fodaAnalysis = new FodaAnalysis();
-        $this->analisisInternoExterno = new AnalisisInternoExterno();
         $this->valueChain = new ValueChain();
         $this->bcgAnalysis = new BCGAnalysis();
         $this->pestAnalysis = new PestAnalysis();
