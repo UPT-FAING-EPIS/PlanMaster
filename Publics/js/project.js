@@ -190,10 +190,10 @@ function startSection(sectionNum) {
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
             } else if (sectionName === 'analisis-interno-externo' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'pest-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
                 // Para Análisis Interno y Externo, Cadena de Valor, BCG, PEST y Estrategias
-                targetUrl = `${sectionName}.php?project_id=${projectData.id}`;
+                targetUrl = `${sectionName}.php?id=${projectData.id}`;
             } else {
                 // Para las futuras secciones, usar la carpeta sections/
-                targetUrl = `sections/${sectionName}.php?project_id=${projectData.id}`;
+                targetUrl = `sections/${sectionName}.php?id=${projectData.id}`;
             }
             
             console.log('Redirigiendo a:', targetUrl);
