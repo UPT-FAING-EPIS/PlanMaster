@@ -274,7 +274,6 @@ class ProjectController {
             'values' => count($this->values->getByProjectId($project_id)) > 0 ? true : false,
             'objectives' => count($this->objectives->getStrategicObjectivesByProjectId($project_id)) > 0 ? true : false,
             'analisis_interno_externo' => true, // Nueva sección siempre disponible (es informativa)
-            // 'foda_analysis' => $this->isFodaComplete($project_id) ? true : false, // FODA original comentado
             'value_chain' => $this->isValueChainComplete($project_id) ? true : false,
             'bcg_analysis' => $this->isBCGComplete($project_id) ? true : false
         ];

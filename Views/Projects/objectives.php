@@ -598,10 +598,8 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                             </button>
                             
                             <?php if (count($existing_objectives) > 0): ?>
-                                <!-- Ruta original a FODA comentada temporalmente -->
-                                <!-- <a href="foda-analysis.php?project_id=<?php echo $project_id; ?>" class="btn btn-continue"> -->
                                 <a href="analisis-interno-externo.php?project_id=<?php echo $project_id; ?>" class="btn btn-continue">
-                                    <span class="btn-icon">📊</span>
+                                    <span class="btn-icon">�</span>
                                     Continuar a Análisis Interno y Externo
                                 </a>
                             <?php endif; ?>

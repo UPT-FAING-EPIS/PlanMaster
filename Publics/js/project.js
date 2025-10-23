@@ -167,8 +167,7 @@ function startSection(sectionNum) {
         '2': 'vision',
         '3': 'values',
         '4': 'objectives',
-        '5': 'analisis-interno-externo', // Nueva interfaz de análisis interno y externo
-        // '5': 'foda-analysis', // Ruta original FODA comentada temporalmente
+        '5': 'analisis-interno-externo',
         '6': 'value-chain',
         '7': 'bcg-analysis',
         '8': 'porter-matrix',
@@ -190,7 +189,7 @@ function startSection(sectionNum) {
             if (sectionNum <= 4) {
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
             } else if (sectionName === 'analisis-interno-externo' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'pest-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
-                // Para nueva interfaz de análisis, Cadena de Valor, BCG, PEST y Estrategias
+                // Para Análisis Interno y Externo, Cadena de Valor, BCG, PEST y Estrategias
                 targetUrl = `${sectionName}.php?project_id=${projectData.id}`;
             } else {
                 // Para las futuras secciones, usar la carpeta sections/
