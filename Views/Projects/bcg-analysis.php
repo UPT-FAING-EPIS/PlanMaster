@@ -1235,7 +1235,7 @@ $bcg_matrix_json = json_encode($bcg_matrix);
                             🗑️
                         </button>
                     </div>
-                `;
+                ;
                 
                 container.appendChild(productRow);
             });

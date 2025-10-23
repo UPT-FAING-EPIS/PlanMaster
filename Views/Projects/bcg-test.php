@@ -1,9 +1,35 @@
+<?php
+// Incluir configuraciones necesarias
+session_start();
+require_once __DIR__ . '/../../Controllers/AuthController.php';
+require_once __DIR__ . '/../../Controllers/ProjectController.php';
+require_once __DIR__ . '/../../config/url_config.php';
+
+// Verificar que el usuario esté logueado
+if (!AuthController::isLoggedIn()) {
+    header("Location: " . getBaseUrl() . "/Views/Auth/login.php");
+    exit();
+}
+
+// Obtener datos del usuario para el header
+$user = AuthController::getCurrentUser();
+
+// Para propósitos de test, usamos datos de proyecto ficticio
+$project = [
+    'project_name' => 'Análisis BCG - Modo Test',
+    'id' => 'test'
+];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 ANÁLISIS BCG - MATRIZ INTERACTIVA</title>
+    <title>📊 ANÁLISIS BCG - MATRIZ INTERACTIVA (Test)</title>
+    
+    <!-- CSS del sistema -->
+    <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_dashboard.css">
+    <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_bcg_analysis.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; padding: 20px; }
@@ -90,10 +116,19 @@
     </style>
 </head>
 <body>
+    <?php include 'header.php'; ?>
+    
     <div class="container">
+        <!-- Notificación modo test -->
+        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
+            <h3 style="color: #92400e; margin: 0;">🧪 MODO PRUEBA - Entorno de Testing</h3>
+            <p style="color: #92400e; margin: 5px 0 0 0;">Esta es una versión de prueba del análisis BCG. Los cambios no se guardarán.</p>
+        </div>
+        
         <h1 style="text-align: center; color: #1e293b; margin-bottom: 40px; font-size: 32px;">� ANÁLISIS BCG - MATRIZ INTERACTIVA</h1>
         
         <div class="nav-buttons" style="text-align: center; margin-bottom: 30px;">
+            <a href="<?php echo getBaseUrl(); ?>/Views/Users/projects.php" class="excel-btn" style="background: #6b7280; color: white; text-decoration: none;">⬅️ Volver a Proyectos</a>
             <button class="excel-btn success" onclick="addProduct()">➕ Agregar Producto</button>
             <button class="excel-btn primary" onclick="loadExampleData()">📝 Cargar Datos de Ejemplo</button>
             <button class="excel-btn primary" onclick="calculateAllMetrics()">🧮 Calcular Todo</button>
@@ -1702,5 +1737,11 @@ Posición: ${positioning.position || 'Perro 🐕'}</title>
             console.log('🔧 Funciones de debug disponibles: debugBCG(), calculateAllMetrics()');
         });
     </script>
+    
+    </div> <!-- Cerrar container -->
+    
+    <?php include __DIR__ . '/../Users/footer.php'; ?>
+    
+    <script src="<?php echo getBaseUrl(); ?>/Publics/js/dashboard.js"></script>
 </body>
 </html>
