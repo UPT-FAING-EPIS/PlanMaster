@@ -285,7 +285,7 @@ $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
                         <p>El siguiente paso es realizar la <strong>Matriz BCG</strong> para analizar la cartera de productos.</p>
                         <div class="action-buttons">
                             <a href="bcg-test.php" class="btn btn-continue">
-                                📊 Continuar a Matriz BCG (Test)
+                                📊 Continuar a Matriz BCG 
                             </a>
                         </div>
                     </div>

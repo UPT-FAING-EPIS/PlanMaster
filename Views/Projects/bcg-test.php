@@ -16,7 +16,7 @@ $user = AuthController::getCurrentUser();
 
 // Para propósitos de test, usamos datos de proyecto ficticio
 $project = [
-    'project_name' => 'Análisis BCG - Modo Test',
+    'project_name' => 'Análisis BCG ',
     'id' => 'test'
 ];
 ?>
@@ -25,7 +25,7 @@ $project = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 ANÁLISIS BCG - MATRIZ INTERACTIVA (Test)</title>
+    <title>📊 ANÁLISIS BCG - MATRIZ INTERACTIVA</title>
     
     <!-- CSS del sistema -->
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_dashboard.css">
@@ -120,10 +120,7 @@ $project = [
     
     <div class="container">
         <!-- Notificación modo test -->
-        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
-            <h3 style="color: #92400e; margin: 0;">🧪 MODO PRUEBA - Entorno de Testing</h3>
-            <p style="color: #92400e; margin: 5px 0 0 0;">Esta es una versión de prueba del análisis BCG. Los cambios no se guardarán.</p>
-        </div>
+        
         
         <h1 style="text-align: center; color: #1e293b; margin-bottom: 40px; font-size: 32px;">� ANÁLISIS BCG - MATRIZ INTERACTIVA</h1>
         
