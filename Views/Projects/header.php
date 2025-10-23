@@ -1,5 +1,6 @@
 <?php
-// Se asume que $baseUrl ya está definido en la página que incluye este header
+require_once __DIR__ . '/../../config/url_config.php';
+$baseUrl = getBaseUrl();
 ?>
 <header class="header">
     <div class="header-container">

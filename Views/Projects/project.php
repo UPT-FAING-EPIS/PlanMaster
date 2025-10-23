@@ -10,7 +10,7 @@ AuthController::requireLogin();
 // Obtener ID del proyecto
 $project_id = $_GET['id'] ?? null;
 if (!$project_id) {
-    header("Location: ../Users/projects.php");
+    header("Location: " . getBaseUrl() . "/Views/Users/projects.php");
     exit();
 }
 
@@ -21,7 +21,7 @@ $project = $projectController->getProject($project_id);
 
 if (!$project) {
     $_SESSION['error'] = "Proyecto no encontrado";
-    header("Location: ../Users/projects.php");
+    header("Location: " . getBaseUrl() . "/Views/Users/projects.php");
     exit();
 }
 
