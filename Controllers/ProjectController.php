@@ -6,6 +6,7 @@ require_once __DIR__ . '/../Models/Vision.php';
 require_once __DIR__ . '/../Models/Values.php';
 require_once __DIR__ . '/../Models/Objectives.php';
 require_once __DIR__ . '/../Models/FodaAnalysis.php';
+require_once __DIR__ . '/../Models/analisis-interno-externo.php';
 require_once __DIR__ . '/../Models/ValueChain.php';
 require_once __DIR__ . '/../Models/BCGAnalysis.php';
 require_once __DIR__ . '/../Models/PestAnalysis.php';
@@ -18,6 +19,7 @@ class ProjectController {
     private $values;
     private $objectives;
     private $fodaAnalysis;
+    private $analisisInternoExterno;
     private $valueChain;
     private $bcgAnalysis;
     private $pestAnalysis;
@@ -29,6 +31,7 @@ class ProjectController {
         $this->values = new Values();
         $this->objectives = new Objectives();
         $this->fodaAnalysis = new FodaAnalysis();
+        $this->analisisInternoExterno = new AnalisisInternoExterno();
         $this->valueChain = new ValueChain();
         $this->bcgAnalysis = new BCGAnalysis();
         $this->pestAnalysis = new PestAnalysis();
@@ -270,7 +273,8 @@ class ProjectController {
             'vision' => $this->vision->getByProjectId($project_id) ? true : false,
             'values' => count($this->values->getByProjectId($project_id)) > 0 ? true : false,
             'objectives' => count($this->objectives->getStrategicObjectivesByProjectId($project_id)) > 0 ? true : false,
-            'foda_analysis' => $this->isFodaComplete($project_id) ? true : false,
+            'analisis_interno_externo' => true, // Nueva sección siempre disponible (es informativa)
+            // 'foda_analysis' => $this->isFodaComplete($project_id) ? true : false, // FODA original comentado
             'value_chain' => $this->isValueChainComplete($project_id) ? true : false,
             'bcg_analysis' => $this->isBCGComplete($project_id) ? true : false
         ];

@@ -167,8 +167,8 @@ function startSection(sectionNum) {
         '2': 'vision',
         '3': 'values',
         '4': 'objectives',
-        '5': 'analisis-interno-externo', // Cambiado de 'foda-analysis' a nueva interfaz
-        // '5': 'foda-analysis', // Ruta original comentada temporalmente
+        '5': 'analisis-interno-externo', // Nueva interfaz de análisis interno y externo
+        // '5': 'foda-analysis', // Ruta original FODA comentada temporalmente
         '6': 'value-chain',
         '7': 'bcg-analysis',
         '8': 'porter-matrix',
