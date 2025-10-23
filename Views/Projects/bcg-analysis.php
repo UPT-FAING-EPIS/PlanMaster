@@ -387,9 +387,13 @@ $bcg_matrix_json = json_encode($bcg_matrix);
     <!-- JavaScript -->
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/dashboard.js"></script>
     <script>
+        // ===== VARIABLES GLOBALES =====
         let productCount = 0;
         let periodCount = 0;
         let products = [];
+        let marketEvolution = [];
+        let competitorData = {};
+        let currentStep = 1;
         
         // Datos existentes del servidor
         const existingBCGData = <?php echo $bcg_data_json; ?>;
@@ -397,10 +401,12 @@ $bcg_matrix_json = json_encode($bcg_matrix);
         
         console.log('Datos BCG existentes:', existingBCGData);
 
-        // Inicializar la aplicación
+        // Inicialización antigua comentada - se usa la nueva más abajo
+        /*
         document.addEventListener('DOMContentLoaded', function() {
             initializeBCG();
         });
+        */
 
         function initializeBCG() {
             // Si hay datos existentes, cargarlos
@@ -491,33 +497,658 @@ $bcg_matrix_json = json_encode($bcg_matrix);
             }
         }
 
+        // ===== FUNCIONES PRINCIPALES CORREGIDAS =====
+        
         function addProduct() {
-            const productIndex = products.length; // Usar el tamaño actual del array
+            console.log('Agregando nuevo producto...');
+            
+            const productIndex = products.length;
             const productName = `Producto ${productIndex + 1}`;
             
+            // Agregar al array de productos
             products.push({
+                id: productIndex,
                 name: productName,
                 sales: 0,
-                percentage: 0
+                percentage: 0,
+                tcm: 0,
+                prm: 0
             });
 
-            const container = document.getElementById('products-container');
-            const productRow = document.createElement('div');
-            productRow.className = 'product-row';
-            productRow.setAttribute('data-product-index', productIndex);
+            // Actualizar la tabla visual
+            renderProductsTable();
             
-            productRow.innerHTML = `
-                <div>
-                    <input type="text" 
-                           name="products[${productIndex}][name]"
-                           class="product-input" 
-                           placeholder="Nombre del producto" 
-                           value="${productName}" 
-                           onchange="updateProductName(${productIndex}, this.value)">
+            console.log(`Producto agregado: ${productName} (index: ${productIndex})`);
+        }
+
+        function renderProductsTable() {
+            const container = document.getElementById('products-container');
+            if (!container) {
+                console.error('Container products-container no encontrado');
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            products.forEach((product, index) => {
+                const productRow = document.createElement('div');
+                productRow.className = 'product-row';
+                productRow.setAttribute('data-product-index', index);
+                
+                productRow.innerHTML = `
+                    <div class="col-product">
+                        <input type="text" 
+                               name="products[${index}][name]"
+                               class="enhanced-input" 
+                               placeholder="Nombre del producto" 
+                               value="${product.name}" 
+                               onchange="updateProductName(${index}, this.value)">
+                    </div>
+                    <div class="col-sales">
+                        <input type="number" 
+                               name="products[${index}][sales_forecast]"
+                               class="enhanced-input" 
+                               placeholder="0" 
+                               value="${product.sales}" 
+                               min="0" 
+                               step="0.01"
+                               onchange="updateProductSales(${index}, this.value)">
+                    </div>
+                    <div class="col-percentage">
+                        <span class="percentage-display calculated-field">${product.percentage.toFixed(1)}%</span>
+                    </div>
+                    <div class="col-actions">
+                        <button type="button" 
+                                class="enhanced-btn danger" 
+                                onclick="removeProduct(${index})"
+                                title="Eliminar producto">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(productRow);
+            });
+            
+            updateTotalSales();
+        }
+
+        function updateProductName(index, name) {
+            console.log(`Actualizando nombre producto ${index}: ${name}`);
+            if (products[index]) {
+                products[index].name = name;
+                markAsChanged();
+            }
+        }
+
+        function updateProductSales(index, sales) {
+            console.log(`Actualizando ventas producto ${index}: ${sales}`);
+            if (products[index]) {
+                products[index].sales = parseFloat(sales) || 0;
+                updateSalesPercentages();
+                markAsChanged();
+            }
+        }
+
+        function updateSalesPercentages() {
+            const totalSales = products.reduce((sum, p) => sum + p.sales, 0);
+            
+            products.forEach((product, index) => {
+                product.percentage = totalSales > 0 ? ((product.sales / totalSales) * 100) : 0;
+                
+                // Actualizar visualización
+                const row = document.querySelector(`[data-product-index="${index}"]`);
+                if (row) {
+                    const percentageDisplay = row.querySelector('.percentage-display');
+                    if (percentageDisplay) {
+                        percentageDisplay.textContent = product.percentage.toFixed(1) + '%';
+                    }
+                }
+            });
+            
+            updateTotalSales();
+        }
+
+        function updateTotalSales() {
+            const totalSales = products.reduce((sum, p) => sum + p.sales, 0);
+            const totalElement = document.getElementById('total-sales');
+            if (totalElement) {
+                totalElement.textContent = totalSales.toLocaleString();
+            }
+        }
+
+        function removeProduct(index) {
+            if (products.length <= 1) {
+                showAlert('Debe mantener al menos un producto', 'warning');
+                return;
+            }
+            
+            console.log(`Eliminando producto ${index}`);
+            products.splice(index, 1);
+            
+            // Reindexar productos
+            products.forEach((product, newIndex) => {
+                product.id = newIndex;
+            });
+            
+            renderProductsTable();
+            updateSalesPercentages();
+            markAsChanged();
+        }
+
+        // Función para agregar años históricos
+        function addHistoryYear() {
+            console.log('Agregando nuevo año histórico...');
+            
+            if (products.length === 0) {
+                showAlert('Primero debe agregar productos', 'warning');
+                return;
+            }
+            
+            const currentYear = new Date().getFullYear();
+            const yearIndex = marketEvolution.length;
+            const startYear = currentYear - yearIndex - 1;
+            const endYear = startYear + 1;
+            
+            // Agregar período al array
+            const newPeriod = {
+                period: `${startYear}-${endYear}`,
+                rates: new Array(products.length).fill(0)
+            };
+            
+            marketEvolution.push(newPeriod);
+            
+            // Actualizar tabla visual
+            renderMarketHistoryTable();
+            
+            console.log(`Año agregado: ${newPeriod.period}`);
+        }
+
+        function renderMarketHistoryTable() {
+            const container = document.getElementById('market-history-container');
+            if (!container) {
+                console.error('Container market-history-container no encontrado');
+                return;
+            }
+            
+            // Crear cabecera
+            let headerHTML = `
+                <div class="history-header">
+                    <div class="col-year">AÑOS</div>
+                    <div class="products-header-grid">
+                        ${products.map(p => `<div class="col-product-header">${p.name}</div>`).join('')}
+                    </div>
+                    <div class="col-actions">ACCIONES</div>
                 </div>
-                <div>
-                    <input type="number" 
-                           name="products[${productIndex}][sales_forecast]"
+            `;
+            
+            // Crear filas de datos
+            let rowsHTML = marketEvolution.map((period, periodIndex) => `
+                <div class="history-row" data-period-index="${periodIndex}">
+                    <div class="col-year">
+                        <input type="text" 
+                               class="enhanced-input" 
+                               value="${period.period}" 
+                               placeholder="2023-2024"
+                               onchange="updatePeriodName(${periodIndex}, this.value)">
+                    </div>
+                    <div class="products-data-grid">
+                        ${products.map((product, productIndex) => `
+                            <div class="col-product-data">
+                                <input type="number" 
+                                       class="enhanced-input" 
+                                       value="${period.rates[productIndex] || 0}" 
+                                       placeholder="0" 
+                                       step="0.1"
+                                       onchange="updateMarketRate(${periodIndex}, ${productIndex}, this.value)">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="col-actions">
+                        <button type="button" 
+                                class="enhanced-btn danger" 
+                                onclick="removePeriod(${periodIndex})"
+                                title="Eliminar período">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = headerHTML + rowsHTML;
+            
+            // Actualizar cálculos TCM
+            updateTCMCalculations();
+        }
+
+        function updatePeriodName(periodIndex, newPeriod) {
+            if (marketEvolution[periodIndex]) {
+                marketEvolution[periodIndex].period = newPeriod;
+                markAsChanged();
+            }
+        }
+
+        function updateMarketRate(periodIndex, productIndex, rate) {
+            console.log(`Actualizando rate: período ${periodIndex}, producto ${productIndex}, valor ${rate}`);
+            
+            if (marketEvolution[periodIndex] && marketEvolution[periodIndex].rates[productIndex] !== undefined) {
+                marketEvolution[periodIndex].rates[productIndex] = parseFloat(rate) || 0;
+                updateTCMCalculations();
+                markAsChanged();
+            }
+        }
+
+        function removePeriod(periodIndex) {
+            if (marketEvolution.length <= 1) {
+                showAlert('Debe mantener al menos un período', 'warning');
+                return;
+            }
+            
+            marketEvolution.splice(periodIndex, 1);
+            renderMarketHistoryTable();
+            markAsChanged();
+        }
+
+        function updateTCMCalculations() {
+            // Calcular TCM promedio para cada producto
+            products.forEach((product, productIndex) => {
+                const rates = marketEvolution.map(period => period.rates[productIndex] || 0);
+                const avgTCM = rates.length > 0 ? (rates.reduce((sum, rate) => sum + rate, 0) / rates.length) : 0;
+                product.tcm = avgTCM;
+            });
+            
+            // Mostrar tabla de TCM calculado
+            const tcmContainer = document.getElementById('tcm-results');
+            if (tcmContainer) {
+                tcmContainer.innerHTML = `
+                    <h4>TCM PROMEDIO CALCULADO</h4>
+                    <div class="tcm-summary-table">
+                        <div class="table-header">
+                            <div class="col-product">PRODUCTO</div>
+                            <div class="col-tcm">TCM PROMEDIO (%)</div>
+                        </div>
+                        ${products.map(p => `
+                            <div class="table-row">
+                                <div class="col-product">${p.name}</div>
+                                <div class="col-tcm calculated-field">${p.tcm.toFixed(2)}%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // Función para generar tablas de competidores
+        function generateCompetitorTables() {
+            console.log('Generando tablas de competidores...');
+            
+            if (products.length === 0) {
+                showAlert('Primero debe agregar productos', 'warning');
+                return;
+            }
+            
+            const container = document.getElementById('competitors-container');
+            if (!container) {
+                console.error('Container competitors-container no encontrado');
+                return;
+            }
+            
+            container.innerHTML = '<h4>Análisis de Competidores por Producto</h4>';
+            
+            products.forEach((product, productIndex) => {
+                // Inicializar competidores si no existen
+                if (!competitorData[product.name]) {
+                    competitorData[product.name] = [
+                        { name: 'Competidor 1', sales: 0, isMax: false },
+                        { name: 'Competidor 2', sales: 0, isMax: false }
+                    ];
+                }
+                
+                const productSection = document.createElement('div');
+                productSection.className = 'competitor-section';
+                productSection.innerHTML = `
+                    <h5>Competidores de: ${product.name}</h5>
+                    <div class="competitor-table">
+                        <div class="table-header">
+                            <div class="col-competitor">COMPETIDOR</div>
+                            <div class="col-sales">VENTAS</div>
+                            <div class="col-max">MAYOR</div>
+                            <div class="col-actions">ACCIONES</div>
+                        </div>
+                        <div id="competitors-${productIndex}" class="competitors-rows">
+                            ${renderCompetitorRows(product.name, productIndex)}
+                        </div>
+                        <button type="button" 
+                                class="enhanced-btn secondary" 
+                                onclick="addCompetitor('${product.name}', ${productIndex})">
+                            ➕ Agregar Competidor
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(productSection);
+            });
+            
+            console.log('Tablas de competidores generadas');
+        }
+
+        function renderCompetitorRows(productName, productIndex) {
+            const competitors = competitorData[productName] || [];
+            
+            return competitors.map((competitor, compIndex) => `
+                <div class="competitor-row" data-comp-index="${compIndex}">
+                    <div class="col-competitor">
+                        <input type="text" 
+                               class="enhanced-input" 
+                               value="${competitor.name}" 
+                               placeholder="Nombre del competidor"
+                               onchange="updateCompetitorName('${productName}', ${compIndex}, this.value)">
+                    </div>
+                    <div class="col-sales">
+                        <input type="number" 
+                               class="enhanced-input" 
+                               value="${competitor.sales}" 
+                               placeholder="0" 
+                               min="0" 
+                               step="0.01"
+                               onchange="updateCompetitorSales('${productName}', ${compIndex}, this.value)">
+                    </div>
+                    <div class="col-max">
+                        <input type="radio" 
+                               name="max_competitor_${productName}" 
+                               ${competitor.isMax ? 'checked' : ''}
+                               onchange="setMaxCompetitor('${productName}', ${compIndex})">
+                    </div>
+                    <div class="col-actions">
+                        <button type="button" 
+                                class="enhanced-btn danger" 
+                                onclick="removeCompetitor('${productName}', ${compIndex})"
+                                title="Eliminar competidor">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addCompetitor(productName, productIndex) {
+            if (!competitorData[productName]) {
+                competitorData[productName] = [];
+            }
+            
+            const compIndex = competitorData[productName].length;
+            competitorData[productName].push({
+                name: `Competidor ${compIndex + 1}`,
+                sales: 0,
+                isMax: false
+            });
+            
+            // Actualizar solo esa sección
+            const competitorsContainer = document.getElementById(`competitors-${productIndex}`);
+            if (competitorsContainer) {
+                competitorsContainer.innerHTML = renderCompetitorRows(productName, productIndex);
+            }
+            
+            markAsChanged();
+        }
+
+        // Función para calcular la matriz BCG completa
+        function calculateBCGMatrix() {
+            console.log('Calculando matriz BCG...');
+            
+            if (products.length === 0) {
+                showAlert('Primero debe agregar productos', 'warning');
+                return;
+            }
+            
+            // Calcular PRM para cada producto
+            products.forEach(product => {
+                const competitors = competitorData[product.name] || [];
+                const maxCompetitor = competitors.find(c => c.isMax && c.sales > 0);
+                
+                if (maxCompetitor) {
+                    product.prm = (product.sales / maxCompetitor.sales) * 100;
+                } else {
+                    product.prm = 0;
+                }
+                
+                // Determinar posición BCG
+                if (product.tcm > 10 && product.prm > 100) {
+                    product.bcgPosition = 'Estrella';
+                } else if (product.tcm <= 10 && product.prm > 100) {
+                    product.bcgPosition = 'Vaca Lechera';
+                } else if (product.tcm > 10 && product.prm <= 100) {
+                    product.bcgPosition = 'Interrogante';
+                } else {
+                    product.bcgPosition = 'Perro';
+                }
+            });
+            
+            // Mostrar tabla PRM
+            displayPRMResults();
+            
+            // Mostrar tabla de posicionamiento final
+            displayBCGPositioning();
+            
+            // Dibujar matriz visual
+            drawBCGMatrix();
+            
+            console.log('Matriz BCG calculada y mostrada');
+        }
+
+        function displayPRMResults() {
+            const prmContainer = document.getElementById('prm-results');
+            if (prmContainer) {
+                prmContainer.innerHTML = `
+                    <h4>PRM CALCULADO (PARTICIPACIÓN RELATIVA EN EL MERCADO)</h4>
+                    <div class="prm-summary-table">
+                        <div class="table-header">
+                            <div class="col-product">PRODUCTO</div>
+                            <div class="col-our-sales">NUESTRAS VENTAS</div>
+                            <div class="col-competitor">MAYOR COMPETIDOR</div>
+                            <div class="col-prm">PRM (%)</div>
+                        </div>
+                        ${products.map(product => {
+                            const competitors = competitorData[product.name] || [];
+                            const maxComp = competitors.find(c => c.isMax);
+                            return `
+                                <div class="table-row">
+                                    <div class="col-product">${product.name}</div>
+                                    <div class="col-our-sales">$${product.sales.toLocaleString()}</div>
+                                    <div class="col-competitor">${maxComp ? maxComp.name + ': $' + maxComp.sales.toLocaleString() : 'No definido'}</div>
+                                    <div class="col-prm calculated-field">${product.prm.toFixed(2)}%</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function displayBCGPositioning() {
+            const positioningContainer = document.getElementById('bcg-positioning-table');
+            if (positioningContainer) {
+                positioningContainer.innerHTML = `
+                    <div class="positioning-summary-table">
+                        <div class="table-header">
+                            <div class="col-product">PRODUCTO</div>
+                            <div class="col-tcm">TCM (%)</div>
+                            <div class="col-prm">PRM (%)</div>
+                            <div class="col-position">POSICIÓN BCG</div>
+                        </div>
+                        ${products.map(product => `
+                            <div class="table-row">
+                                <div class="col-product">${product.name}</div>
+                                <div class="col-tcm">${product.tcm.toFixed(2)}%</div>
+                                <div class="col-prm">${product.prm.toFixed(2)}%</div>
+                                <div class="col-position ${product.bcgPosition.toLowerCase().replace(' ', '-')}">${product.bcgPosition}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // ===== FUNCIONES AUXILIARES =====
+        
+        function updateCompetitorName(productName, compIndex, name) {
+            if (competitorData[productName] && competitorData[productName][compIndex]) {
+                competitorData[productName][compIndex].name = name;
+                markAsChanged();
+            }
+        }
+
+        function updateCompetitorSales(productName, compIndex, sales) {
+            if (competitorData[productName] && competitorData[productName][compIndex]) {
+                competitorData[productName][compIndex].sales = parseFloat(sales) || 0;
+                markAsChanged();
+            }
+        }
+
+        function setMaxCompetitor(productName, compIndex) {
+            if (competitorData[productName]) {
+                // Desmarcar todos los competidores
+                competitorData[productName].forEach((comp, i) => {
+                    comp.isMax = (i === compIndex);
+                });
+                markAsChanged();
+            }
+        }
+
+        function removeCompetitor(productName, compIndex) {
+            if (competitorData[productName] && competitorData[productName].length > 1) {
+                competitorData[productName].splice(compIndex, 1);
+                
+                // Actualizar la tabla visual
+                const productIndex = products.findIndex(p => p.name === productName);
+                if (productIndex >= 0) {
+                    const competitorsContainer = document.getElementById(`competitors-${productIndex}`);
+                    if (competitorsContainer) {
+                        competitorsContainer.innerHTML = renderCompetitorRows(productName, productIndex);
+                    }
+                }
+                markAsChanged();
+            } else {
+                showAlert('Debe mantener al menos un competidor', 'warning');
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `enhanced-alert ${type}`;
+            alertDiv.innerHTML = `
+                <strong>${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️'}</strong>
+                ${message}
+                <button type="button" onclick="this.parentElement.remove()" style="float: right; background: none; border: none; font-size: 18px; cursor: pointer;">&times;</button>
+            `;
+            
+            // Agregar al contenedor principal
+            const container = document.querySelector('.section-content') || document.body;
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function drawBCGMatrix() {
+            const chartContainer = document.getElementById('bcg-chart');
+            if (!chartContainer) {
+                console.error('Container bcg-chart no encontrado');
+                return;
+            }
+            
+            const width = 500;
+            const height = 400;
+            const margin = 50;
+            
+            // Crear SVG
+            const svg = `
+                <svg width="${width}" height="${height}" class="bcg-matrix-svg">
+                    <!-- Fondo y cuadrantes -->
+                    <defs>
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    
+                    <!-- Fondo con cuadrículas -->
+                    <rect width="100%" height="100%" fill="url(#grid)"/>
+                    
+                    <!-- Cuadrantes de colores -->
+                    <rect x="${margin}" y="${margin}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#4CAF50" opacity="0.1" stroke="#4CAF50" stroke-width="2"/>
+                    <rect x="${margin + (width-2*margin)/2}" y="${margin}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#FF9800" opacity="0.1" stroke="#FF9800" stroke-width="2"/>
+                    <rect x="${margin}" y="${margin + (height-2*margin)/2}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#2196F3" opacity="0.1" stroke="#2196F3" stroke-width="2"/>
+                    <rect x="${margin + (width-2*margin)/2}" y="${margin + (height-2*margin)/2}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#9E9E9E" opacity="0.1" stroke="#9E9E9E" stroke-width="2"/>
+                    
+                    <!-- Etiquetas de cuadrantes -->
+                    <text x="${margin + (width-2*margin)/4}" y="${margin + 20}" text-anchor="middle" class="quadrant-label" fill="#4CAF50" font-weight="bold">ESTRELLA</text>
+                    <text x="${margin + 3*(width-2*margin)/4}" y="${margin + 20}" text-anchor="middle" class="quadrant-label" fill="#FF9800" font-weight="bold">INTERROGANTE</text>
+                    <text x="${margin + (width-2*margin)/4}" y="${height - margin - 10}" text-anchor="middle" class="quadrant-label" fill="#2196F3" font-weight="bold">VACA LECHERA</text>
+                    <text x="${margin + 3*(width-2*margin)/4}" y="${height - margin - 10}" text-anchor="middle" class="quadrant-label" fill="#9E9E9E" font-weight="bold">PERRO</text>
+                    
+                    <!-- Ejes -->
+                    <line x1="${margin}" y1="${margin}" x2="${margin}" y2="${height-margin}" stroke="#333" stroke-width="2"/>
+                    <line x1="${margin}" y1="${height-margin}" x2="${width-margin}" y2="${height-margin}" stroke="#333" stroke-width="2"/>
+                    
+                    <!-- Líneas divisorias -->
+                    <line x1="${margin + (width-2*margin)/2}" y1="${margin}" x2="${margin + (width-2*margin)/2}" y2="${height-margin}" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+                    <line x1="${margin}" y1="${margin + (height-2*margin)/2}" x2="${width-margin}" y2="${margin + (height-2*margin)/2}" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+                    
+                    <!-- Etiquetas de ejes -->
+                    <text x="${width/2}" y="${height - 10}" text-anchor="middle" class="axis-label">PRM (Participación Relativa del Mercado)</text>
+                    <text x="20" y="${height/2}" text-anchor="middle" class="axis-label" transform="rotate(-90, 20, ${height/2})">TCM (Tasa de Crecimiento del Mercado)</text>
+                    
+                    <!-- Productos como círculos -->
+                    ${products.map(product => {
+                        // Normalizar posiciones (PRM en X, TCM en Y)
+                        const maxPRM = Math.max(200, ...products.map(p => p.prm)); // Escala mínima de 200%
+                        const maxTCM = Math.max(20, ...products.map(p => p.tcm)); // Escala mínima de 20%
+                        
+                        const x = margin + ((product.prm / maxPRM) * (width - 2*margin));
+                        const y = height - margin - ((product.tcm / maxTCM) * (height - 2*margin));
+                        
+                        // Tamaño proporcional al % de ventas
+                        const radius = Math.max(8, Math.min(25, product.percentage * 1.5));
+                        
+                        // Color según posición BCG
+                        const color = product.bcgPosition === 'Estrella' ? '#4CAF50' :
+                                     product.bcgPosition === 'Interrogante' ? '#FF9800' :
+                                     product.bcgPosition === 'Vaca Lechera' ? '#2196F3' : '#9E9E9E';
+                        
+                        return `
+                            <circle cx="${x}" cy="${y}" r="${radius}" fill="${color}" opacity="0.8" stroke="#333" stroke-width="2">
+                                <title>${product.name}\nTCM: ${product.tcm.toFixed(1)}%\nPRM: ${product.prm.toFixed(1)}%\nVentas: ${product.percentage.toFixed(1)}%\nPosición: ${product.bcgPosition}</title>
+                            </circle>
+                            <text x="${x}" y="${y+4}" text-anchor="middle" class="product-label" fill="white" font-size="10" font-weight="bold">
+                                ${product.name.substring(0, 8)}
+                            </text>
+                        `;
+                    }).join('')}
+                    
+                    <!-- Escalas de referencia -->
+                    <text x="${margin + (width-2*margin)/2}" y="${height - margin + 15}" text-anchor="middle" class="scale-label">100% PRM</text>
+                    <text x="${margin - 10}" y="${margin + (height-2*margin)/2}" text-anchor="end" class="scale-label">10% TCM</text>
+                </svg>
+            `;
+            
+            chartContainer.innerHTML = svg;
+        }
+
+        // Variables globales para cambios
+        let hasChanges = false;
+        
+        function markAsChanged() {
+            hasChanges = true;
+        }
                            class="product-input" 
                            placeholder="0.00" 
                            step="0.01" 
@@ -1605,27 +2236,7 @@ $bcg_matrix_json = json_encode($bcg_matrix);
             }
         }
 
-        // Agregar producto
-        function addProduct() {
-            const newId = products.length;
-            products.push({
-                id: newId,
-                name: '',
-                sales: 0
-            });
-            renderProducts();
-        }
-
-        // Remover producto
-        function removeProduct(index) {
-            if (products.length > 1) {
-                products.splice(index, 1);
-                renderProducts();
-                updateAllCalculations();
-            } else {
-                alert('Debe mantener al menos un producto');
-            }
-        }
+        // Las funciones addProduct y removeProduct ya están definidas arriba
 
         // Actualizar headers de productos en historia
         function updateProductsHeaderHistory() {
@@ -2280,17 +2891,76 @@ $bcg_matrix_json = json_encode($bcg_matrix);
             currentStep = stepNumber;
         }
 
-        // Inicialización
+        // ===== FUNCIÓN DE DEPURACIÓN =====
+        function debugBCG() {
+            console.log('=== DEBUG BCG ===');
+            console.log('Products:', products);
+            console.log('Market Evolution:', marketEvolution);
+            console.log('Competitor Data:', competitorData);
+            console.log('Current Step:', currentStep);
+            
+            // Verificar contenedores
+            console.log('Products Container:', document.getElementById('products-container'));
+            console.log('Market History Container:', document.getElementById('market-history-container'));
+            console.log('Competitors Container:', document.getElementById('competitors-container'));
+            console.log('BCG Chart:', document.getElementById('bcg-chart'));
+        }
+
+        // ===== INICIALIZACIÓN MEJORADA =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Eventos click en mini-steps
-            document.querySelectorAll('.bcg-mini-steps .mini-step').forEach((step, index) => {
-                step.addEventListener('click', () => setActiveStep(index + 1));
+            console.log('🚀 Inicializando BCG Analysis...');
+            
+            // Verificar que todos los contenedores existan
+            const requiredContainers = [
+                'products-container',
+                'market-history-container', 
+                'competitors-container',
+                'tcm-results',
+                'prm-results',
+                'bcg-chart'
+            ];
+            
+            let allContainersPresent = true;
+            requiredContainers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    console.error(`❌ Container faltante: ${containerId}`);
+                    allContainersPresent = false;
+                } else {
+                    console.log(`✅ Container encontrado: ${containerId}`);
+                }
             });
             
-            setActiveStep(1); // Activar step 1 por defecto
+            if (!allContainersPresent) {
+                console.error('❌ Faltan contenedores necesarios');
+                return;
+            }
+            
+            // Inicializar variables globales
+            window.products = products;
+            window.marketEvolution = marketEvolution; 
+            window.competitorData = competitorData;
+            
+            // Eventos click en mini-steps
+            document.querySelectorAll('.bcg-mini-steps .mini-step').forEach((step, index) => {
+                step.addEventListener('click', () => {
+                    console.log(`🖱️ Click en step ${index + 1}`);
+                    setActiveStep(index + 1);
+                });
+            });
+            
+            // Activar step 1 por defecto  
+            setActiveStep(1);
             
             // Cargar datos de ejemplo automáticamente
+            console.log('📊 Cargando datos de ejemplo...');
             loadExampleData();
+            
+            // Función de depuración disponible globalmente
+            window.debugBCG = debugBCG;
+            
+            console.log('✅ BCG Analysis inicializado correctamente');
+            console.log('💡 Usa debugBCG() en la consola para depurar');
         });
 
     </script>

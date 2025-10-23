@@ -1630,3 +1630,315 @@
         margin: 30px 0;
     }
 }
+
+/* ===== ESTILOS ESPECÍFICOS PARA TABLAS BCG FUNCIONALES ===== */
+
+/* Tabla de productos mejorada */
+.sales-forecast-table {
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sales-forecast-table .table-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.product-row:hover {
+    background: #f8f9fa;
+    transform: translateX(3px);
+}
+
+.product-row:last-child {
+    border-bottom: none;
+}
+
+.sales-total {
+    padding: 15px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Tabla de evolución histórica */
+.market-evolution-table {
+    margin: 20px 0;
+}
+
+.history-header {
+    display: grid;
+    grid-template-columns: 150px 1fr 100px;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 8px 8px 0 0;
+}
+
+.products-header-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 5px;
+}
+
+.history-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 100px;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+.products-data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 5px;
+}
+
+/* Tabla TCM calculado */
+.tcm-summary-table {
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tcm-summary-table .table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 15px;
+    background: linear-gradient(135deg, #fd7e14, #e55a00);
+    color: white;
+    font-weight: 600;
+}
+
+.tcm-summary-table .table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+/* Sección de competidores */
+.competitor-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.competitor-section h5 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #4CAF50;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.competitor-table .table-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 80px 100px;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, #6f42c1, #5a32a3);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 8px 8px 0 0;
+}
+
+.competitor-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 80px 100px;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+/* Tabla PRM calculado */
+.prm-summary-table {
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.prm-summary-table .table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, #20c997, #17a2b8);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.prm-summary-table .table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr 1fr;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+/* Tabla de posicionamiento BCG */
+.positioning-summary-table {
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.positioning-summary-table .table-header {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, #343a40, #495057);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.positioning-summary-table .table-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+}
+
+/* Estilos para posiciones BCG */
+.estrella {
+    background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    color: white !important;
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.vaca-lechera {
+    background: linear-gradient(135deg, #2196F3, #1976D2) !important;
+    color: white !important;
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.interrogante {
+    background: linear-gradient(135deg, #FF9800, #F57C00) !important;
+    color: white !important;
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.perro {
+    background: linear-gradient(135deg, #9E9E9E, #757575) !important;
+    color: white !important;
+    padding: 8px 12px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Matriz BCG visual */
+.bcg-matrix-svg {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.quadrant-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.axis-label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: #495057;
+}
+
+.scale-label {
+    font-size: 10px;
+    fill: #6c757d;
+}
+
+.product-label {
+    font-size: 10px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Responsive para tablas */
+@media (max-width: 768px) {
+    .sales-forecast-table .table-header,
+    .product-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .history-header,
+    .history-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .competitor-table .table-header,
+    .competitor-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .prm-summary-table .table-header,
+    .prm-summary-table .table-row,
+    .positioning-summary-table .table-header,
+    .positioning-summary-table .table-row {
+        grid-template-columns: 1fr;
+    }
+}
