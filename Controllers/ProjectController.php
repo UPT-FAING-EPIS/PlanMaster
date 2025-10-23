@@ -333,17 +333,29 @@ class ProjectController {
                 
                 $_SESSION['success'] = "Análisis FODA guardado exitosamente";
                 
-                // Redirigir según la acción
+                // Redirigir según la acción y el origen
                 if ($save_and_exit) {
                     header("Location: ../Views/Users/projects.php");
                 } else {
-                    header("Location: ../Views/Projects/foda-analysis.php?project_id=" . $project_id);
+                    // Verificar desde dónde se envió el formulario
+                    $source = $_POST['source'] ?? 'foda-analysis';
+                    if ($source === 'value-chain') {
+                        header("Location: ../Views/Projects/value-chain.php?id=" . $project_id . "&success=1");
+                    } else {
+                        header("Location: ../Views/Projects/foda-analysis.php?id=" . $project_id);
+                    }
                 }
                 exit();
                 
             } catch (Exception $e) {
                 $_SESSION['error'] = $e->getMessage();
-                header("Location: ../Views/Projects/foda-analysis.php?project_id=" . $project_id);
+                // Redirigir al origen en caso de error
+                $source = $_POST['source'] ?? 'foda-analysis';
+                if ($source === 'value-chain') {
+                    header("Location: ../Views/Projects/value-chain.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
+                } else {
+                    header("Location: ../Views/Projects/foda-analysis.php?id=" . $project_id);
+                }
                 exit();
             }
         }

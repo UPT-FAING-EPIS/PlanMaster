@@ -38,6 +38,11 @@ $improvement = $projectController->getValueChainImprovement($project_id);
 require_once __DIR__ . '/../../Models/ValueChain.php';
 $valueChainModel = new ValueChain();
 $questions = $valueChainModel->getStandardQuestions();
+
+// Obtener datos FODA existentes para Fortalezas y Debilidades
+$fodaData = $projectController->getFodaAnalysis($project_id);
+$fortalezas = isset($fodaData['fortaleza']) ? $fodaData['fortaleza'] : [];
+$debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -185,6 +190,72 @@ $questions = $valueChainModel->getStandardQuestions();
                     </a>
                 </div>
             </form>
+
+            <!-- Sección FODA: Fortalezas y Debilidades -->
+            <div class="foda-section" style="margin-top: 40px;">
+                <div class="section-header">
+                    <h2>🔍 Análisis FODA - Factores Internos</h2>
+                    <p>Complete las fortalezas y debilidades de su organización para complementar el análisis de la cadena de valor.</p>
+                </div>
+
+                <form action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php" method="POST" id="fodaForm">
+                    <input type="hidden" name="action" value="saveFodaAnalysis">
+                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                    <input type="hidden" name="source" value="value-chain">
+
+                    <div class="foda-container">
+                        <!-- Fortalezas -->
+                        <div class="foda-column">
+                            <h3 class="foda-title fortaleza">💪 Fortalezas</h3>
+                            <p class="foda-description">Características internas positivas que dan ventaja competitiva</p>
+                            <div class="foda-items" id="fortalezas">
+                                <?php if (!empty($fortalezas)): ?>
+                                    <?php foreach ($fortalezas as $index => $fortaleza): ?>
+                                        <div class="foda-item">
+                                            <textarea name="fortalezas[]" placeholder="Escriba una fortaleza..." maxlength="500"><?php echo htmlspecialchars($fortaleza['item_text']); ?></textarea>
+                                            <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="foda-item">
+                                        <textarea name="fortalezas[]" placeholder="Escriba una fortaleza..." maxlength="500"></textarea>
+                                        <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <button type="button" class="btn-add" onclick="addFodaItem('fortalezas', 'fortalezas')">➕ Agregar Fortaleza</button>
+                        </div>
+
+                        <!-- Debilidades -->
+                        <div class="foda-column">
+                            <h3 class="foda-title debilidad">⚠️ Debilidades</h3>
+                            <p class="foda-description">Características internas que representan desventajas</p>
+                            <div class="foda-items" id="debilidades">
+                                <?php if (!empty($debilidades)): ?>
+                                    <?php foreach ($debilidades as $index => $debilidad): ?>
+                                        <div class="foda-item">
+                                            <textarea name="debilidades[]" placeholder="Escriba una debilidad..." maxlength="500"><?php echo htmlspecialchars($debilidad['item_text']); ?></textarea>
+                                            <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="foda-item">
+                                        <textarea name="debilidades[]" placeholder="Escriba una debilidad..." maxlength="500"></textarea>
+                                        <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <button type="button" class="btn-add" onclick="addFodaItem('debilidades', 'debilidades')">➕ Agregar Debilidad</button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="margin-top: 30px;">
+                        <button type="submit" class="btn btn-save">
+                            💾 Guardar Fortalezas y Debilidades
+                        </button>
+                    </div>
+                </form>
+            </div>
             
             <!-- Navegación a siguiente sección -->
             <?php if ($projectController->isValueChainComplete($project_id)): ?>
@@ -285,6 +356,78 @@ $questions = $valueChainModel->getStandardQuestions();
         // Inicializar contador de progreso
         document.addEventListener('DOMContentLoaded', function() {
             updateProgressCounter();
+        });
+
+        // Funciones FODA
+        function addFodaItem(containerId, type) {
+            const container = document.getElementById(containerId);
+            const newItem = document.createElement('div');
+            newItem.className = 'foda-item';
+            newItem.innerHTML = `
+                <textarea name="${type}[]" placeholder="Escriba una ${type}..." maxlength="500"></textarea>
+                <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+            `;
+            container.appendChild(newItem);
+            
+            // Focus en el nuevo textarea
+            const textarea = newItem.querySelector('textarea');
+            textarea.focus();
+        }
+
+        function removeFodaItem(button) {
+            const item = button.closest('.foda-item');
+            const container = item.parentNode;
+            
+            // No permitir eliminar si es el último elemento
+            if (container.children.length <= 1) {
+                // En lugar de eliminar, solo limpiar el contenido
+                const textarea = item.querySelector('textarea');
+                textarea.value = '';
+                textarea.focus();
+                return;
+            }
+            
+            // Animación de salida
+            item.style.transform = 'translateX(-100%)';
+            item.style.opacity = '0';
+            
+            setTimeout(() => {
+                item.remove();
+            }, 300);
+        }
+
+        // Validación del formulario FODA
+        document.addEventListener('DOMContentLoaded', function() {
+            const fodaForm = document.getElementById('fodaForm');
+            if (fodaForm) {
+                fodaForm.addEventListener('submit', function(e) {
+                    const fortalezas = document.querySelectorAll('textarea[name="fortalezas[]"]');
+                    const debilidades = document.querySelectorAll('textarea[name="debilidades[]"]');
+                    
+                    let hasFortaleza = false;
+                    let hasDebilidad = false;
+                    
+                    // Verificar si hay al menos una fortaleza
+                    fortalezas.forEach(textarea => {
+                        if (textarea.value.trim()) {
+                            hasFortaleza = true;
+                        }
+                    });
+                    
+                    // Verificar si hay al menos una debilidad
+                    debilidades.forEach(textarea => {
+                        if (textarea.value.trim()) {
+                            hasDebilidad = true;
+                        }
+                    });
+                    
+                    if (!hasFortaleza || !hasDebilidad) {
+                        e.preventDefault();
+                        alert('Por favor, complete al menos una fortaleza y una debilidad antes de guardar.');
+                        return false;
+                    }
+                });
+            }
         });
     </script>
 </body>

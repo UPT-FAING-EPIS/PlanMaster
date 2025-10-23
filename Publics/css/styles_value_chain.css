@@ -505,3 +505,236 @@
         max-width: none;
     }
 }
+
+/* =============================================================
+   SECCIÓN FODA - FORTALEZAS Y DEBILIDADES
+============================================================= */
+
+.foda-section {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.foda-section .section-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.foda-section .section-header h2 {
+    color: #1f2937;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.foda-section .section-header p {
+    color: #6b7280;
+    font-size: 16px;
+    margin: 0;
+}
+
+.foda-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.foda-column {
+    background: #f9fafb;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.foda-column:hover {
+    border-color: #e5e7eb;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.foda-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.foda-title.fortaleza {
+    color: #059669;
+}
+
+.foda-title.debilidad {
+    color: #dc2626;
+}
+
+.foda-description {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.foda-items {
+    margin-bottom: 15px;
+}
+
+.foda-item {
+    position: relative;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.foda-item textarea {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    resize: vertical;
+    min-height: 60px;
+    max-height: 150px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.foda-item textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.foda-item textarea::placeholder {
+    color: #9ca3af;
+}
+
+.btn-remove {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    height: 36px;
+    width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.btn-remove:hover {
+    background: #fecaca;
+    transform: scale(1.1);
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-add:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.foda-section .form-actions {
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 25px;
+}
+
+.foda-section .btn-save {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 220px;
+    justify-content: center;
+}
+
+.foda-section .btn-save:hover {
+    background: linear-gradient(135deg, #047857, #065f46);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+}
+
+.foda-section .btn-save:active {
+    transform: translateY(0);
+}
+
+/* Animaciones */
+.foda-item {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .foda-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .foda-section {
+        padding: 20px;
+        margin: 20px 10px;
+    }
+    
+    .foda-column {
+        padding: 20px;
+    }
+    
+    .foda-title {
+        font-size: 18px;
+    }
+    
+    .btn-add,
+    .foda-section .btn-save {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
