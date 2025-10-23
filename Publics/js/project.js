@@ -167,7 +167,8 @@ function startSection(sectionNum) {
         '2': 'vision',
         '3': 'values',
         '4': 'objectives',
-        '5': 'foda-analysis',
+        '5': 'analisis-interno-externo', // Cambiado de 'foda-analysis' a nueva interfaz
+        // '5': 'foda-analysis', // Ruta original comentada temporalmente
         '6': 'value-chain',
         '7': 'bcg-analysis',
         '8': 'porter-matrix',
@@ -188,9 +189,9 @@ function startSection(sectionNum) {
             // Para las secciones 1-4, usar directamente el nombre del archivo
             if (sectionNum <= 4) {
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
-            } else if (sectionName === 'foda-analysis' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'pest-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
-                // Para FODA, Cadena de Valor, BCG, PEST y Estrategias, usar el nombre completo del archivo
-                targetUrl = `${sectionName}.php?id=${projectData.id}`;
+            } else if (sectionName === 'analisis-interno-externo' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'pest-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
+                // Para nueva interfaz de análisis, Cadena de Valor, BCG, PEST y Estrategias
+                targetUrl = `${sectionName}.php?project_id=${projectData.id}`;
             } else {
                 // Para las futuras secciones, usar la carpeta sections/
                 targetUrl = `sections/${sectionName}.php?project_id=${projectData.id}`;

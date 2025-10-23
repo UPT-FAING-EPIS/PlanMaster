@@ -1,0 +1,520 @@
+/* Estilos para la interfaz de Análisis Interno y Externo - PlanMaster */
+
+/* Estructura general */
+.main-content {
+    min-height: calc(100vh - 160px);
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Header del proyecto */
+.project-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.project-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.project-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.company-name {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Sección de introducción */
+.intro-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.intro-content h2 {
+    color: #1e293b;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.intro-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #475569;
+    margin-bottom: 1.5rem;
+}
+
+.highlight-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.highlight-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Diagrama de análisis */
+.analysis-diagram {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.analysis-diagram h3 {
+    text-align: center;
+    color: #1e293b;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.diagram-container {
+    display: flex;
+    justify-content: center;
+}
+
+.analysis-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 1.5rem;
+    max-width: 800px;
+    width: 100%;
+}
+
+/* Análisis Externo */
+.external-analysis {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+.analysis-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border-radius: 12px;
+}
+
+.analysis-title.external {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+
+.analysis-title.internal {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.external-factors, .internal-factors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.factor-box {
+    background: white;
+    border: 3px solid;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.factor-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.factor-box h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.factor-box.opportunities {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+}
+
+.factor-box.opportunities h5 {
+    color: #059669;
+}
+
+.factor-box.threats {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2, #fecaca);
+}
+
+.factor-box.threats h5 {
+    color: #dc2626;
+}
+
+.factor-box.strengths {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.factor-box.strengths h5 {
+    color: #1d4ed8;
+}
+
+.factor-box.weaknesses {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb, #fed7aa);
+}
+
+.factor-box.weaknesses h5 {
+    color: #d97706;
+}
+
+/* Análisis Interno */
+.internal-analysis {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+/* Centro - Análisis de Recursos */
+.resources-analysis {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.resources-box {
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+}
+
+.resources-box h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Sección de definiciones */
+.definitions-section {
+    margin-bottom: 2rem;
+}
+
+.definitions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.definition-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.definition-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+.card-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.opportunities-card .card-header {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.threats-card .card-header {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.strengths-card .card-header {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.weaknesses-card .card-header {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #475569;
+    margin-bottom: 1.5rem;
+}
+
+.examples-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.8rem;
+}
+
+.examples-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.examples-section li {
+    font-size: 0.9rem;
+    color: #64748b;
+    padding: 0.4rem 0;
+    border-left: 3px solid #e2e8f0;
+    padding-left: 1rem;
+    margin-bottom: 0.3rem;
+    transition: all 0.3s ease;
+}
+
+.opportunities-card .examples-section li:hover {
+    border-left-color: #10b981;
+    background: #f0fdfa;
+}
+
+.threats-card .examples-section li:hover {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+}
+
+.strengths-card .examples-section li:hover {
+    border-left-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.weaknesses-card .examples-section li:hover {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+}
+
+/* Sección de próximos pasos */
+.next-steps-section {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+}
+
+.next-steps-content h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.next-steps-content > p {
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.steps-info {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.step-number {
+    background: white;
+    color: #4f46e5;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.step-content p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Navegación */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.btn-back, .btn-continue {
+    padding: 0.8rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-back {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+}
+
+.btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+.btn-continue {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.btn-continue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+    
+    .project-header {
+        padding: 1.5rem;
+    }
+    
+    .project-header h1 {
+        font-size: 2rem;
+    }
+    
+    .intro-section, 
+    .analysis-diagram, 
+    .next-steps-section {
+        padding: 1.5rem;
+    }
+    
+    .analysis-matrix {
+        grid-template-columns: 1fr;
+    }
+    
+    .external-factors, 
+    .internal-factors {
+        grid-template-columns: 1fr;
+    }
+    
+    .definitions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .step-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 1rem 0;
+    }
+    
+    .project-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .intro-content h2 {
+        font-size: 1.6rem;
+    }
+    
+    .analysis-diagram h3 {
+        font-size: 1.5rem;
+    }
+    
+    .next-steps-content h3 {
+        font-size: 1.5rem;
+    }
+}
