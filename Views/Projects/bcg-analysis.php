@@ -950,19 +950,242 @@ $bcg_matrix_json = json_encode($bcg_matrix);
                 </div>
             `;
         }
-                        <div class="step-number">3</div>
-                        <h3 class="step-title">TABLA 4: NIVELES DE VENTA DE COMPETIDORES</h3>
-                        <button type="button" class="btn-add-mini" onclick="generateCompetitorTables()">
-                            <i class="icon-refresh"></i> Generar Tablas
-                        </button>
-                    </div>
+
+        function generateBCGMatrix() {
+            console.log('🎯 Generando matriz BCG completa...');
+            
+            // Calcular todas las métricas
+            calculateAllMetrics();
+            
+            // Generar resumen de posicionamiento
+            updateBCGSummary();
+            
+            // Generar matriz visual
+            generateBCGVisual();
+            
+            showAlert('Matriz BCG generada exitosamente', 'success');
+        }
+
+        function updateBCGSummary() {
+            const container = document.getElementById('bcg-positioning-summary');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <h3>📊 RESUMEN DE POSICIONAMIENTO BCG</h3>
+                <div class="dynamic-table-container">
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>PRODUCTO</th>
+                                <th>TCM (%)</th>
+                                <th>PRM</th>
+                                <th>% VENTAS</th>
+                                <th>POSICIÓN BCG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${products.map((product, index) => {
+                                const tcm = calculatedMetrics.tcm[product.name] || 0;
+                                const prm = calculatedMetrics.prm[product.name] || 0;
+                                const positioning = calculatedMetrics.positioning[product.name] || {};
+                                
+                                return `
+                                    <tr class="product-color-${index}">
+                                        <td style="background: ${product.color}; font-weight: bold;">${product.name}</td>
+                                        <td class="calculated-cell">${tcm.toFixed(2)}%</td>
+                                        <td class="calculated-cell">${prm.toFixed(3)}</td>
+                                        <td class="calculated-cell">${product.percentage.toFixed(1)}%</td>
+                                        <td style="text-align: center; font-weight: bold; font-size: 16px;">${positioning.position || 'Perro 🐕'}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function generateBCGVisual() {
+            const container = document.getElementById('bcg-visual-matrix');
+            if (!container) return;
+            
+            const width = 600;
+            const height = 450;
+            const margin = 60;
+            
+            container.innerHTML = `
+                <svg width="${width}" height="${height}" style="border: 2px solid #d1d5db; border-radius: 8px;">
+                    <!-- Cuadrantes -->
+                    <rect x="${margin}" y="${margin}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#4ade80" opacity="0.15" stroke="#16a34a" stroke-width="2"/>
+                    <rect x="${margin + (width-2*margin)/2}" y="${margin}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#fb923c" opacity="0.15" stroke="#ea580c" stroke-width="2"/>
+                    <rect x="${margin}" y="${margin + (height-2*margin)/2}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#3b82f6" opacity="0.15" stroke="#1d4ed8" stroke-width="2"/>
+                    <rect x="${margin + (width-2*margin)/2}" y="${margin + (height-2*margin)/2}" width="${(width-2*margin)/2}" height="${(height-2*margin)/2}" 
+                          fill="#9ca3af" opacity="0.15" stroke="#6b7280" stroke-width="2"/>
                     
-                    <div class="mini-step-content">
-                        <div class="info-box">
-                            <strong>Propósito:</strong> Identificar al líder del mercado en cada categoría<br>
-                            <strong>Dato clave:</strong> El competidor con <strong>MAYORES VENTAS</strong> se usará para calcular PRM<br>
-                            <strong>Ejemplo:</strong> Si tu empresa vende 100 y el mayor competidor 150, entonces estás en desventaja
-                        </div>
+                    <!-- Etiquetas de cuadrantes -->
+                    <text x="${margin + (width-2*margin)/4}" y="${margin + 25}" text-anchor="middle" style="font-weight: bold; font-size: 14px; fill: #16a34a;">⭐ ESTRELLA</text>
+                    <text x="${margin + 3*(width-2*margin)/4}" y="${margin + 25}" text-anchor="middle" style="font-weight: bold; font-size: 14px; fill: #ea580c;">❓ INCÓGNITA</text>
+                    <text x="${margin + (width-2*margin)/4}" y="${height - margin - 10}" text-anchor="middle" style="font-weight: bold; font-size: 14px; fill: #1d4ed8;">🐄 VACA</text>
+                    <text x="${margin + 3*(width-2*margin)/4}" y="${height - margin - 10}" text-anchor="middle" style="font-weight: bold; font-size: 14px; fill: #6b7280;">🐕 PERRO</text>
+                    
+                    <!-- Ejes -->
+                    <line x1="${margin}" y1="${margin}" x2="${margin}" y2="${height-margin}" stroke="#374151" stroke-width="3"/>
+                    <line x1="${margin}" y1="${height-margin}" x2="${width-margin}" y2="${height-margin}" stroke="#374151" stroke-width="3"/>
+                    
+                    <!-- Líneas divisorias -->
+                    <line x1="${margin + (width-2*margin)/2}" y1="${margin}" x2="${margin + (width-2*margin)/2}" y2="${height-margin}" stroke="#6b7280" stroke-width="2" stroke-dasharray="8,4"/>
+                    <line x1="${margin}" y1="${margin + (height-2*margin)/2}" x2="${width-margin}" y2="${margin + (height-2*margin)/2}" stroke="#6b7280" stroke-width="2" stroke-dasharray="8,4"/>
+                    
+                    <!-- Etiquetas de ejes -->
+                    <text x="${width/2}" y="${height - 15}" text-anchor="middle" style="font-size: 12px; fill: #374151; font-weight: bold;">PRM (Participación Relativa) →</text>
+                    <text x="25" y="${height/2}" text-anchor="middle" style="font-size: 12px; fill: #374151; font-weight: bold;" transform="rotate(-90, 25, ${height/2})">↑ TCM (% Crecimiento)</text>
+                    
+                    <!-- Marcas de escala -->
+                    <text x="${margin + (width-2*margin)/2}" y="${height - margin + 15}" text-anchor="middle" style="font-size: 10px; fill: #6b7280;">1.0</text>
+                    <text x="${margin - 15}" y="${margin + (height-2*margin)/2}" text-anchor="middle" style="font-size: 10px; fill: #6b7280;">10%</text>
+                    
+                    <!-- Productos posicionados -->
+                    ${products.map((product, index) => {
+                        const tcm = calculatedMetrics.tcm[product.name] || 0;
+                        const prm = calculatedMetrics.prm[product.name] || 0;
+                        const positioning = calculatedMetrics.positioning[product.name] || {};
+                        
+                        // Escalar posiciones (TCM: 0-30%, PRM: 0-3.0)
+                        const xPos = margin + Math.min((prm / 3.0) * (width - 2*margin), width - 2*margin);
+                        const yPos = height - margin - Math.min((tcm / 30) * (height - 2*margin), height - 2*margin);
+                        
+                        // Tamaño proporcional al % de ventas
+                        const radius = Math.max(12, Math.min(30, product.percentage * 2));
+                        
+                        return `
+                            <circle cx="${xPos}" cy="${yPos}" r="${radius}" 
+                                    fill="${product.color}" 
+                                    opacity="0.8" 
+                                    stroke="#374151" 
+                                    stroke-width="3">
+                                <title>${product.name}
+TCM: ${tcm.toFixed(2)}%
+PRM: ${prm.toFixed(3)}
+Ventas: ${product.percentage.toFixed(1)}%
+Posición: ${positioning.position || 'Perro 🐕'}</title>
+                            </circle>
+                            <text x="${xPos}" y="${yPos + 4}" text-anchor="middle" 
+                                  style="font-size: 10px; font-weight: bold; fill: #374151; pointer-events: none;">
+                                ${product.name.substring(0, 8)}
+                            </text>
+                        `;
+                    }).join('')}
+                </svg>
+                
+                <div style="margin-top: 20px; text-align: center; color: #6b7280; font-size: 14px;">
+                    <p><strong>Interpretación:</strong> Tamaño del círculo = % sobre ventas totales | Posición = TCM vs PRM</p>
+                </div>
+            `;
+        }
+
+        function renderSectorDemandTable() {
+            console.log('🌍 Renderizando Tabla 4: Demanda Global del Sector');
+            
+            const thead = document.getElementById('demand-header');
+            const tbody = document.getElementById('demand-body');
+            
+            if (!thead || !tbody) return;
+            
+            // Encabezado dinámico
+            thead.innerHTML = `
+                <tr>
+                    <th style="width: 15%;">AÑOS</th>
+                    ${products.map(product => `
+                        <th style="background: ${product.color};">${product.name}</th>
+                    `).join('')}
+                    <th style="width: 10%;">ACCIONES</th>
+                </tr>
+            `;
+            
+            // Filas de años con demanda
+            tbody.innerHTML = sectorDemandData.map((yearData, yearIndex) => `
+                <tr>
+                    <td>
+                        <input type="text" 
+                               class="excel-input" 
+                               value="${yearData.year}" 
+                               onchange="updateDemandYear(${yearIndex}, this.value)">
+                    </td>
+                    ${products.map((product, productIndex) => `
+                        <td>
+                            <input type="number" 
+                                   class="excel-input" 
+                                   value="${yearData.values[productIndex] || 0}" 
+                                   step="50" 
+                                   min="0"
+                                   onchange="updateDemandValue(${yearIndex}, ${productIndex}, this.value)">
+                        </td>
+                    `).join('')}
+                    <td>
+                        <button class="excel-btn danger" onclick="removeDemandYear(${yearIndex})" title="Eliminar año">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateDemandYear(yearIndex, newYear) {
+            if (sectorDemandData[yearIndex]) {
+                sectorDemandData[yearIndex].year = newYear;
+            }
+        }
+
+        function updateDemandValue(yearIndex, productIndex, value) {
+            if (sectorDemandData[yearIndex]) {
+                if (!sectorDemandData[yearIndex].values) {
+                    sectorDemandData[yearIndex].values = [];
+                }
+                sectorDemandData[yearIndex].values[productIndex] = parseFloat(value) || 0;
+            }
+        }
+
+        function removeDemandYear(yearIndex) {
+            if (sectorDemandData.length <= 1) {
+                showAlert('Debe mantener al menos un año', 'warning');
+                return;
+            }
+            sectorDemandData.splice(yearIndex, 1);
+            renderSectorDemandTable();
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 1000;
+                padding: 15px 20px; border-radius: 8px; color: white; font-weight: bold;
+                background: ${type === 'success' ? '#059669' : type === 'warning' ? '#d97706' : type === 'error' ? '#dc2626' : '#0284c7'};
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            `;
+            alertDiv.innerHTML = `
+                ${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️'} ${message}
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; float: right; font-size: 18px; cursor: pointer; margin-left: 10px;">&times;</button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) alertDiv.remove();
+            }, 4000);
+        }
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Inicializando BCG Analysis...');
+            
+            // Inicializar con datos de ejemplo automáticamente
+            loadExampleData();
+            
+            console.log('✅ BCG Analysis inicializado correctamente');
+        });
                         
                         <div id="competitors-container">
                             <!-- Se genera una tabla por cada producto -->
