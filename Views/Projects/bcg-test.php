@@ -141,6 +141,7 @@ $project = [
                             <th style="width: 40%;">PRODUCTO</th>
                             <th style="width: 30%;">VENTAS (Miles S/.)</th>
                             <th style="width: 20%;">% S/TOTAL</th>
+                            <th style="width: 10%;">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody id="sales-forecast-body">
