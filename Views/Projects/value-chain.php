@@ -44,10 +44,11 @@ $fodaData = $projectController->getFodaAnalysis($project_id);
 $fortalezas = isset($fodaData['fortaleza']) ? $fodaData['fortaleza'] : [];
 $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
 
-// Obtener datos FODA existentes para Fortalezas y Debilidades
-$fodaData = $projectController->getFodaAnalysis($project_id);
-$fortalezas = isset($fodaData['fortaleza']) ? $fodaData['fortaleza'] : [];
-$debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
+// Debug temporal - descomentar para verificar datos
+// echo "<!-- Debug FODA Data: " . print_r($fodaData, true) . " -->";
+// echo "<!-- Debug Fortalezas: " . print_r($fortalezas, true) . " -->";
+// echo "<!-- Debug Debilidades: " . print_r($debilidades, true) . " -->";
+?>
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -221,6 +222,11 @@ $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
                                             <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
                                         </div>
                                     <?php endforeach; ?>
+                                    <!-- Campo vacío adicional para agregar más -->
+                                    <div class="foda-item">
+                                        <textarea name="fortalezas[]" placeholder="Escriba una fortaleza..." maxlength="500"></textarea>
+                                        <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+                                    </div>
                                 <?php else: ?>
                                     <div class="foda-item">
                                         <textarea name="fortalezas[]" placeholder="Escriba una fortaleza..." maxlength="500"></textarea>
@@ -243,6 +249,11 @@ $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
                                             <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
                                         </div>
                                     <?php endforeach; ?>
+                                    <!-- Campo vacío adicional para agregar más -->
+                                    <div class="foda-item">
+                                        <textarea name="debilidades[]" placeholder="Escriba una debilidad..." maxlength="500"></textarea>
+                                        <button type="button" class="btn-remove" onclick="removeFodaItem(this)">❌</button>
+                                    </div>
                                 <?php else: ?>
                                     <div class="foda-item">
                                         <textarea name="debilidades[]" placeholder="Escriba una debilidad..." maxlength="500"></textarea>
@@ -293,7 +304,11 @@ $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
     <?php include '../Users/footer.php'; ?>
     
     <!-- Mensajes de éxito/error -->
-    <?php if (isset($_GET['success'])): ?>
+    <?php if (isset($_GET['success']) && $_GET['success'] == '1'): ?>
+    <div class="alert alert-success" id="alertMessage">
+        ✅ Fortalezas y Debilidades guardadas exitosamente
+    </div>
+    <?php elseif (isset($_GET['success'])): ?>
     <div class="alert alert-success" id="alertMessage">
         ✅ Diagnóstico guardado exitosamente
     </div>
@@ -428,8 +443,18 @@ $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
                     
                     if (!hasFortaleza || !hasDebilidad) {
                         e.preventDefault();
-                        alert('Por favor, complete al menos una fortaleza y una debilidad antes de guardar.');
+                        let mensaje = 'Por favor, complete:';
+                        if (!hasFortaleza) mensaje += '\n- Al menos una fortaleza';
+                        if (!hasDebilidad) mensaje += '\n- Al menos una debilidad';
+                        alert(mensaje);
                         return false;
+                    }
+                    
+                    // Mostrar mensaje de guardando
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '💾 Guardando...';
                     }
                 });
             }
