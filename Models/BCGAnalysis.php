@@ -341,6 +341,312 @@ class BCGAnalysis {
     }
     
     /**
+     * NUEVOS MÉTODOS PARA INTERFAZ MEJORADA BCG
+     */
+     
+    /**
+     * Guardar análisis BCG mejorado con 4 mini-steps
+     */
+    public function saveEnhancedBCG($project_id, $bcg_data) {
+        try {
+            $this->conn->autocommit(FALSE);
+            
+            // Limpiar datos existentes
+            $this->clearProjectData($project_id);
+            
+            // Crear registro principal
+            $this->createMainRecord($project_id);
+            
+            // Step 1: Guardar productos y ventas
+            if (isset($bcg_data['products']) && is_array($bcg_data['products'])) {
+                $product_ids = [];
+                foreach ($bcg_data['products'] as $index => $product) {
+                    $product_id = $this->saveEnhancedProduct($project_id, $product, $index);
+                    $product_ids[] = $product_id;
+                }
+                
+                // Step 2: Guardar evolución del mercado
+                if (isset($bcg_data['market_evolution']) && is_array($bcg_data['market_evolution'])) {
+                    $this->saveEnhancedMarketEvolution($project_id, $product_ids, $bcg_data['market_evolution']);
+                }
+                
+                // Step 3: Guardar competidores
+                if (isset($bcg_data['competitors']) && is_array($bcg_data['competitors'])) {
+                    $this->saveEnhancedCompetitors($project_id, $product_ids, $bcg_data['competitors']);
+                }
+            }
+            
+            $this->conn->commit();
+            $this->conn->autocommit(TRUE);
+            return true;
+            
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            $this->conn->autocommit(TRUE);
+            error_log("Enhanced BCG Save Error: " . $e->getMessage());
+            throw $e;
+        }
+    }
+    
+    /**
+     * Guardar producto mejorado con cálculos automáticos
+     */
+    private function saveEnhancedProduct($project_id, $product_data, $order) {
+        $sql = "INSERT INTO project_bcg_products 
+                (project_id, product_name, sales_forecast, sales_percentage, 
+                 tcm_calculated, prm_calculated, bcg_position, product_order) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        $name = $product_data['name'] ?? '';
+        $sales = floatval($product_data['sales'] ?? 0);
+        $percentage = floatval($product_data['percentage'] ?? 0);
+        $tcm = floatval($product_data['tcm'] ?? 0);
+        $prm = floatval($product_data['prm'] ?? 0);
+        $position = $product_data['bcg_position'] ?? null;
+        
+        $stmt->bind_param("isdddisi", 
+            $project_id, $name, $sales, $percentage, 
+            $tcm, $prm, $position, $order
+        );
+        
+        $stmt->execute();
+        return $this->conn->insert_id;
+    }
+    
+    /**
+     * Guardar evolución del mercado mejorada
+     */
+    private function saveEnhancedMarketEvolution($project_id, $product_ids, $market_data) {
+        $sql = "INSERT INTO project_bcg_market_evolution 
+                (project_id, product_id, period_start_year, period_end_year, 
+                 tcm_percentage, period_order) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        foreach ($market_data as $period_index => $period) {
+            $period_parts = explode('-', $period['period'] ?? '');
+            $start_year = intval($period_parts[0] ?? date('Y'));
+            $end_year = intval($period_parts[1] ?? date('Y') + 1);
+            
+            foreach ($period['rates'] as $product_index => $rate) {
+                if (isset($product_ids[$product_index])) {
+                    $tcm_percentage = floatval($rate ?? 0);
+                    
+                    $stmt->bind_param("iiidii", 
+                        $project_id, 
+                        $product_ids[$product_index], 
+                        $start_year, 
+                        $end_year, 
+                        $tcm_percentage, 
+                        $period_index
+                    );
+                    
+                    $stmt->execute();
+                }
+            }
+        }
+    }
+    
+    /**
+     * Guardar competidores mejorados
+     */
+    private function saveEnhancedCompetitors($project_id, $product_ids, $competitors_data) {
+        $sql = "INSERT INTO project_bcg_competitors 
+                (project_id, product_id, competitor_name, competitor_sales, 
+                 is_max_competitor, competitor_order) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $this->conn->prepare($sql);
+        
+        foreach ($competitors_data as $product_name => $competitors) {
+            // Encontrar product_id por nombre
+            $product_index = array_search($product_name, array_column($competitors_data, 'product_name'));
+            
+            if ($product_index !== false && isset($product_ids[$product_index])) {
+                $product_id = $product_ids[$product_index];
+                
+                foreach ($competitors as $comp_index => $competitor) {
+                    $comp_name = $competitor['name'] ?? '';
+                    $comp_sales = floatval($competitor['sales'] ?? 0);
+                    $is_max = intval($competitor['isMax'] ?? 0);
+                    
+                    $stmt->bind_param("iisdii", 
+                        $project_id, 
+                        $product_id, 
+                        $comp_name, 
+                        $comp_sales, 
+                        $is_max, 
+                        $comp_index
+                    );
+                    
+                    $stmt->execute();
+                }
+            }
+        }
+    }
+    
+    /**
+     * Obtener análisis BCG completo mejorado
+     */
+    public function getEnhancedBCGAnalysis($project_id) {
+        $analysis = [
+            'products' => $this->getEnhancedProducts($project_id),
+            'market_evolution' => $this->getEnhancedMarketEvolution($project_id),
+            'competitors' => $this->getEnhancedCompetitors($project_id),
+            'matrix_data' => []
+        ];
+        
+        // Calcular datos de matriz
+        $analysis['matrix_data'] = $this->calculateEnhancedMatrix($analysis['products']);
+        
+        return $analysis;
+    }
+    
+    /**
+     * Obtener productos mejorados
+     */
+    private function getEnhancedProducts($project_id) {
+        $sql = "SELECT * FROM project_bcg_products 
+                WHERE project_id = ? 
+                ORDER BY product_order ASC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $project_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $products = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $products[] = [
+                'id' => $row['id'],
+                'name' => $row['product_name'],
+                'sales' => floatval($row['sales_forecast']),
+                'percentage' => floatval($row['sales_percentage']),
+                'tcm' => floatval($row['tcm_calculated']),
+                'prm' => floatval($row['prm_calculated']),
+                'bcg_position' => $row['bcg_position'],
+                'order' => $row['product_order']
+            ];
+        }
+        
+        return $products;
+    }
+    
+    /**
+     * Obtener evolución del mercado mejorada
+     */
+    private function getEnhancedMarketEvolution($project_id) {
+        $sql = "SELECT me.*, p.product_name 
+                FROM project_bcg_market_evolution me
+                JOIN project_bcg_products p ON me.product_id = p.id
+                WHERE me.project_id = ? 
+                ORDER BY me.period_order ASC, p.product_order ASC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $project_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $evolution = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $period_key = $row['period_start_year'] . '-' . $row['period_end_year'];
+            
+            if (!isset($evolution[$period_key])) {
+                $evolution[$period_key] = [
+                    'period' => $period_key,
+                    'rates' => []
+                ];
+            }
+            
+            $evolution[$period_key]['rates'][] = floatval($row['tcm_percentage']);
+        }
+        
+        return array_values($evolution);
+    }
+    
+    /**
+     * Obtener competidores mejorados
+     */
+    private function getEnhancedCompetitors($project_id) {
+        $sql = "SELECT c.*, p.product_name 
+                FROM project_bcg_competitors c
+                JOIN project_bcg_products p ON c.product_id = p.id
+                WHERE c.project_id = ? 
+                ORDER BY p.product_order ASC, c.competitor_order ASC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $project_id);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $competitors = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $product_name = $row['product_name'];
+            
+            if (!isset($competitors[$product_name])) {
+                $competitors[$product_name] = [];
+            }
+            
+            $competitors[$product_name][] = [
+                'name' => $row['competitor_name'],
+                'sales' => floatval($row['competitor_sales']),
+                'isMax' => boolval($row['is_max_competitor']),
+                'order' => $row['competitor_order']
+            ];
+        }
+        
+        return $competitors;
+    }
+    
+    /**
+     * Calcular matriz BCG mejorada
+     */
+    private function calculateEnhancedMatrix($products) {
+        $matrix_data = [];
+        
+        foreach ($products as $product) {
+            $tcm = $product['tcm'];
+            $prm = $product['prm'];
+            
+            // Determinar cuadrante BCG
+            if ($tcm > 10 && $prm > 100) {
+                $quadrant = 'Estrella';
+                $color = '#4CAF50';
+            } elseif ($tcm <= 10 && $prm > 100) {
+                $quadrant = 'Vaca Lechera';
+                $color = '#2196F3';
+            } elseif ($tcm > 10 && $prm <= 100) {
+                $quadrant = 'Interrogante';
+                $color = '#FF9800';
+            } else {
+                $quadrant = 'Perro';
+                $color = '#9E9E9E';
+            }
+            
+            $matrix_data[] = [
+                'product_name' => $product['name'],
+                'sales' => $product['sales'],
+                'percentage' => $product['percentage'],
+                'tcm' => $tcm,
+                'prm' => $prm,
+                'quadrant' => $quadrant,
+                'color' => $color,
+                'x' => $prm,  // Posición X en la matriz
+                'y' => $tcm,  // Posición Y en la matriz
+                'size' => $product['percentage'] * 2  // Tamaño proporcional
+            ];
+        }
+        
+        return $matrix_data;
+    }
+
+    /**
      * Eliminar análisis completo de un proyecto
      */
     public function deleteByProject($project_id) {

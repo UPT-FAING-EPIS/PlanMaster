@@ -585,6 +585,237 @@ class ProjectController {
             return false;
         }
     }
+
+    // ===== NUEVOS MÉTODOS PARA INTERFAZ BCG MEJORADA =====
+    
+    /**
+     * Guardar análisis BCG mejorado con 4 mini-steps
+     */
+    public function saveEnhancedBCGAnalysis() {
+        try {
+            error_log("=== GUARDADO BCG MEJORADO ===");
+            error_log("POST data: " . print_r($_POST, true));
+            
+            // Verificar sesión
+            if (!AuthController::isLoggedIn()) {
+                throw new Exception("Usuario no logueado");
+            }
+            
+            // Validar proyecto
+            if (!isset($_POST['project_id'])) {
+                throw new Exception("ID de proyecto no especificado");
+            }
+            
+            $project_id = (int)$_POST['project_id'];
+            $user_id = $_SESSION['user_id'];
+            
+            // Verificar permisos
+            $project = $this->project->getById($project_id);
+            if (!$project || $project['user_id'] != $user_id) {
+                throw new Exception("Proyecto no encontrado o sin permisos");
+            }
+            
+            // Procesar datos de los 4 steps
+            $bcg_data = [
+                'products' => $this->processProductsData($_POST),
+                'market_evolution' => $this->processMarketEvolutionData($_POST),
+                'competitors' => $this->processCompetitorsData($_POST)
+            ];
+            
+            error_log("Datos BCG procesados: " . print_r($bcg_data, true));
+            
+            // Validaciones
+            if (empty($bcg_data['products'])) {
+                throw new Exception("Debe agregar al menos un producto");
+            }
+            
+            // Guardar usando modelo mejorado
+            $result = $this->bcgAnalysis->saveEnhancedBCG($project_id, $bcg_data);
+            
+            if ($result) {
+                $_SESSION['success'] = "Análisis BCG mejorado guardado exitosamente";
+                error_log("BCG mejorado guardado para proyecto $project_id");
+            } else {
+                throw new Exception("Error al guardar en la base de datos");
+            }
+            
+            // Respuesta JSON para AJAX
+            if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Análisis BCG guardado exitosamente'
+                ]);
+                exit();
+            }
+            
+            // Redirección normal
+            header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
+            exit();
+            
+        } catch (Exception $e) {
+            error_log("ERROR BCG MEJORADO: " . $e->getMessage());
+            $_SESSION['error'] = "Error al guardar BCG: " . $e->getMessage();
+            
+            // Respuesta JSON para AJAX
+            if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+                exit();
+            }
+            
+            // Redirección normal
+            $project_id = $_POST['project_id'] ?? '';
+            if (!empty($project_id)) {
+                header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
+            } else {
+                header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
+            }
+            exit();
+        }
+    }
+    
+    /**
+     * Procesar datos de productos del formulario
+     */
+    private function processProductsData($post_data) {
+        $products = [];
+        
+        if (isset($post_data['products']) && is_array($post_data['products'])) {
+            foreach ($post_data['products'] as $index => $product_data) {
+                $name = trim($product_data['name'] ?? '');
+                $sales = floatval($product_data['sales_forecast'] ?? 0);
+                
+                if (!empty($name) && $sales > 0) {
+                    $products[] = [
+                        'name' => $name,
+                        'sales' => $sales,
+                        'percentage' => floatval($product_data['percentage'] ?? 0),
+                        'tcm' => floatval($product_data['tcm'] ?? 0),
+                        'prm' => floatval($product_data['prm'] ?? 0),
+                        'bcg_position' => $product_data['bcg_position'] ?? null
+                    ];
+                }
+            }
+        }
+        
+        return $products;
+    }
+    
+    /**
+     * Procesar datos de evolución del mercado
+     */
+    private function processMarketEvolutionData($post_data) {
+        $market_evolution = [];
+        
+        if (isset($post_data['market_periods']) && is_array($post_data['market_periods'])) {
+            foreach ($post_data['market_periods'] as $index => $period_data) {
+                $period = trim($period_data['period'] ?? '');
+                $rates = $period_data['rates'] ?? [];
+                
+                if (!empty($period) && is_array($rates)) {
+                    $processed_rates = [];
+                    foreach ($rates as $rate) {
+                        $processed_rates[] = floatval($rate ?? 0);
+                    }
+                    
+                    $market_evolution[] = [
+                        'period' => $period,
+                        'rates' => $processed_rates
+                    ];
+                }
+            }
+        }
+        
+        return $market_evolution;
+    }
+    
+    /**
+     * Procesar datos de competidores
+     */
+    private function processCompetitorsData($post_data) {
+        $competitors = [];
+        
+        if (isset($post_data['competitors']) && is_array($post_data['competitors'])) {
+            foreach ($post_data['competitors'] as $product_name => $product_competitors) {
+                if (is_array($product_competitors)) {
+                    $processed_competitors = [];
+                    
+                    foreach ($product_competitors as $comp_data) {
+                        $name = trim($comp_data['name'] ?? '');
+                        $sales = floatval($comp_data['sales'] ?? 0);
+                        
+                        if (!empty($name) && $sales > 0) {
+                            $processed_competitors[] = [
+                                'name' => $name,
+                                'sales' => $sales,
+                                'isMax' => boolval($comp_data['is_max'] ?? false)
+                            ];
+                        }
+                    }
+                    
+                    if (!empty($processed_competitors)) {
+                        $competitors[$product_name] = $processed_competitors;
+                    }
+                }
+            }
+        }
+        
+        return $competitors;
+    }
+    
+    /**
+     * Obtener análisis BCG mejorado completo
+     */
+    public function getEnhancedBCGAnalysis($project_id) {
+        try {
+            // Verificar permisos
+            if (AuthController::isLoggedIn()) {
+                $project = $this->project->getById($project_id);
+                if ($project && $project['user_id'] == $_SESSION['user_id']) {
+                    return $this->bcgAnalysis->getEnhancedBCGAnalysis($project_id);
+                }
+            }
+            return null;
+        } catch (Exception $e) {
+            error_log("Error getting enhanced BCG: " . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * API endpoint para obtener datos BCG en formato JSON
+     */
+    public function getBCGDataJSON() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['project_id'])) {
+            $project_id = (int)$_GET['project_id'];
+            
+            try {
+                $bcg_data = $this->getEnhancedBCGAnalysis($project_id);
+                
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'data' => $bcg_data
+                ]);
+                exit();
+                
+            } catch (Exception $e) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+                exit();
+            }
+        }
+        
+        header('HTTP/1.1 400 Bad Request');
+        exit();
+    }
     
     // ======= MÉTODOS PARA ESTRATEGIAS =======
     
@@ -985,6 +1216,12 @@ if (isset($_GET['action'])) {
         case 'save_strategies':
             $controller->saveStrategies();
             break;
+        case 'save_enhanced_bcg':
+            $controller->saveEnhancedBCGAnalysis();
+            break;
+        case 'get_bcg_json':
+            $controller->getBCGDataJSON();
+            break;
         case 'save_strategies_auto':
             $controller->saveStrategiesAuto();
             break;
@@ -1034,6 +1271,12 @@ if (isset($_POST['action'])) {
             break;
         case 'save_strategies':
             $controller->saveStrategies();
+            break;
+        case 'save_enhanced_bcg':
+            $controller->saveEnhancedBCGAnalysis();
+            break;
+        case 'get_bcg_json':
+            $controller->getBCGDataJSON();
             break;
         case 'save_strategies_auto':
             $controller->saveStrategiesAuto();
