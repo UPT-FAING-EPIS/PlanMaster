@@ -240,7 +240,7 @@ $fodaData = $projectController->getFodaAnalysis($project_id);
                 <!-- Botones de acción -->
                 <div class="form-actions">
                     <div class="actions-left">
-                        <a href="<?php echo getBaseUrl(); ?>/Views/Projects/objectives.php?project_id=<?php echo $project_id; ?>" 
+                        <a href="<?php echo getBaseUrl(); ?>/Views/Projects/objectives.php?id=<?php echo $project_id; ?>" 
                            class="btn-back">
                             ← Objetivos
                         </a>
@@ -267,7 +267,7 @@ $fodaData = $projectController->getFodaAnalysis($project_id);
                         <h4>Siguiente paso: Cadena de Valor</h4>
                         <p>El siguiente paso es realizar el <strong>Diagnóstico de Cadena de Valor</strong> para evaluar tus procesos comerciales.</p>
                         <div class="action-buttons">
-                            <a href="value-chain.php?project_id=<?php echo $project_id; ?>" class="btn btn-continue">
+                            <a href="value-chain.php?id=<?php echo $project_id; ?>" class="btn btn-continue">
                                 ⛓️ Continuar a Cadena de Valor
                             </a>
                         </div>

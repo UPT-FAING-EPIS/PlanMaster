@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../config/url_config.php';
 AuthController::requireLogin();
 
 // Obtener el ID del proyecto
-$project_id = intval($_GET['project_id'] ?? 0);
+$project_id = intval($_GET['id'] ?? 0);
 if ($project_id === 0) {
     header("Location: " . getBaseUrl() . "/Views/Users/projects.php");
     exit();
@@ -244,13 +244,13 @@ if (!$project) {
             <!-- Navegación -->
             <div class="form-actions">
                 <div class="actions-left">
-                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/objectives.php?project_id=<?php echo $project_id; ?>" 
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/objectives.php?id=<?php echo $project_id; ?>" 
                        class="btn-back">
                         ← Objetivos
                     </a>
                 </div>
                 <div class="actions-right">
-                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/value-chain.php?project_id=<?php echo $project_id; ?>" 
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/value-chain.php?id=<?php echo $project_id; ?>" 
                        class="btn-continue">
                         ⛓️ Continuar a Cadena de Valor →
                     </a>
