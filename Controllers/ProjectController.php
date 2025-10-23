@@ -993,4 +993,54 @@ if (isset($_GET['action'])) {
             break;
     }
 }
+
+// Manejo de rutas POST
+if (isset($_POST['action'])) {
+    // Iniciar sesión si no está iniciada
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    $controller = new ProjectController();
+    $action = $_POST['action'];
+    
+    switch ($action) {
+        case 'create':
+            $controller->createProject();
+            break;
+        case 'save_mission':
+            $controller->saveMission();
+            break;
+        case 'save_vision':
+            $controller->saveVision();
+            break;
+        case 'save_values':
+            $controller->saveValues();
+            break;
+        case 'save_objectives':
+            $controller->saveObjectives();
+            break;
+        case 'save_foda':
+            $controller->saveFodaAnalysis();
+            break;
+        case 'save_value_chain':
+            $controller->saveValueChain();
+            break;
+        case 'save_pest_analysis':
+            $controller->savePestAnalysis();
+            break;
+        case 'save_bcg_analysis':
+            $controller->saveBCGAnalysis();
+            break;
+        case 'save_strategies':
+            $controller->saveStrategies();
+            break;
+        case 'save_strategies_auto':
+            $controller->saveStrategiesAuto();
+            break;
+        default:
+            header("Location: ../Views/Users/dashboard.php");
+            break;
+    }
+}
 ?>

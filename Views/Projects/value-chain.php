@@ -43,6 +43,11 @@ $questions = $valueChainModel->getStandardQuestions();
 $fodaData = $projectController->getFodaAnalysis($project_id);
 $fortalezas = isset($fodaData['fortaleza']) ? $fodaData['fortaleza'] : [];
 $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
+
+// Obtener datos FODA existentes para Fortalezas y Debilidades
+$fodaData = $projectController->getFodaAnalysis($project_id);
+$fortalezas = isset($fodaData['fortaleza']) ? $fodaData['fortaleza'] : [];
+$debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -199,7 +204,7 @@ $debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
                 </div>
 
                 <form action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php" method="POST" id="fodaForm">
-                    <input type="hidden" name="action" value="saveFodaAnalysis">
+                    <input type="hidden" name="action" value="save_foda">
                     <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
                     <input type="hidden" name="source" value="value-chain">
 
