@@ -377,7 +377,7 @@ try {
         if ($stmt) $stmt->close();
     }
     
-    // 5. GUARDAR DEMANDA SECTORIAL
+    // 5. GUARDAR DEMANDA SECTORIAL (CORREGIDO - CON SOPORTE PARA MÚLTIPLES AÑOS)
     if (isset($data['sector_demand']) && is_array($data['sector_demand'])) {
         // Obtener mapeo de productos
         $productMapping = [];
@@ -388,20 +388,24 @@ try {
             }
         }
         
-        // Guardar solo el primer año por ahora (el sistema actual de BD no soporta múltiples años)
-        // En el futuro se podría expandir la tabla para incluir 'year' como campo
+        // CORREGIDO: Guardar TODOS los años, no solo el primero
+        $stmt = $conn->prepare("
+            INSERT INTO project_bcg_sector_demand 
+            (project_id, product_id, demand_year, total_sector_demand, company_participation, participation_percentage) 
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+            total_sector_demand = VALUES(total_sector_demand),
+            company_participation = VALUES(company_participation),
+            participation_percentage = VALUES(participation_percentage)
+        ");
         
-        if (!empty($data['sector_demand']) && isset($data['sector_demand'][0]['productDemands'])) {
-            $firstYearData = $data['sector_demand'][0]; // Tomar solo el primer año
-            
-            $stmt = $conn->prepare("
-                INSERT INTO project_bcg_sector_demand 
-                (project_id, product_id, total_sector_demand, company_participation, participation_percentage) 
-                VALUES (?, ?, ?, ?, ?)
-            ");
-            
-            if (isset($firstYearData['productDemands']) && is_array($firstYearData['productDemands'])) {
-                foreach ($firstYearData['productDemands'] as $productIndex => $demand) {
+        // Iterar por cada año de demanda sectorial
+        foreach ($data['sector_demand'] as $yearData) {
+            if (isset($yearData['year']) && isset($yearData['productDemands']) && is_array($yearData['productDemands'])) {
+                $year = (int)$yearData['year'];
+                
+                // Iterar por cada producto en este año
+                foreach ($yearData['productDemands'] as $productIndex => $demand) {
                     if (isset($productMapping[$productIndex])) {
                         $productId = $productMapping[$productIndex];
                         $totalDemand = (float)$demand;
@@ -409,7 +413,7 @@ try {
                         $participationPercentage = 10.0; // 10%
                         
                         if ($stmt) {
-                            $stmt->bind_param('iiddd', $projectId, $productId, $totalDemand, $companyParticipation, $participationPercentage);
+                            $stmt->bind_param('iiiddd', $projectId, $productId, $year, $totalDemand, $companyParticipation, $participationPercentage);
                             if ($stmt->execute()) {
                                 $savedData['sector_demand']++;
                             }
@@ -417,8 +421,8 @@ try {
                     }
                 }
             }
-            if ($stmt) $stmt->close();
         }
+        if ($stmt) $stmt->close();
     }
     
     // 6. GUARDAR FORTALEZAS

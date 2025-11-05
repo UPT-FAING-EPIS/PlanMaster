@@ -1113,20 +1113,40 @@ function addMarketPeriod() {
 // Funciones obsoletas eliminadas - Los años ahora se generan automáticamente desde el paso 2
 
 function updateSectorDemand(year, productIndex, demand) {
+    console.log(`🔍 DEBUG updateSectorDemand: year=${year}, productIndex=${productIndex}, demand=${demand}`);
+    
     let yearData = sectorDemandData.find(d => d.year === year);
     if (!yearData) {
+        // CORREGIDO: No usar fill(0) para no resetear otros productos
+        const initialDemands = new Array(products.length);
+        for (let i = 0; i < products.length; i++) {
+            initialDemands[i] = 0; // Inicializar individualmente
+        }
+        
         yearData = {
             year: year,
-            productDemands: new Array(products.length).fill(0)
+            productDemands: initialDemands
         };
         sectorDemandData.push(yearData);
     }
     
-    if (!yearData.productDemands) {
-        yearData.productDemands = new Array(products.length).fill(0);
+    // CORREGIDO: Asegurar que el array existe pero SIN resetear valores existentes
+    if (!yearData.productDemands || !Array.isArray(yearData.productDemands)) {
+        yearData.productDemands = new Array(products.length);
+        for (let i = 0; i < products.length; i++) {
+            yearData.productDemands[i] = 0;
+        }
     }
     
-    yearData.productDemands[productIndex] = demand;
+    // Extender array si es necesario (si se agregaron productos)
+    while (yearData.productDemands.length < products.length) {
+        yearData.productDemands.push(0);
+    }
+    
+    // Actualizar SOLO el producto específico
+    yearData.productDemands[productIndex] = parseFloat(demand) || 0;
+    
+    console.log(`🔍 DEBUG después actualización:`, yearData.productDemands);
 }
 
 // ===== FUNCIONES FORTALEZAS Y DEBILIDADES =====
@@ -1294,6 +1314,10 @@ function saveBCGData() {
     console.log('🔍 DEBUG - Market Growth:', marketGrowthData);
     console.log('🔍 DEBUG - Competitors:', competitorsByProduct);
     console.log('🔍 DEBUG - Sector Demand:', sectorDemandData);
+    console.log('🔍 DEBUG - Sector Demand DETALLADO:');
+    sectorDemandData.forEach((yearData, index) => {
+        console.log(`  Año ${yearData.year}:`, yearData.productDemands);
+    });
     console.log('🔍 DEBUG - Strengths:', strengths);
     console.log('🔍 DEBUG - Weaknesses:', weaknesses);
     

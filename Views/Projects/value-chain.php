@@ -41,14 +41,13 @@ $questions = $valueChainModel->getStandardQuestions();
 
 // Obtener datos FODA existentes para Fortalezas y Debilidades
 $fodaData = $projectController->getFodaAnalysis($project_id);
-$fortalezas = isset($fodaData['fortaleza']) ? $fodaData['fortaleza'] : [];
-$debilidades = isset($fodaData['debilidad']) ? $fodaData['debilidad'] : [];
+$fortalezas = isset($fodaData['fortalezas']) ? $fodaData['fortalezas'] : [];  // CORREGIDO: usar plural
+$debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : [];  // CORREGIDO: usar plural
 
 // Debug temporal - descomentar para verificar datos
 // echo "<!-- Debug FODA Data: " . print_r($fodaData, true) . " -->";
 // echo "<!-- Debug Fortalezas: " . print_r($fortalezas, true) . " -->";
 // echo "<!-- Debug Debilidades: " . print_r($debilidades, true) . " -->";
-?>
 ?>
 <!DOCTYPE html>
 <html lang="es">

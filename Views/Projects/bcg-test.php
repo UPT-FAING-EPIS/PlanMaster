@@ -277,47 +277,44 @@ if (!$project) {
                     $existingData['market_growth'][] = $period;
                 }
                 
-                // Cargar demanda sectorial CORRECTAMENTE
+                // Cargar demanda sectorial CORREGIDO - CON SOPORTE PARA MÚLTIPLES AÑOS
                 $stmt = $conn->prepare("
-                    SELECT sd.total_sector_demand, p.product_order
+                    SELECT sd.demand_year, sd.total_sector_demand, p.product_order
                     FROM project_bcg_sector_demand sd
                     JOIN project_bcg_products p ON sd.product_id = p.id
                     WHERE sd.project_id = ? 
-                    ORDER BY p.product_order
+                    ORDER BY sd.demand_year, p.product_order
                 ");
                 $stmt->bind_param('i', $project['id']);
                 $stmt->execute();
                 $demands = $stmt->get_result();
                 
-                // Crear estructura para 3 años (2023, 2024, 2025)
-                $years = [2023, 2024, 2025];
-                $productDemands = [];
-                
-                // Recopilar demandas por producto (solo tenemos un registro por producto)
+                // Organizar datos por año y producto
+                $demandsByYear = [];
                 while ($row = $demands->fetch_assoc()) {
-                    $productDemands[] = (float)$row['total_sector_demand'];
+                    $year = (int)$row['demand_year'];
+                    $productIndex = $row['product_order'] - 1; // Convertir a índice base 0
+                    $demand = (float)$row['total_sector_demand'];
+                    
+                    if (!isset($demandsByYear[$year])) {
+                        $demandsByYear[$year] = [];
+                    }
+                    $demandsByYear[$year][$productIndex] = $demand;
                 }
                 
-                // Simular datos para los 3 años (en realidad solo tenemos un conjunto de datos)
-                foreach ($years as $index => $year) {
-                    if ($index === 0 && !empty($productDemands)) {
-                        // Primer año: usar datos reales
-                        $existingData['sector_demand'][] = [
-                            'year' => $year,
-                            'productDemands' => $productDemands
-                        ];
-                    } else {
-                        // Años siguientes: generar datos derivados (opcional)
-                        $derivedDemands = [];
-                        foreach ($productDemands as $demand) {
-                            $factor = 1 + (0.1 * $index); // Incremento del 10% por año
-                            $derivedDemands[] = round($demand * $factor, 1);
-                        }
-                        $existingData['sector_demand'][] = [
-                            'year' => $year,
-                            'productDemands' => $derivedDemands
-                        ];
+                // Convertir a estructura esperada por JavaScript
+                foreach ($demandsByYear as $year => $productDemands) {
+                    // Asegurar que todos los productos tengan valor (rellenar con 0 si falta)
+                    $maxProducts = count($existingData['products']);
+                    $completeDemands = [];
+                    for ($i = 0; $i < $maxProducts; $i++) {
+                        $completeDemands[$i] = isset($productDemands[$i]) ? $productDemands[$i] : 0;
                     }
+                    
+                    $existingData['sector_demand'][] = [
+                        'year' => $year,
+                        'productDemands' => array_values($completeDemands) // Reindexar array
+                    ];
                 }
                 
                 // Cargar fortalezas y debilidades
