@@ -14,11 +14,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Volcando estructura de base de datos para planmaster
-CREATE DATABASE IF NOT EXISTS `planmaster` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
-USE `planmaster`;
-
 -- Volcando estructura para tabla planmaster.project_bcg_analysis
 CREATE TABLE IF NOT EXISTS `project_bcg_analysis` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -34,12 +29,13 @@ CREATE TABLE IF NOT EXISTS `project_bcg_analysis` (
   UNIQUE KEY `unique_project_bcg` (`project_id`),
   KEY `idx_bcg_project` (`project_id`),
   KEY `idx_bcg_status` (`analysis_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_analysis: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_analysis: ~2 rows (aproximadamente)
 INSERT INTO `project_bcg_analysis` (`id`, `project_id`, `analysis_name`, `analysis_status`, `total_sales_forecast`, `average_tcm`, `average_prm`, `created_at`, `updated_at`) VALUES
 	(1, 10, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-10-30 01:21:51', '2025-10-30 01:26:01'),
-	(3, 7, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(3, 7, 'Análisis BCG', 'completed', 28700.00, 13.15, 0.52, '2025-10-30 01:31:07', '2025-11-05 17:01:13'),
+	(13, 11, 'Análisis BCG', 'completed', 34700.00, 12.94, 0.72, '2025-11-05 17:02:14', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_bcg_competitors
 CREATE TABLE IF NOT EXISTS `project_bcg_competitors` (
@@ -60,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `project_bcg_competitors` (
   KEY `idx_competitors_product` (`product_id`),
   KEY `idx_competitors_order` (`product_id`,`competitor_order`),
   KEY `idx_competitors_main` (`product_id`,`is_main_competitor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Volcando datos para la tabla planmaster.project_bcg_competitors: ~14 rows (aproximadamente)
 INSERT INTO `project_bcg_competitors` (`id`, `project_id`, `product_id`, `competitor_name`, `competitor_sales`, `market_share_percentage`, `is_main_competitor`, `is_max_sales`, `competitor_order`, `notes`, `created_at`, `updated_at`) VALUES
@@ -71,13 +67,26 @@ INSERT INTO `project_bcg_competitors` (`id`, `project_id`, `product_id`, `compet
 	(12, 10, 4, 'MSI Gaming', 10500.00, 0.00, 0, 0, 5, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(13, 10, 4, 'iPad Pro', 15000.00, 0.00, 0, 0, 6, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(14, 10, 4, 'Surface Pro', 8500.00, 0.00, 0, 0, 7, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(15, 7, 7, 'Apple iPhone', 25000.00, 0.00, 0, 0, 1, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(16, 7, 7, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(17, 7, 7, 'Xiaomi Mi', 18000.00, 0.00, 0, 0, 3, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(18, 7, 7, 'ASUS ROG', 12000.00, 0.00, 0, 0, 4, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(19, 7, 7, 'MSI Gaming', 10500.00, 0.00, 0, 0, 5, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(20, 7, 7, 'iPad Pro', 15000.00, 0.00, 0, 0, 6, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(21, 7, 7, 'Surface Pro', 8500.00, 0.00, 0, 0, 7, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(75, 7, 32, 'Apple iPhone', 25000.00, 0.00, 0, 1, 1, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(76, 7, 32, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(77, 7, 32, 'Xiaomi Mi', 18000.00, 0.00, 0, 0, 3, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(78, 7, 33, 'ASUS ROG', 12000.00, 0.00, 0, 1, 1, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(79, 7, 33, 'MSI Gaming', 10500.00, 0.00, 0, 0, 2, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(80, 7, 33, 'NVIDIA CORP', 3000.00, 0.00, 0, 0, 3, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(81, 7, 33, 'CHEVI ASS', 6000.00, 0.00, 0, 0, 4, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(82, 7, 33, 'LOS AMARTERS', 6005.00, 0.00, 0, 0, 5, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(83, 7, 34, 'iPad Pro', 15000.00, 0.00, 0, 0, 1, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(84, 7, 34, 'Surface Pro', 8500.00, 0.00, 0, 0, 2, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(85, 7, 34, 'Chevi CORP', 20000.00, 0.00, 0, 1, 3, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(100, 11, 41, 'Apple iPhone', 25000.00, 0.00, 0, 1, 1, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(101, 11, 41, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(102, 11, 41, 'Xiaomi Mi', 18000.00, 0.00, 0, 0, 3, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(103, 11, 42, 'ASUS ROG', 12000.00, 0.00, 0, 1, 1, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(104, 11, 42, 'MSI Gaming', 10500.00, 0.00, 0, 0, 2, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(105, 11, 43, 'iPad Pro', 15000.00, 0.00, 0, 1, 1, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(106, 11, 43, 'Surface Pro', 8500.00, 0.00, 0, 0, 2, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(107, 11, 44, 'Chevi CORP', 1000.00, 0.00, 0, 0, 1, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(108, 11, 44, 'Delegada CORP', 5000.00, 0.00, 0, 1, 2, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_bcg_market_growth
 CREATE TABLE IF NOT EXISTS `project_bcg_market_growth` (
@@ -96,14 +105,33 @@ CREATE TABLE IF NOT EXISTS `project_bcg_market_growth` (
   KEY `idx_market_growth_project` (`project_id`),
   KEY `idx_market_growth_product` (`product_id`),
   KEY `idx_market_growth_order` (`product_id`,`period_order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_market_growth: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_market_growth: ~8 rows (aproximadamente)
 INSERT INTO `project_bcg_market_growth` (`id`, `project_id`, `product_id`, `period_name`, `period_start_year`, `period_end_year`, `tcm_percentage`, `period_order`, `created_at`, `updated_at`) VALUES
 	(3, 10, 4, '2023-2024', 2023, 2024, 0.00, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(4, 10, 4, '2024-2025', 2024, 2025, 0.00, 2, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(5, 7, 7, '2023-2024', 2023, 2024, 0.00, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(6, 7, 7, '2024-2025', 2024, 2025, 0.00, 2, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(59, 7, 32, '2024-2025', 2024, 2025, 18.30, 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(60, 7, 33, '2024-2025', 2024, 2025, 10.50, 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(61, 7, 34, '2024-2025', 2024, 2025, 14.70, 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(62, 7, 32, '2023-2024', 2023, 2024, 15.50, 2, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(63, 7, 33, '2023-2024', 2023, 2024, 8.20, 2, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(64, 7, 34, '2023-2024', 2023, 2024, 12.10, 2, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(65, 7, 32, '2022-2023', 2022, 2023, 13.00, 3, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(66, 7, 33, '2022-2023', 2022, 2023, 13.00, 3, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(67, 7, 34, '2022-2023', 2022, 2023, 13.00, 3, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(83, 11, 41, '2025-2026', 2025, 2026, 15.50, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(84, 11, 42, '2025-2026', 2025, 2026, 8.20, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(85, 11, 43, '2025-2026', 2025, 2026, 12.10, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(86, 11, 44, '2025-2026', 2025, 2026, 12.20, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(87, 11, 41, '2024-2025', 2024, 2025, 18.30, 2, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(88, 11, 42, '2024-2025', 2024, 2025, 10.50, 2, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(89, 11, 43, '2024-2025', 2024, 2025, 14.70, 2, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(90, 11, 44, '2024-2025', 2024, 2025, 12.20, 2, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(91, 11, 41, '2023-2024', 2023, 2024, 12.20, 3, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(92, 11, 42, '2023-2024', 2023, 2024, 12.20, 3, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(93, 11, 43, '2023-2024', 2023, 2024, 12.20, 3, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(94, 11, 44, '2023-2024', 2023, 2024, 15.00, 3, '2025-11-05 17:08:48', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_bcg_matrix_results
 CREATE TABLE IF NOT EXISTS `project_bcg_matrix_results` (
@@ -125,9 +153,44 @@ CREATE TABLE IF NOT EXISTS `project_bcg_matrix_results` (
   KEY `idx_matrix_project` (`project_id`),
   KEY `idx_matrix_product` (`product_id`),
   KEY `idx_matrix_quadrant` (`project_id`,`bcg_quadrant`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_matrix_results: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_matrix_results: ~15 rows (aproximadamente)
+INSERT INTO `project_bcg_matrix_results` (`id`, `project_id`, `product_id`, `prm_relative_position`, `tcm_market_growth`, `bcg_quadrant`, `quadrant_description`, `strategic_recommendation`, `matrix_position_x`, `matrix_position_y`, `bubble_size`, `created_at`, `updated_at`) VALUES
+	(1, 7, 11, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-10-30 01:40:35', '2025-10-30 01:40:35'),
+	(2, 7, 12, 0.0000, 9.35, 'perro', NULL, NULL, 0.0000, 46.7500, 0.8500, '2025-10-30 01:40:35', '2025-10-30 01:40:35'),
+	(3, 7, 13, 0.0000, 13.40, 'interrogante', NULL, NULL, 0.0000, 67.0000, 0.5200, '2025-10-30 01:40:35', '2025-10-30 01:40:35'),
+	(4, 7, 14, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-10-30 01:41:40', '2025-10-30 01:41:40'),
+	(5, 7, 15, 0.0000, 9.35, 'perro', NULL, NULL, 0.0000, 46.7500, 0.8500, '2025-10-30 01:41:40', '2025-10-30 01:41:40'),
+	(6, 7, 16, 0.0000, 13.40, 'interrogante', NULL, NULL, 0.0000, 67.0000, 0.5200, '2025-10-30 01:41:40', '2025-10-30 01:41:40'),
+	(7, 7, 17, 0.6000, 11.27, 'interrogante', NULL, NULL, 30.0000, 56.3333, 1.5000, '2025-10-30 01:43:08', '2025-10-30 01:43:08'),
+	(8, 7, 18, 0.0000, 6.23, 'perro', NULL, NULL, 0.0000, 31.1667, 0.8500, '2025-10-30 01:43:08', '2025-10-30 01:43:08'),
+	(9, 7, 19, 0.0000, 8.93, 'perro', NULL, NULL, 0.0000, 44.6667, 0.5200, '2025-10-30 01:43:08', '2025-10-30 01:43:08'),
+	(10, 7, 20, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-10-30 01:45:41', '2025-10-30 01:45:41'),
+	(11, 7, 21, 0.0000, 9.35, 'perro', NULL, NULL, 0.0000, 46.7500, 0.8500, '2025-10-30 01:45:41', '2025-10-30 01:45:41'),
+	(12, 7, 22, 0.0000, 13.40, 'interrogante', NULL, NULL, 0.0000, 67.0000, 0.5200, '2025-10-30 01:45:41', '2025-10-30 01:45:41'),
+	(13, 7, 23, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-10-30 02:06:32', '2025-10-30 02:06:32'),
+	(14, 7, 24, 0.7083, 9.35, 'perro', NULL, NULL, 35.4167, 46.7500, 0.8500, '2025-10-30 02:06:32', '2025-10-30 02:06:32'),
+	(15, 7, 25, 0.3467, 13.40, 'interrogante', NULL, NULL, 17.3333, 67.0000, 0.5200, '2025-10-30 02:06:32', '2025-10-30 02:06:32'),
+	(16, 7, 26, 0.6000, 15.60, 'interrogante', NULL, NULL, 30.0000, 78.0000, 1.5000, '2025-11-05 16:59:24', '2025-11-05 16:59:24'),
+	(17, 7, 27, 0.7083, 10.57, 'interrogante', NULL, NULL, 35.4167, 52.8333, 0.8500, '2025-11-05 16:59:24', '2025-11-05 16:59:24'),
+	(18, 7, 28, 0.2600, 13.27, 'interrogante', NULL, NULL, 13.0000, 66.3333, 0.5200, '2025-11-05 16:59:24', '2025-11-05 16:59:24'),
+	(19, 7, 29, 0.6000, 15.60, 'interrogante', NULL, NULL, 30.0000, 78.0000, 1.5000, '2025-11-05 17:00:25', '2025-11-05 17:00:25'),
+	(20, 7, 30, 0.7083, 10.57, 'interrogante', NULL, NULL, 35.4167, 52.8333, 0.8500, '2025-11-05 17:00:25', '2025-11-05 17:00:25'),
+	(21, 7, 31, 0.2600, 13.27, 'interrogante', NULL, NULL, 13.0000, 66.3333, 0.5200, '2025-11-05 17:00:25', '2025-11-05 17:00:25'),
+	(22, 7, 32, 0.6000, 15.60, 'interrogante', NULL, NULL, 30.0000, 78.0000, 1.5000, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(23, 7, 33, 0.7083, 10.57, 'interrogante', NULL, NULL, 35.4167, 52.8333, 0.8500, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(24, 7, 34, 0.2600, 13.27, 'interrogante', NULL, NULL, 13.0000, 66.3333, 0.5200, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(25, 11, 35, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-11-05 17:02:14', '2025-11-05 17:02:14'),
+	(26, 11, 36, 0.7083, 9.35, 'perro', NULL, NULL, 35.4167, 46.7500, 0.8500, '2025-11-05 17:02:14', '2025-11-05 17:02:14'),
+	(27, 11, 37, 0.3467, 13.40, 'interrogante', NULL, NULL, 17.3333, 67.0000, 0.5200, '2025-11-05 17:02:14', '2025-11-05 17:02:14'),
+	(28, 11, 38, 0.6000, 15.33, 'interrogante', NULL, NULL, 30.0000, 76.6667, 1.5000, '2025-11-05 17:04:41', '2025-11-05 17:04:41'),
+	(29, 11, 39, 0.7083, 10.30, 'interrogante', NULL, NULL, 35.4167, 51.5000, 0.8500, '2025-11-05 17:04:41', '2025-11-05 17:04:41'),
+	(30, 11, 40, 0.3467, 13.00, 'interrogante', NULL, NULL, 17.3333, 65.0000, 0.5200, '2025-11-05 17:04:41', '2025-11-05 17:04:41'),
+	(31, 11, 41, 0.6000, 15.33, 'interrogante', NULL, NULL, 30.0000, 76.6667, 1.5000, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(32, 11, 42, 0.7083, 10.30, 'interrogante', NULL, NULL, 35.4167, 51.5000, 0.8500, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(33, 11, 43, 0.3467, 13.00, 'interrogante', NULL, NULL, 17.3333, 65.0000, 0.5200, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(34, 11, 44, 1.2000, 13.13, 'estrella', NULL, NULL, 60.0000, 65.6667, 0.6000, '2025-11-05 17:08:48', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_bcg_products
 CREATE TABLE IF NOT EXISTS `project_bcg_products` (
@@ -149,16 +212,20 @@ CREATE TABLE IF NOT EXISTS `project_bcg_products` (
   KEY `idx_products_project` (`project_id`),
   KEY `idx_products_order` (`project_id`,`product_order`),
   KEY `idx_products_active` (`project_id`,`is_active`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_products: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_products: ~6 rows (aproximadamente)
 INSERT INTO `project_bcg_products` (`id`, `project_id`, `product_name`, `sales_forecast`, `sales_percentage`, `tcm_calculated`, `prm_calculated`, `bcg_quadrant`, `bcg_position_x`, `bcg_position_y`, `product_order`, `is_active`, `created_at`, `updated_at`) VALUES
 	(4, 10, 'Smartphone Pro', 15000.00, 52.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 1, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(5, 10, 'Laptop Gaming', 8500.00, 29.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 2, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(6, 10, 'Tablet Ultra', 5200.00, 18.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 3, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(7, 7, 'Smartphone Pro', 15000.00, 52.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 1, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(8, 7, 'Laptop Gaming', 8500.00, 29.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 2, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(9, 7, 'Tablet Ultra', 5200.00, 18.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 3, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(32, 7, 'Smartphone Pro', 15000.00, 52.00, 15.60, 0.60, 'interrogante', 0.0000, 0.0000, 1, 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(33, 7, 'Laptop Gaming', 8500.00, 29.00, 10.57, 0.71, 'interrogante', 0.0000, 0.0000, 2, 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(34, 7, 'Tablet Ultra', 5200.00, 18.00, 13.27, 0.26, 'interrogante', 0.0000, 0.0000, 3, 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(41, 11, 'Smartphone Pro', 15000.00, 43.00, 15.33, 0.60, 'interrogante', 0.0000, 0.0000, 1, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(42, 11, 'Laptop Gaming', 8500.00, 24.00, 10.30, 0.71, 'interrogante', 0.0000, 0.0000, 2, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(43, 11, 'Tablet Ultra', 5200.00, 14.00, 13.00, 0.35, 'interrogante', 0.0000, 0.0000, 3, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(44, 11, 'Smart Watch', 6000.00, 17.00, 13.13, 1.20, 'estrella', 0.0000, 0.0000, 4, 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_bcg_sector_demand
 CREATE TABLE IF NOT EXISTS `project_bcg_sector_demand` (
@@ -175,13 +242,17 @@ CREATE TABLE IF NOT EXISTS `project_bcg_sector_demand` (
   UNIQUE KEY `unique_product_sector` (`product_id`),
   KEY `idx_sector_demand_project` (`project_id`),
   KEY `idx_sector_demand_product` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_sector_demand: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_sector_demand: ~3 rows (aproximadamente)
 INSERT INTO `project_bcg_sector_demand` (`id`, `project_id`, `product_id`, `total_sector_demand`, `company_participation`, `participation_percentage`, `market_share_notes`, `created_at`, `updated_at`) VALUES
-	(1, 7, 7, 12.50, 1.25, 10.00, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(2, 7, 8, 8.30, 0.83, 10.00, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(3, 7, 9, 15.70, 1.57, 10.00, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(58, 7, 32, 15.00, 1.50, 10.00, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(59, 7, 33, 15.00, 1.50, 10.00, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(60, 7, 34, 15.00, 1.50, 10.00, NULL, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(67, 11, 41, 12.20, 1.22, 10.00, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(68, 11, 42, 12.20, 1.22, 10.00, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(69, 11, 43, 12.20, 1.22, 10.00, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(70, 11, 44, 12.20, 1.22, 10.00, NULL, '2025-11-05 17:08:48', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_foda_analysis
 CREATE TABLE IF NOT EXISTS `project_foda_analysis` (
@@ -195,9 +266,9 @@ CREATE TABLE IF NOT EXISTS `project_foda_analysis` (
   PRIMARY KEY (`id`),
   KEY `idx_project_foda` (`project_id`,`type`,`item_order`),
   CONSTRAINT `project_foda_analysis_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.project_foda_analysis: ~6 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_foda_analysis: ~18 rows (aproximadamente)
 INSERT INTO `project_foda_analysis` (`id`, `project_id`, `type`, `item_text`, `item_order`, `created_at`, `updated_at`) VALUES
 	(83, 8, 'fortaleza', 'ASSDADSAD', 1, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
 	(84, 8, 'fortaleza', 'ASDASD', 2, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
@@ -211,12 +282,21 @@ INSERT INTO `project_foda_analysis` (`id`, `project_id`, `type`, `item_text`, `i
 	(98, 10, 'debilidad', 'Altos costos de producción', 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(99, 10, 'debilidad', 'Dependencia de proveedores externos', 2, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(100, 10, 'debilidad', 'Limitada presencia digital', 3, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(101, 7, 'fortaleza', 'Marca reconocida en el mercado', 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(102, 7, 'fortaleza', 'Equipo técnico altamente capacitado', 2, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(103, 7, 'fortaleza', 'Red de distribución consolidada', 3, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(104, 7, 'debilidad', 'Altos costos de producción', 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(105, 7, 'debilidad', 'Dependencia de proveedores externos', 2, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(106, 7, 'debilidad', 'Limitada presencia digital', 3, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(153, 7, 'fortaleza', 'Innovación tecnológica avanzada', 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(154, 7, 'fortaleza', 'Equipo de desarrollo experimentado', 2, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(155, 7, 'fortaleza', 'Base de clientes leales', 3, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(156, 7, 'fortaleza', 'La fe', 4, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(157, 7, 'debilidad', 'Limitada presencia digital', 1, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(158, 7, 'debilidad', 'Dependencia de pocos proveedores', 2, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(159, 7, 'debilidad', 'Recursos financieros limitados', 3, '2025-11-05 17:01:13', '2025-11-05 17:01:13'),
+	(173, 11, 'fortaleza', 'Marca reconocida en el mercado', 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(174, 11, 'fortaleza', 'Equipo técnico altamente capacitado', 2, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(175, 11, 'fortaleza', 'Red de distribución consolidada', 3, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(176, 11, 'fortaleza', 'La fe', 4, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(177, 11, 'debilidad', 'Altos costos de producción', 1, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(178, 11, 'debilidad', 'Dependencia de proveedores externos', 2, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(179, 11, 'debilidad', 'Limitada presencia digital', 3, '2025-11-05 17:08:48', '2025-11-05 17:08:48'),
+	(180, 11, 'debilidad', 'Falacias en los productos', 4, '2025-11-05 17:08:48', '2025-11-05 17:08:48');
 
 -- Volcando estructura para tabla planmaster.project_mission
 CREATE TABLE IF NOT EXISTS `project_mission` (
@@ -237,7 +317,8 @@ INSERT INTO `project_mission` (`id`, `project_id`, `mission_text`, `is_completed
 	(2, 5, 'fsfsf', 1, '2025-09-18 18:45:44', '2025-09-18 18:45:44'),
 	(3, 6, 'Somos una empresa encargada de superación de un platillo típico de las noches turbias de examenes universitario, exactamente, las salchipapas', 1, '2025-09-18 18:48:02', '2025-09-18 18:48:02'),
 	(4, 8, 'ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggsssssssssssssssssssssssssssssssssssss', 1, '2025-10-01 22:24:04', '2025-10-01 22:24:04'),
-	(5, 9, 'habhdhabdhabhdbandnman ajbdbahbdahbdhasd  ahbdhjabdhba', 1, '2025-10-23 23:07:04', '2025-10-23 23:07:04');
+	(5, 9, 'habhdhabdhabhdbandnman ajbdbahbdahbdhasd  ahbdhjabdhba', 1, '2025-10-23 23:07:04', '2025-10-23 23:07:04'),
+	(6, 11, 'Mision de la empresa es ofrecer productos farmaceuticos de primera calidad para las personas de la ciudad de Tacna', 1, '2025-11-05 16:52:05', '2025-11-05 16:52:05');
 
 -- Volcando estructura para tabla planmaster.project_pest_analysis
 CREATE TABLE IF NOT EXISTS `project_pest_analysis` (
@@ -289,7 +370,13 @@ INSERT INTO `project_specific_objectives` (`id`, `strategic_objective_id`, `obje
 	(15, 8, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesHJJJ', '', 1, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
 	(16, 8, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesOOOO', '', 2, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
 	(17, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesNNNMM', '', 1, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
-	(18, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesKKK', '', 2, '2025-10-23 23:10:41', '2025-10-23 23:10:41');
+	(18, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesKKK', '', 2, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
+	(19, 10, 'Objetivo 1,1,', '', 1, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(20, 10, 'Objetivo 1.2.', '', 2, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(21, 11, 'Objetivo 2.1', '', 1, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(22, 11, 'Objetivo 2.2', '', 2, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(23, 12, 'Objetivo 3.1', '', 1, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(24, 12, 'Objetivo 3.2', '', 2, '2025-11-05 16:54:36', '2025-11-05 16:54:36');
 
 -- Volcando estructura para tabla planmaster.project_strategic_objectives
 CREATE TABLE IF NOT EXISTS `project_strategic_objectives` (
@@ -315,7 +402,10 @@ INSERT INTO `project_strategic_objectives` (`id`, `project_id`, `objective_title
 	(6, 5, 'A continuación reflexione sobre la misión, visión y valores definidos y establezca los objetivos estratégicos y específicos de su empresa. Le proponem', '', 3, '2025-10-22 22:40:20', '2025-10-22 22:40:20'),
 	(7, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totales', '', 1, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
 	(8, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesFFFF', '', 2, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
-	(9, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesNNNNN', '', 3, '2025-10-23 23:10:41', '2025-10-23 23:10:41');
+	(9, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesNNNNN', '', 3, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
+	(10, 11, 'Objetivo 1', '', 1, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(11, 11, 'Objetivo 2', '', 2, '2025-11-05 16:54:36', '2025-11-05 16:54:36'),
+	(12, 11, 'Objetivo 3', '', 3, '2025-11-05 16:54:36', '2025-11-05 16:54:36');
 
 -- Volcando estructura para tabla planmaster.project_values
 CREATE TABLE IF NOT EXISTS `project_values` (
@@ -347,7 +437,10 @@ INSERT INTO `project_values` (`id`, `project_id`, `value_text`, `value_order`, `
 	(19, 9, 'Integridad', 1, '2025-10-23 23:09:13', '2025-10-23 23:09:13'),
 	(20, 9, 'Innovación', 2, '2025-10-23 23:09:13', '2025-10-23 23:09:13'),
 	(21, 9, 'Compromiso', 3, '2025-10-23 23:09:13', '2025-10-23 23:09:13'),
-	(22, 9, 'Excelencia', 4, '2025-10-23 23:09:13', '2025-10-23 23:09:13');
+	(22, 9, 'Excelencia', 4, '2025-10-23 23:09:13', '2025-10-23 23:09:13'),
+	(23, 11, 'Integridad', 1, '2025-11-05 16:52:52', '2025-11-05 16:52:52'),
+	(24, 11, 'Compromiso', 2, '2025-11-05 16:52:52', '2025-11-05 16:52:52'),
+	(25, 11, 'Etica', 3, '2025-11-05 16:52:52', '2025-11-05 16:52:52');
 
 -- Volcando estructura para tabla planmaster.project_value_chain
 CREATE TABLE IF NOT EXISTS `project_value_chain` (
@@ -466,7 +559,32 @@ INSERT INTO `project_value_chain` (`id`, `project_id`, `question_number`, `ratin
 	(97, 9, 22, 2, '2025-10-23 23:11:46', '2025-10-23 23:11:46'),
 	(98, 9, 23, 1, '2025-10-23 23:11:46', '2025-10-23 23:11:46'),
 	(99, 9, 24, 1, '2025-10-23 23:11:46', '2025-10-23 23:11:46'),
-	(100, 9, 25, 1, '2025-10-23 23:11:46', '2025-10-23 23:11:46');
+	(100, 9, 25, 1, '2025-10-23 23:11:46', '2025-10-23 23:11:46'),
+	(101, 11, 1, 3, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(102, 11, 2, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(103, 11, 3, 2, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(104, 11, 4, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(105, 11, 5, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(106, 11, 6, 0, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(107, 11, 7, 0, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(108, 11, 8, 2, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(109, 11, 9, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(110, 11, 10, 1, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(111, 11, 11, 3, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(112, 11, 12, 1, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(113, 11, 13, 1, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(114, 11, 14, 3, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(115, 11, 15, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(116, 11, 16, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(117, 11, 17, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(118, 11, 18, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(119, 11, 19, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(120, 11, 20, 3, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(121, 11, 21, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(122, 11, 22, 3, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(123, 11, 23, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(124, 11, 24, 3, '2025-11-05 16:55:25', '2025-11-05 16:55:25'),
+	(125, 11, 25, 4, '2025-11-05 16:55:25', '2025-11-05 16:55:25');
 
 -- Volcando estructura para tabla planmaster.project_vision
 CREATE TABLE IF NOT EXISTS `project_vision` (
@@ -486,7 +604,8 @@ INSERT INTO `project_vision` (`id`, `project_id`, `vision_text`, `is_completed`,
 	(1, 6, 'Ser reconocidos en 2027, como la mejor salchipaperia de Tacna', 1, '2025-09-18 18:48:30', '2025-09-18 18:48:30'),
 	(2, 8, 'afdddddddddddddddddddddddddddddddddddddddddddddd ssssssssssssssssssssssssssssssssssssssssssssss sssssssssssssssssssssssssssssssssssssssssssssssss', 1, '2025-10-01 22:24:15', '2025-10-01 22:24:15'),
 	(3, 5, 'Imagina tu empresa en 2-3 años: ¿Dónde estará ubicada? ¿Qué productos o servicios ofrecerá? ¿Cómo será reconocida en el mercado? ¿Cuál será su posición competitiva?', 1, '2025-10-22 22:37:42', '2025-10-22 22:37:42'),
-	(4, 9, 'ajsdkjabjdkbkjs ajbdkjakjdnkjand ajndkjadkjbajd ajsdkjbakjdbsa', 1, '2025-10-23 23:08:21', '2025-10-23 23:08:21');
+	(4, 9, 'ajsdkjabjdkbkjs ajbdkjakjdnkjand ajndkjadkjbajd ajsdkjbakjdbsa', 1, '2025-10-23 23:08:21', '2025-10-23 23:08:21'),
+	(5, 11, 'Visión de la empresa es ser reconocida a nivel distrital de Tacna como una de las farmacias con mas relevancia.', 1, '2025-11-05 16:52:37', '2025-11-05 16:52:37');
 
 -- Volcando estructura para tabla planmaster.strategic_projects
 CREATE TABLE IF NOT EXISTS `strategic_projects` (
@@ -502,9 +621,9 @@ CREATE TABLE IF NOT EXISTS `strategic_projects` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `strategic_projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla planmaster.strategic_projects: ~9 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.strategic_projects: ~10 rows (aproximadamente)
 INSERT INTO `strategic_projects` (`id`, `user_id`, `project_name`, `company_name`, `created_at`, `updated_at`, `completed_at`, `status`, `progress_percentage`) VALUES
 	(1, 7, 'dafafaffafaf', 'fafafafaf', '2025-09-17 23:55:51', '2025-09-17 23:55:51', NULL, 'in_progress', NULL),
 	(2, 2, 'Plan de Superación de Caida de ventas', 'CAPICODEX', '2025-09-18 00:08:52', '2025-09-18 00:08:52', NULL, 'in_progress', NULL),
@@ -515,7 +634,8 @@ INSERT INTO `strategic_projects` (`id`, `user_id`, `project_name`, `company_name
 	(7, 10, 'dadawdawdadwadaw', 'dwdawdawdawd', '2025-09-18 19:05:32', '2025-09-18 19:05:32', NULL, 'in_progress', NULL),
 	(8, 3, 'Plan Estrategico Google 2025-2030: Tecnologia para Todos', 'Google', '2025-10-01 22:23:19', '2025-10-01 22:23:19', NULL, 'in_progress', 0.00),
 	(9, 3, 'plan estrategico', 'gaby corp', '2025-10-23 23:06:33', '2025-10-23 23:06:33', NULL, 'in_progress', 0.00),
-	(10, 1, 'BCG Test 2025-10-30 02:21:51', 'Empresa Demo BCG', '2025-10-30 01:21:51', '2025-10-30 01:21:51', NULL, 'draft', 0.00);
+	(10, 1, 'BCG Test 2025-10-30 02:21:51', 'Empresa Demo BCG', '2025-10-30 01:21:51', '2025-10-30 01:21:51', NULL, 'draft', 0.00),
+	(11, 10, 'Plan Estrategico para Farmacia Maria de los Angeles', 'Farmacia Maria de los Angeles', '2025-11-05 16:51:13', '2025-11-05 16:51:13', NULL, 'in_progress', 0.00);
 
 -- Volcando estructura para tabla planmaster.users
 CREATE TABLE IF NOT EXISTS `users` (
@@ -551,7 +671,7 @@ INSERT INTO `users` (`id`, `email`, `password`, `name`, `avatar`, `google_id`, `
 	(7, 'sf2022073902@virtual.upt.pe', NULL, 'SEBASTIAN NICOLAS FUENTES AVALOS', 'https://lh3.googleusercontent.com/a/ACg8ocIldVbBQckiP7rwOIKiNWrDyrMX8yoUr2wjceuxppk4ahCQpm0=s96-c', '118030351119923353936', 1, NULL, NULL, NULL, '2025-09-17 21:59:09', '2025-10-22 23:55:08', '2025-10-22 23:55:08', 'active'),
 	(8, 'ferquatck@gmail.com', NULL, 'fer ,', 'https://lh3.googleusercontent.com/a/ACg8ocJwB9Y4ST5t74ag0w5PyB7qshajRj4NsO-1HvO7QsUIOizrBg=s96-c', '108307062242127529441', 1, NULL, NULL, NULL, '2025-09-17 22:01:35', '2025-09-17 22:01:35', '2025-09-17 22:01:35', 'active'),
 	(9, 'cescamac@upt.pe', '$2y$10$KRSRaJ0qScKBdlIBKwpBwukDiVHkbC7FlEOcCdXF4QGBCjs6quv5e', 'cesar camac', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 04:08:08', '2025-09-18 04:08:15', '2025-09-18 04:08:15', 'active'),
-	(10, 'gagaga@email.com', '$2y$10$S58/gIoNoC9ruw9dia59sOpduIAYei2QBiNMEMwwuoyG33aV.UkdW', 'gagaga', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 19:05:09', '2025-10-30 01:30:42', '2025-10-30 01:30:42', 'active'),
+	(10, 'gagaga@email.com', '$2y$10$S58/gIoNoC9ruw9dia59sOpduIAYei2QBiNMEMwwuoyG33aV.UkdW', 'gagaga', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 19:05:09', '2025-11-05 16:50:44', '2025-11-05 16:50:44', 'active'),
 	(11, 'cc2022074262@virtual.upt.pe', NULL, 'CESAR NIKOLAS CAMAC MELENDEZ', 'https://lh3.googleusercontent.com/a/ACg8ocJ8aemfsa0JcyWht1g7g1wafmHFPaDnMqzk0JvbZnUWJ7-IDXmI=s96-c', '117081121404025596376', 1, NULL, NULL, NULL, '2025-10-22 22:55:19', '2025-10-29 22:03:30', '2025-10-29 22:03:30', 'active'),
 	(12, 'nicolas@gmail.com', '$2y$10$B9D2c/HG4gBK5jm4ywZ78OZ6eL9Y/HLPp4KsMgf28KfaEAD/EipxS', 'nicolas', NULL, NULL, 1, NULL, NULL, NULL, '2025-10-29 22:27:19', '2025-10-29 22:27:19', NULL, 'active'),
 	(13, 'nicolas@email.com', '$2y$10$gAzRBXs0em/rPVnOdZr2.OJKsKFidIaJrTqAICclH0v0TxAkDVInm', 'nicolas', NULL, NULL, 1, NULL, NULL, NULL, '2025-10-29 22:28:26', '2025-10-29 22:28:26', NULL, 'active');
