@@ -11,14 +11,44 @@ if (!AuthController::isLoggedIn()) {
     exit();
 }
 
+// Validar parámetros
+if (!isset($_GET['id'])) {
+    header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
+    exit();
+}
+
+$project_id = (int)$_GET['id'];
+$projectController = new ProjectController();
+
+// Verificar que el proyecto existe y pertenece al usuario
+$project = $projectController->getProject($project_id);
+if (!$project || $project['user_id'] != $_SESSION['user_id']) {
+    header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
+    exit();
+}
+
 // Obtener datos del usuario para el header
 $user = AuthController::getCurrentUser();
 
-// Para propósitos de test, usamos datos de proyecto ficticio
-$project = [
-    'project_name' => 'Análisis BCG ',
-    'id' => 'test'
-];
+// Obtener datos BCG existentes
+$bcg_products = $projectController->getBCGAnalysis($project_id);
+$bcg_matrix = $projectController->getBCGMatrix($project_id);
+// Obtener análisis BCG mejorado (productos, evolución y competidores)
+$enhanced_bcg = $projectController->getEnhancedBCGAnalysis($project_id);
+if (!$enhanced_bcg) {
+    $enhanced_bcg = [
+        'products' => [],
+        'market_evolution' => [],
+        'competitors' => []
+    ];
+}
+// datos para inyección en JS
+$bcg_products_enhanced = $enhanced_bcg['products'];
+$bcg_market_evolution = $enhanced_bcg['market_evolution'];
+$bcg_competitors = $enhanced_bcg['competitors'];
+
+// Obtener datos del usuario para el header
+$user = AuthController::getCurrentUser();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -238,11 +268,14 @@ $project = [
 
     <script>
         // ===== VARIABLES GLOBALES =====
-        let products = [];                    // TABLA 1: Lista de productos con ventas
-        let marketGrowthData = [];           // TABLA 2: TCM por período y producto  
-        let competitorsByProduct = {};       // TABLA 3: Competidores por producto
-        let sectorDemandData = [];          // TABLA 4: Demanda global del sector
+    let products = <?php echo json_encode($bcg_products_enhanced ?? [], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP); ?>;                    // TABLA 1: Lista de productos con ventas
+    let marketGrowthData = <?php echo json_encode($bcg_market_evolution ?? [], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP); ?>;           // TABLA 2: TCM por período y producto  
+    let competitorsByProduct = <?php echo json_encode($bcg_competitors ?? [], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP); ?>;       // TABLA 3: Competidores por producto
+    let sectorDemandData = [];          // TABLA 4: Demanda global del sector (no almacenada actualmente)
         
+    // Compatibilidad: alias para nombres usados en el JS (varios lugares usan marketEvolution y competitorData)
+    let marketEvolution = marketGrowthData;
+    let competitorData = competitorsByProduct;
         // Colores distintivos para productos (máximo 6)
         const productColors = [
             '#fef3c7', '#d1fae5', '#dbeafe', '#f3e8ff', '#fed7d7', '#e6fffa'
@@ -1734,11 +1767,3 @@ Posición: ${positioning.position || 'Perro 🐕'}</title>
             console.log('🔧 Funciones de debug disponibles: debugBCG(), calculateAllMetrics()');
         });
     </script>
-    
-    </div> <!-- Cerrar container -->
-    
-    <?php include __DIR__ . '/../Users/footer.php'; ?>
-    
-    <script src="<?php echo getBaseUrl(); ?>/Publics/js/dashboard.js"></script>
-</body>
-</html>

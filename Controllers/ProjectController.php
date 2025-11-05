@@ -539,7 +539,7 @@ class ProjectController {
                 throw new Exception("Error interno al guardar");
             }
             
-            header("Location: " . getBaseUrl() . "/Views/Projects/bcg-test.php?id=" . $project_id);
+            header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
             exit();
             
         } catch (Exception $e) {
@@ -650,7 +650,7 @@ class ProjectController {
             }
             
             // Redirección normal
-            header("Location: " . getBaseUrl() . "/Views/Projects/bcg-test.php?id=" . $project_id);
+            header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
             exit();
             
         } catch (Exception $e) {
@@ -670,7 +670,7 @@ class ProjectController {
             // Redirección normal
             $project_id = $_POST['project_id'] ?? '';
             if (!empty($project_id)) {
-                header("Location: " . getBaseUrl() . "/Views/Projects/bcg-test.php?id=" . $project_id);
+                header("Location: " . getBaseUrl() . "/Views/Projects/bcg-analysis.php?id=" . $project_id);
             } else {
                 header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
             }

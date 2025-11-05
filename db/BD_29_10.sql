@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Versión del servidor:         10.4.32-MariaDB - mariadb.org binary distribution
--- SO del servidor:              Win64
+-- Host:                         nozomi.proxy.rlwy.net
+-- Versión del servidor:         9.4.0 - MySQL Community Server - GPL
+-- SO del servidor:              Linux
 -- HeidiSQL Versión:             12.10.0.7000
 -- --------------------------------------------------------
 
@@ -15,223 +15,208 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
--- Volcando estructura de base de datos para planmaster
-CREATE DATABASE IF NOT EXISTS `planmaster` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+-- Volcando estructura de base de datos para railway
+CREATE DATABASE IF NOT EXISTS `planmaster` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `planmaster`;
 
--- Volcando estructura para tabla planmaster.project_bcg_analysis
+-- Volcando estructura para tabla railway.project_bcg_analysis
 CREATE TABLE IF NOT EXISTS `project_bcg_analysis` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
   `analysis_name` varchar(255) DEFAULT 'Análisis BCG',
   `analysis_status` enum('draft','in_progress','completed') DEFAULT 'draft',
-  `total_sales_forecast` decimal(15,2) DEFAULT 0.00,
-  `average_tcm` decimal(5,2) DEFAULT 0.00,
-  `average_prm` decimal(5,2) DEFAULT 0.00,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `total_sales_forecast` decimal(15,2) DEFAULT '0.00',
+  `average_tcm` decimal(5,2) DEFAULT '0.00',
+  `average_prm` decimal(5,2) DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_project_bcg` (`project_id`),
   KEY `idx_bcg_project` (`project_id`),
-  KEY `idx_bcg_status` (`analysis_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_bcg_status` (`analysis_status`),
+  CONSTRAINT `project_bcg_analysis_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_analysis: ~1 rows (aproximadamente)
-INSERT INTO `project_bcg_analysis` (`id`, `project_id`, `analysis_name`, `analysis_status`, `total_sales_forecast`, `average_tcm`, `average_prm`, `created_at`, `updated_at`) VALUES
-	(1, 10, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-10-30 01:21:51', '2025-10-30 01:26:01'),
-	(3, 7, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+-- Volcando datos para la tabla railway.project_bcg_analysis: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_bcg_competitors
+-- Volcando estructura para tabla railway.project_bcg_competitors
 CREATE TABLE IF NOT EXISTS `project_bcg_competitors` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `product_id` int NOT NULL,
   `competitor_name` varchar(255) NOT NULL,
-  `competitor_sales` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `market_share_percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
-  `is_main_competitor` tinyint(1) DEFAULT 0,
-  `is_max_sales` tinyint(1) DEFAULT 0,
-  `competitor_order` int(11) NOT NULL DEFAULT 1,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `competitor_sales` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `market_share_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `is_main_competitor` tinyint(1) DEFAULT '0',
+  `is_max_sales` tinyint(1) DEFAULT '0',
+  `competitor_order` int NOT NULL DEFAULT '1',
+  `notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_competitors_project` (`project_id`),
   KEY `idx_competitors_product` (`product_id`),
   KEY `idx_competitors_order` (`product_id`,`competitor_order`),
-  KEY `idx_competitors_main` (`product_id`,`is_main_competitor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_competitors_main` (`product_id`,`is_main_competitor`),
+  CONSTRAINT `project_bcg_competitors_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `project_bcg_competitors_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `project_bcg_products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_competitors: ~14 rows (aproximadamente)
-INSERT INTO `project_bcg_competitors` (`id`, `project_id`, `product_id`, `competitor_name`, `competitor_sales`, `market_share_percentage`, `is_main_competitor`, `is_max_sales`, `competitor_order`, `notes`, `created_at`, `updated_at`) VALUES
-	(8, 10, 4, 'Apple iPhone', 25000.00, 0.00, 0, 0, 1, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(9, 10, 4, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(10, 10, 4, 'Xiaomi Mi', 18000.00, 0.00, 0, 0, 3, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(11, 10, 4, 'ASUS ROG', 12000.00, 0.00, 0, 0, 4, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(12, 10, 4, 'MSI Gaming', 10500.00, 0.00, 0, 0, 5, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(13, 10, 4, 'iPad Pro', 15000.00, 0.00, 0, 0, 6, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(14, 10, 4, 'Surface Pro', 8500.00, 0.00, 0, 0, 7, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(15, 7, 7, 'Apple iPhone', 25000.00, 0.00, 0, 0, 1, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(16, 7, 7, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(17, 7, 7, 'Xiaomi Mi', 18000.00, 0.00, 0, 0, 3, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(18, 7, 7, 'ASUS ROG', 12000.00, 0.00, 0, 0, 4, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(19, 7, 7, 'MSI Gaming', 10500.00, 0.00, 0, 0, 5, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(20, 7, 7, 'iPad Pro', 15000.00, 0.00, 0, 0, 6, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(21, 7, 7, 'Surface Pro', 8500.00, 0.00, 0, 0, 7, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+-- Volcando datos para la tabla railway.project_bcg_competitors: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_bcg_market_growth
+-- Volcando estructura para tabla railway.project_bcg_market_growth
 CREATE TABLE IF NOT EXISTS `project_bcg_market_growth` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `product_id` int NOT NULL,
   `period_name` varchar(100) NOT NULL,
-  `period_start_year` int(11) NOT NULL,
-  `period_end_year` int(11) NOT NULL,
-  `tcm_percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
-  `period_order` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `period_start_year` int NOT NULL,
+  `period_end_year` int NOT NULL,
+  `tcm_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `period_order` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_product_period` (`product_id`,`period_order`),
   KEY `idx_market_growth_project` (`project_id`),
   KEY `idx_market_growth_product` (`product_id`),
-  KEY `idx_market_growth_order` (`product_id`,`period_order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_market_growth_order` (`product_id`,`period_order`),
+  CONSTRAINT `project_bcg_market_growth_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `project_bcg_market_growth_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `project_bcg_products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_market_growth: ~2 rows (aproximadamente)
-INSERT INTO `project_bcg_market_growth` (`id`, `project_id`, `product_id`, `period_name`, `period_start_year`, `period_end_year`, `tcm_percentage`, `period_order`, `created_at`, `updated_at`) VALUES
-	(3, 10, 4, '2023-2024', 2023, 2024, 0.00, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(4, 10, 4, '2024-2025', 2024, 2025, 0.00, 2, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(5, 7, 7, '2023-2024', 2023, 2024, 0.00, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(6, 7, 7, '2024-2025', 2024, 2025, 0.00, 2, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+-- Volcando datos para la tabla railway.project_bcg_market_growth: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_bcg_matrix_results
+-- Volcando estructura para tabla railway.project_bcg_matrix_results
 CREATE TABLE IF NOT EXISTS `project_bcg_matrix_results` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `prm_relative_position` decimal(8,4) NOT NULL DEFAULT 0.0000,
-  `tcm_market_growth` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `prm_relative_position` decimal(8,4) NOT NULL DEFAULT '0.0000',
+  `tcm_market_growth` decimal(5,2) NOT NULL DEFAULT '0.00',
   `bcg_quadrant` enum('estrella','interrogante','vaca_lechera','perro') NOT NULL,
-  `quadrant_description` text DEFAULT NULL,
-  `strategic_recommendation` text DEFAULT NULL,
-  `matrix_position_x` decimal(8,4) NOT NULL DEFAULT 0.0000,
-  `matrix_position_y` decimal(8,4) NOT NULL DEFAULT 0.0000,
-  `bubble_size` decimal(8,4) DEFAULT 1.0000,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `quadrant_description` text,
+  `strategic_recommendation` text,
+  `matrix_position_x` decimal(8,4) NOT NULL DEFAULT '0.0000',
+  `matrix_position_y` decimal(8,4) NOT NULL DEFAULT '0.0000',
+  `bubble_size` decimal(8,4) DEFAULT '1.0000',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_product_matrix` (`product_id`),
   KEY `idx_matrix_project` (`project_id`),
   KEY `idx_matrix_product` (`product_id`),
-  KEY `idx_matrix_quadrant` (`project_id`,`bcg_quadrant`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_matrix_quadrant` (`project_id`,`bcg_quadrant`),
+  CONSTRAINT `project_bcg_matrix_results_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `project_bcg_matrix_results_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `project_bcg_products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_matrix_results: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_bcg_matrix_results: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_bcg_products
+-- Volcando estructura para tabla railway.project_bcg_products
 CREATE TABLE IF NOT EXISTS `project_bcg_products` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
   `product_name` varchar(255) NOT NULL,
-  `sales_forecast` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `sales_percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
-  `tcm_calculated` decimal(5,2) NOT NULL DEFAULT 0.00,
-  `prm_calculated` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `sales_forecast` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `sales_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `tcm_calculated` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `prm_calculated` decimal(5,2) NOT NULL DEFAULT '0.00',
   `bcg_quadrant` enum('estrella','interrogante','vaca_lechera','perro') DEFAULT NULL,
-  `bcg_position_x` decimal(8,4) DEFAULT 0.0000,
-  `bcg_position_y` decimal(8,4) DEFAULT 0.0000,
-  `product_order` int(11) NOT NULL DEFAULT 1,
-  `is_active` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `bcg_position_x` decimal(8,4) DEFAULT '0.0000',
+  `bcg_position_y` decimal(8,4) DEFAULT '0.0000',
+  `product_order` int NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_products_project` (`project_id`),
   KEY `idx_products_order` (`project_id`,`product_order`),
-  KEY `idx_products_active` (`project_id`,`is_active`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_products_active` (`project_id`,`is_active`),
+  CONSTRAINT `project_bcg_products_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_products: ~3 rows (aproximadamente)
-INSERT INTO `project_bcg_products` (`id`, `project_id`, `product_name`, `sales_forecast`, `sales_percentage`, `tcm_calculated`, `prm_calculated`, `bcg_quadrant`, `bcg_position_x`, `bcg_position_y`, `product_order`, `is_active`, `created_at`, `updated_at`) VALUES
-	(4, 10, 'Smartphone Pro', 15000.00, 52.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 1, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(5, 10, 'Laptop Gaming', 8500.00, 29.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 2, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(6, 10, 'Tablet Ultra', 5200.00, 18.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 3, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(7, 7, 'Smartphone Pro', 15000.00, 52.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 1, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(8, 7, 'Laptop Gaming', 8500.00, 29.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 2, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(9, 7, 'Tablet Ultra', 5200.00, 18.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 3, 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+-- Volcando datos para la tabla railway.project_bcg_products: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_bcg_sector_demand
+-- Volcando estructura para tabla railway.project_bcg_sector_demand
 CREATE TABLE IF NOT EXISTS `project_bcg_sector_demand` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `total_sector_demand` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `company_participation` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `participation_percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
-  `market_share_notes` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `total_sector_demand` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `company_participation` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `participation_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `market_share_notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_product_sector` (`product_id`),
   KEY `idx_sector_demand_project` (`project_id`),
-  KEY `idx_sector_demand_product` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_sector_demand_product` (`product_id`),
+  CONSTRAINT `project_bcg_sector_demand_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `project_bcg_sector_demand_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `project_bcg_products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_bcg_sector_demand: ~0 rows (aproximadamente)
-INSERT INTO `project_bcg_sector_demand` (`id`, `project_id`, `product_id`, `total_sector_demand`, `company_participation`, `participation_percentage`, `market_share_notes`, `created_at`, `updated_at`) VALUES
-	(1, 7, 7, 12.50, 1.25, 10.00, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(2, 7, 8, 8.30, 0.83, 10.00, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(3, 7, 9, 15.70, 1.57, 10.00, NULL, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+-- Volcando datos para la tabla railway.project_bcg_sector_demand: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_foda_analysis
+-- Volcando estructura para tabla railway.project_bcg_settings
+CREATE TABLE IF NOT EXISTS `project_bcg_settings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `tcm_threshold` decimal(5,2) DEFAULT '10.00',
+  `prm_threshold` decimal(8,4) DEFAULT '1.0000',
+  `currency_symbol` varchar(10) DEFAULT '$',
+  `decimal_places` int DEFAULT '2',
+  `show_percentages` tinyint(1) DEFAULT '1',
+  `matrix_colors` json DEFAULT NULL,
+  `analysis_notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_project_settings` (`project_id`),
+  KEY `idx_settings_project` (`project_id`),
+  CONSTRAINT `project_bcg_settings_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Volcando datos para la tabla railway.project_bcg_settings: ~0 rows (aproximadamente)
+
+-- Volcando estructura para tabla railway.project_foda_analysis
 CREATE TABLE IF NOT EXISTS `project_foda_analysis` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `type` enum('oportunidad','amenaza','fortaleza','debilidad') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `item_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `item_order` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `type` enum('oportunidad','amenaza','fortaleza','debilidad') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_order` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_project_foda` (`project_id`,`type`,`item_order`),
   CONSTRAINT `project_foda_analysis_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla planmaster.project_foda_analysis: ~6 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_foda_analysis: ~6 rows (aproximadamente)
 INSERT INTO `project_foda_analysis` (`id`, `project_id`, `type`, `item_text`, `item_order`, `created_at`, `updated_at`) VALUES
 	(83, 8, 'fortaleza', 'ASSDADSAD', 1, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
 	(84, 8, 'fortaleza', 'ASDASD', 2, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
 	(85, 8, 'fortaleza', 'ASDADSAD', 3, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
 	(86, 8, 'debilidad', 'ADAD', 1, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
 	(87, 8, 'debilidad', 'ASDAD', 2, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
-	(88, 8, 'debilidad', 'ASDASDAD', 3, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
-	(95, 10, 'fortaleza', 'Marca reconocida en el mercado', 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(96, 10, 'fortaleza', 'Equipo técnico altamente capacitado', 2, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(97, 10, 'fortaleza', 'Red de distribución consolidada', 3, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(98, 10, 'debilidad', 'Altos costos de producción', 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(99, 10, 'debilidad', 'Dependencia de proveedores externos', 2, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(100, 10, 'debilidad', 'Limitada presencia digital', 3, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
-	(101, 7, 'fortaleza', 'Marca reconocida en el mercado', 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(102, 7, 'fortaleza', 'Equipo técnico altamente capacitado', 2, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(103, 7, 'fortaleza', 'Red de distribución consolidada', 3, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(104, 7, 'debilidad', 'Altos costos de producción', 1, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(105, 7, 'debilidad', 'Dependencia de proveedores externos', 2, '2025-10-30 01:31:07', '2025-10-30 01:31:07'),
-	(106, 7, 'debilidad', 'Limitada presencia digital', 3, '2025-10-30 01:31:07', '2025-10-30 01:31:07');
+	(88, 8, 'debilidad', 'ASDASDAD', 3, '2025-10-23 23:12:36', '2025-10-23 23:12:36');
 
--- Volcando estructura para tabla planmaster.project_mission
+-- Volcando estructura para tabla railway.project_mission
 CREATE TABLE IF NOT EXISTS `project_mission` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
   `mission_text` text NOT NULL,
-  `is_completed` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_completed` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_project_mission` (`project_id`),
   CONSTRAINT `project_mission_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_mission: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_mission: ~5 rows (aproximadamente)
 INSERT INTO `project_mission` (`id`, `project_id`, `mission_text`, `is_completed`, `created_at`, `updated_at`) VALUES
 	(1, 2, 'Somos una empresa encargada de la superación de paginas web', 1, '2025-09-18 00:09:59', '2025-09-18 00:09:59'),
 	(2, 5, 'fsfsf', 1, '2025-09-18 18:45:44', '2025-09-18 18:45:44'),
@@ -239,38 +224,38 @@ INSERT INTO `project_mission` (`id`, `project_id`, `mission_text`, `is_completed
 	(4, 8, 'ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggsssssssssssssssssssssssssssssssssssss', 1, '2025-10-01 22:24:04', '2025-10-01 22:24:04'),
 	(5, 9, 'habhdhabdhabhdbandnman ajbdbahbdahbdhasd  ahbdhjabdhba', 1, '2025-10-23 23:07:04', '2025-10-23 23:07:04');
 
--- Volcando estructura para tabla planmaster.project_pest_analysis
+-- Volcando estructura para tabla railway.project_pest_analysis
 CREATE TABLE IF NOT EXISTS `project_pest_analysis` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `question_number` int(11) NOT NULL,
-  `rating` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `question_number` int NOT NULL,
+  `rating` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_project_pest_question` (`project_id`,`question_number`),
   CONSTRAINT `project_pest_analysis_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `project_pest_analysis_chk_1` CHECK (`question_number` between 1 and 25),
-  CONSTRAINT `project_pest_analysis_chk_2` CHECK (`rating` between 0 and 4)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `project_pest_analysis_chk_1` CHECK ((`question_number` between 1 and 25)),
+  CONSTRAINT `project_pest_analysis_chk_2` CHECK ((`rating` between 0 and 4))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla planmaster.project_pest_analysis: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_pest_analysis: ~0 rows (aproximadamente)
 
--- Volcando estructura para tabla planmaster.project_specific_objectives
+-- Volcando estructura para tabla railway.project_specific_objectives
 CREATE TABLE IF NOT EXISTS `project_specific_objectives` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `strategic_objective_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `strategic_objective_id` int NOT NULL,
   `objective_title` varchar(255) NOT NULL,
-  `objective_description` text DEFAULT NULL,
-  `objective_order` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `objective_description` text,
+  `objective_order` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_specific_objectives` (`strategic_objective_id`,`objective_order`),
   CONSTRAINT `project_specific_objectives_ibfk_1` FOREIGN KEY (`strategic_objective_id`) REFERENCES `project_strategic_objectives` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_specific_objectives: ~18 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_specific_objectives: ~18 rows (aproximadamente)
 INSERT INTO `project_specific_objectives` (`id`, `strategic_objective_id`, `objective_title`, `objective_description`, `objective_order`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Conectividad Global', '', 1, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
 	(2, 1, 'Dispositivos Accesibles', '', 2, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
@@ -291,21 +276,21 @@ INSERT INTO `project_specific_objectives` (`id`, `strategic_objective_id`, `obje
 	(17, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesNNNMM', '', 1, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
 	(18, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesKKK', '', 2, '2025-10-23 23:10:41', '2025-10-23 23:10:41');
 
--- Volcando estructura para tabla planmaster.project_strategic_objectives
+-- Volcando estructura para tabla railway.project_strategic_objectives
 CREATE TABLE IF NOT EXISTS `project_strategic_objectives` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
   `objective_title` varchar(255) NOT NULL,
-  `objective_description` text DEFAULT NULL,
-  `objective_order` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `objective_description` text,
+  `objective_order` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_project_objectives` (`project_id`,`objective_order`),
   CONSTRAINT `project_strategic_objectives_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_strategic_objectives: ~9 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_strategic_objectives: ~9 rows (aproximadamente)
 INSERT INTO `project_strategic_objectives` (`id`, `project_id`, `objective_title`, `objective_description`, `objective_order`, `created_at`, `updated_at`) VALUES
 	(1, 8, 'Democratizar el Acceso a la Tecnología', '', 1, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
 	(2, 8, 'Impulsar la Educación Digital Global', '', 2, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
@@ -317,20 +302,20 @@ INSERT INTO `project_strategic_objectives` (`id`, `project_id`, `objective_title
 	(8, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesFFFF', '', 2, '2025-10-23 23:10:41', '2025-10-23 23:10:41'),
 	(9, 9, '3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totalesNNNNN', '', 3, '2025-10-23 23:10:41', '2025-10-23 23:10:41');
 
--- Volcando estructura para tabla planmaster.project_values
+-- Volcando estructura para tabla railway.project_values
 CREATE TABLE IF NOT EXISTS `project_values` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
   `value_text` varchar(255) NOT NULL,
-  `value_order` int(11) NOT NULL DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `value_order` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_project_values` (`project_id`,`value_order`),
   CONSTRAINT `project_values_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_values: ~16 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_values: ~16 rows (aproximadamente)
 INSERT INTO `project_values` (`id`, `project_id`, `value_text`, `value_order`, `created_at`, `updated_at`) VALUES
 	(1, 6, 'Integridad', 1, '2025-09-18 18:48:55', '2025-09-18 18:48:55'),
 	(2, 6, 'Compromiso', 2, '2025-09-18 18:48:55', '2025-09-18 18:48:55'),
@@ -349,23 +334,23 @@ INSERT INTO `project_values` (`id`, `project_id`, `value_text`, `value_order`, `
 	(21, 9, 'Compromiso', 3, '2025-10-23 23:09:13', '2025-10-23 23:09:13'),
 	(22, 9, 'Excelencia', 4, '2025-10-23 23:09:13', '2025-10-23 23:09:13');
 
--- Volcando estructura para tabla planmaster.project_value_chain
+-- Volcando estructura para tabla railway.project_value_chain
 CREATE TABLE IF NOT EXISTS `project_value_chain` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
-  `question_number` int(11) NOT NULL,
-  `rating` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
+  `question_number` int NOT NULL,
+  `rating` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_project_question` (`project_id`,`question_number`),
   KEY `idx_project_id` (`project_id`),
   CONSTRAINT `project_value_chain_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `project_value_chain_chk_1` CHECK (`question_number` between 1 and 25),
-  CONSTRAINT `project_value_chain_chk_2` CHECK (`rating` between 0 and 4)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `project_value_chain_chk_1` CHECK ((`question_number` between 1 and 25)),
+  CONSTRAINT `project_value_chain_chk_2` CHECK ((`rating` between 0 and 4))
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla planmaster.project_value_chain: ~100 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_value_chain: ~100 rows (aproximadamente)
 INSERT INTO `project_value_chain` (`id`, `project_id`, `question_number`, `rating`, `created_at`, `updated_at`) VALUES
 	(1, 7, 1, 2, '2025-10-01 04:28:18', '2025-10-01 04:28:18'),
 	(2, 7, 2, 3, '2025-10-01 04:28:18', '2025-10-01 04:28:18'),
@@ -468,43 +453,43 @@ INSERT INTO `project_value_chain` (`id`, `project_id`, `question_number`, `ratin
 	(99, 9, 24, 1, '2025-10-23 23:11:46', '2025-10-23 23:11:46'),
 	(100, 9, 25, 1, '2025-10-23 23:11:46', '2025-10-23 23:11:46');
 
--- Volcando estructura para tabla planmaster.project_vision
+-- Volcando estructura para tabla railway.project_vision
 CREATE TABLE IF NOT EXISTS `project_vision` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `project_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `project_id` int NOT NULL,
   `vision_text` text NOT NULL,
-  `is_completed` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_completed` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_project_vision` (`project_id`),
   CONSTRAINT `project_vision_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `strategic_projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.project_vision: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla railway.project_vision: ~4 rows (aproximadamente)
 INSERT INTO `project_vision` (`id`, `project_id`, `vision_text`, `is_completed`, `created_at`, `updated_at`) VALUES
 	(1, 6, 'Ser reconocidos en 2027, como la mejor salchipaperia de Tacna', 1, '2025-09-18 18:48:30', '2025-09-18 18:48:30'),
 	(2, 8, 'afdddddddddddddddddddddddddddddddddddddddddddddd ssssssssssssssssssssssssssssssssssssssssssssss sssssssssssssssssssssssssssssssssssssssssssssssss', 1, '2025-10-01 22:24:15', '2025-10-01 22:24:15'),
 	(3, 5, 'Imagina tu empresa en 2-3 años: ¿Dónde estará ubicada? ¿Qué productos o servicios ofrecerá? ¿Cómo será reconocida en el mercado? ¿Cuál será su posición competitiva?', 1, '2025-10-22 22:37:42', '2025-10-22 22:37:42'),
 	(4, 9, 'ajsdkjabjdkbkjs ajbdkjakjdnkjand ajndkjadkjbajd ajsdkjbakjdbsa', 1, '2025-10-23 23:08:21', '2025-10-23 23:08:21');
 
--- Volcando estructura para tabla planmaster.strategic_projects
+-- Volcando estructura para tabla railway.strategic_projects
 CREATE TABLE IF NOT EXISTS `strategic_projects` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
   `project_name` varchar(255) NOT NULL,
   `company_name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `completed_at` timestamp NULL DEFAULT NULL,
   `status` enum('draft','in_progress','completed') DEFAULT 'draft',
-  `progress_percentage` decimal(5,2) DEFAULT 0.00,
+  `progress_percentage` decimal(5,2) DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `strategic_projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.strategic_projects: ~9 rows (aproximadamente)
+-- Volcando datos para la tabla railway.strategic_projects: ~8 rows (aproximadamente)
 INSERT INTO `strategic_projects` (`id`, `user_id`, `project_name`, `company_name`, `created_at`, `updated_at`, `completed_at`, `status`, `progress_percentage`) VALUES
 	(1, 7, 'dafafaffafaf', 'fafafafaf', '2025-09-17 23:55:51', '2025-09-17 23:55:51', NULL, 'in_progress', NULL),
 	(2, 2, 'Plan de Superación de Caida de ventas', 'CAPICODEX', '2025-09-18 00:08:52', '2025-09-18 00:08:52', NULL, 'in_progress', NULL),
@@ -514,23 +499,22 @@ INSERT INTO `strategic_projects` (`id`, `user_id`, `project_name`, `company_name
 	(6, 2, 'PLAN ESTRATEGICO PARA AUMENTO DE VENTAS DE LA SALCHIPAPERIA DE VICTOR', 'SALCHIPAPEANDO CON VICTOR', '2025-09-18 18:45:41', '2025-09-18 18:45:41', NULL, 'in_progress', NULL),
 	(7, 10, 'dadawdawdadwadaw', 'dwdawdawdawd', '2025-09-18 19:05:32', '2025-09-18 19:05:32', NULL, 'in_progress', NULL),
 	(8, 3, 'Plan Estrategico Google 2025-2030: Tecnologia para Todos', 'Google', '2025-10-01 22:23:19', '2025-10-01 22:23:19', NULL, 'in_progress', 0.00),
-	(9, 3, 'plan estrategico', 'gaby corp', '2025-10-23 23:06:33', '2025-10-23 23:06:33', NULL, 'in_progress', 0.00),
-	(10, 1, 'BCG Test 2025-10-30 02:21:51', 'Empresa Demo BCG', '2025-10-30 01:21:51', '2025-10-30 01:21:51', NULL, 'draft', 0.00);
+	(9, 3, 'plan estrategico', 'gaby corp', '2025-10-23 23:06:33', '2025-10-23 23:06:33', NULL, 'in_progress', 0.00);
 
--- Volcando estructura para tabla planmaster.users
+-- Volcando estructura para tabla railway.users
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   `avatar` varchar(500) DEFAULT NULL,
   `google_id` varchar(255) DEFAULT NULL,
-  `email_verified` tinyint(1) DEFAULT 0,
+  `email_verified` tinyint(1) DEFAULT '0',
   `verification_token` varchar(255) DEFAULT NULL,
   `reset_token` varchar(255) DEFAULT NULL,
   `reset_token_expires` datetime DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `last_login` timestamp NULL DEFAULT NULL,
   `status` enum('active','inactive','suspended') DEFAULT 'active',
   PRIMARY KEY (`id`),
@@ -538,9 +522,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `google_id` (`google_id`),
   KEY `idx_users_email` (`email`),
   KEY `idx_users_google_id` (`google_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.users: ~13 rows (aproximadamente)
+-- Volcando datos para la tabla railway.users: ~11 rows (aproximadamente)
 INSERT INTO `users` (`id`, `email`, `password`, `name`, `avatar`, `google_id`, `email_verified`, `verification_token`, `reset_token`, `reset_token_expires`, `created_at`, `updated_at`, `last_login`, `status`) VALUES
 	(1, 'admin@planmaster.com', '$2y$10$rCgRXCL8EfE5IUvYwLBVN.6wxPoSCS9QZUTnULXwT2cH4SCcrJ9U.', 'Administrador PlanMaster', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-11 19:04:33', '2025-09-11 23:02:26', NULL, 'active'),
 	(2, 'fuentessebastiansa4s@gmail.com', NULL, 'Sebastian Fuentes', 'https://lh3.googleusercontent.com/a/ACg8ocLfEswYK_9p-rBZuBQE7S8VeDn8_qMdo6rVjf2vCrLvDkU9CxBg=s96-c', '118266572871877651902', 1, NULL, NULL, NULL, '2025-09-11 23:08:36', '2025-09-18 18:59:08', '2025-09-18 18:59:08', 'active'),
@@ -551,26 +535,82 @@ INSERT INTO `users` (`id`, `email`, `password`, `name`, `avatar`, `google_id`, `
 	(7, 'sf2022073902@virtual.upt.pe', NULL, 'SEBASTIAN NICOLAS FUENTES AVALOS', 'https://lh3.googleusercontent.com/a/ACg8ocIldVbBQckiP7rwOIKiNWrDyrMX8yoUr2wjceuxppk4ahCQpm0=s96-c', '118030351119923353936', 1, NULL, NULL, NULL, '2025-09-17 21:59:09', '2025-10-22 23:55:08', '2025-10-22 23:55:08', 'active'),
 	(8, 'ferquatck@gmail.com', NULL, 'fer ,', 'https://lh3.googleusercontent.com/a/ACg8ocJwB9Y4ST5t74ag0w5PyB7qshajRj4NsO-1HvO7QsUIOizrBg=s96-c', '108307062242127529441', 1, NULL, NULL, NULL, '2025-09-17 22:01:35', '2025-09-17 22:01:35', '2025-09-17 22:01:35', 'active'),
 	(9, 'cescamac@upt.pe', '$2y$10$KRSRaJ0qScKBdlIBKwpBwukDiVHkbC7FlEOcCdXF4QGBCjs6quv5e', 'cesar camac', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 04:08:08', '2025-09-18 04:08:15', '2025-09-18 04:08:15', 'active'),
-	(10, 'gagaga@email.com', '$2y$10$S58/gIoNoC9ruw9dia59sOpduIAYei2QBiNMEMwwuoyG33aV.UkdW', 'gagaga', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 19:05:09', '2025-10-30 01:30:42', '2025-10-30 01:30:42', 'active'),
-	(11, 'cc2022074262@virtual.upt.pe', NULL, 'CESAR NIKOLAS CAMAC MELENDEZ', 'https://lh3.googleusercontent.com/a/ACg8ocJ8aemfsa0JcyWht1g7g1wafmHFPaDnMqzk0JvbZnUWJ7-IDXmI=s96-c', '117081121404025596376', 1, NULL, NULL, NULL, '2025-10-22 22:55:19', '2025-10-29 22:03:30', '2025-10-29 22:03:30', 'active'),
-	(12, 'nicolas@gmail.com', '$2y$10$B9D2c/HG4gBK5jm4ywZ78OZ6eL9Y/HLPp4KsMgf28KfaEAD/EipxS', 'nicolas', NULL, NULL, 1, NULL, NULL, NULL, '2025-10-29 22:27:19', '2025-10-29 22:27:19', NULL, 'active'),
-	(13, 'nicolas@email.com', '$2y$10$gAzRBXs0em/rPVnOdZr2.OJKsKFidIaJrTqAICclH0v0TxAkDVInm', 'nicolas', NULL, NULL, 1, NULL, NULL, NULL, '2025-10-29 22:28:26', '2025-10-29 22:28:26', NULL, 'active');
+	(10, 'gagaga@email.com', '$2y$10$S58/gIoNoC9ruw9dia59sOpduIAYei2QBiNMEMwwuoyG33aV.UkdW', 'gagaga', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 19:05:09', '2025-10-01 04:27:30', '2025-10-01 04:27:30', 'active'),
+	(11, 'cc2022074262@virtual.upt.pe', NULL, 'CESAR NIKOLAS CAMAC MELENDEZ', 'https://lh3.googleusercontent.com/a/ACg8ocJ8aemfsa0JcyWht1g7g1wafmHFPaDnMqzk0JvbZnUWJ7-IDXmI=s96-c', '117081121404025596376', 1, NULL, NULL, NULL, '2025-10-22 22:55:19', '2025-10-29 22:03:30', '2025-10-29 22:03:30', 'active');
 
--- Volcando estructura para tabla planmaster.user_sessions
+-- Volcando estructura para tabla railway.user_sessions
 CREATE TABLE IF NOT EXISTS `user_sessions` (
   `id` varchar(128) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` int NOT NULL,
   `ip_address` varchar(45) DEFAULT NULL,
-  `user_agent` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `expires_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `user_agent` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `expires_at` timestamp NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_sessions_user_id` (`user_id`),
   KEY `idx_sessions_expires` (`expires_at`),
   CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Volcando datos para la tabla planmaster.user_sessions: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla railway.user_sessions: ~0 rows (aproximadamente)
+
+-- Volcando estructura para disparador railway.tr_calculate_sales_percentage
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `tr_calculate_sales_percentage` AFTER INSERT ON `project_bcg_products` FOR EACH ROW BEGIN
+    UPDATE project_bcg_products p1 
+    JOIN (
+        SELECT project_id, SUM(sales_forecast) as total_sales 
+        FROM project_bcg_products 
+        WHERE project_id = NEW.project_id AND is_active = 1
+        GROUP BY project_id
+    ) p2 ON p1.project_id = p2.project_id
+    SET p1.sales_percentage = CASE 
+        WHEN p2.total_sales > 0 THEN (p1.sales_forecast / p2.total_sales) * 100 
+        ELSE 0 
+    END
+    WHERE p1.project_id = NEW.project_id AND p1.is_active = 1;
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
+-- Volcando estructura para disparador railway.tr_update_bcg_totals
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `tr_update_bcg_totals` AFTER UPDATE ON `project_bcg_products` FOR EACH ROW BEGIN
+    UPDATE project_bcg_analysis 
+    SET total_sales_forecast = (
+        SELECT COALESCE(SUM(sales_forecast), 0) 
+        FROM project_bcg_products 
+        WHERE project_id = NEW.project_id AND is_active = 1
+    ),
+    updated_at = CURRENT_TIMESTAMP
+    WHERE project_id = NEW.project_id;
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
+-- Volcando estructura para disparador railway.tr_update_sales_percentage
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `tr_update_sales_percentage` AFTER UPDATE ON `project_bcg_products` FOR EACH ROW BEGIN
+    IF OLD.sales_forecast != NEW.sales_forecast OR OLD.is_active != NEW.is_active THEN
+        UPDATE project_bcg_products p1 
+        JOIN (
+            SELECT project_id, SUM(sales_forecast) as total_sales 
+            FROM project_bcg_products 
+            WHERE project_id = NEW.project_id AND is_active = 1
+            GROUP BY project_id
+        ) p2 ON p1.project_id = p2.project_id
+        SET p1.sales_percentage = CASE 
+            WHEN p2.total_sales > 0 THEN (p1.sales_forecast / p2.total_sales) * 100 
+            ELSE 0 
+        END
+        WHERE p1.project_id = NEW.project_id AND p1.is_active = 1;
+    END IF;
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

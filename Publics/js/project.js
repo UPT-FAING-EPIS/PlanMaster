@@ -169,7 +169,7 @@ function startSection(sectionNum) {
         '4': 'objectives',
         '5': 'analisis-interno-externo',
         '6': 'value-chain',
-        '7': 'bcg-test',
+        '7': 'bcg-analysis',
         '8': 'porter-matrix',
         '9': 'pest-analysis',
         '10': 'strategies',
@@ -188,7 +188,7 @@ function startSection(sectionNum) {
             // Para las secciones 1-4, usar directamente el nombre del archivo
             if (sectionNum <= 4) {
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
-            } else if (sectionName === 'analisis-interno-externo' || sectionName === 'value-chain' || sectionName === 'bcg-test' || sectionName === 'pest-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
+            } else if (sectionName === 'analisis-interno-externo' || sectionName === 'value-chain' || sectionName === 'bcg-analysis' || sectionName === 'pest-analysis' || sectionName === 'strategies' || sectionName === 'came-matrix' || sectionName === 'porter-matrix' ) {
                 // Para Análisis Interno y Externo, Cadena de Valor, BCG, PEST y Estrategias
                 targetUrl = `${sectionName}.php?id=${projectData.id}`;
             } else {
