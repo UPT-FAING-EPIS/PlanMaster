@@ -24,6 +24,9 @@ class PorterController {
      * Maneja las peticiones HTTP para el análisis Porter
      */
     public function handleRequest() {
+        // Limpiar cualquier output previo
+        ob_clean();
+        
         // Asegurar que la sesión esté iniciada
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -32,6 +35,7 @@ class PorterController {
         // Verificar autenticación
         if (!AuthController::isLoggedIn()) {
             http_response_code(401);
+            header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Usuario no autenticado']);
             exit();
         }
@@ -70,11 +74,13 @@ class PorterController {
                     
                 default:
                     http_response_code(400);
+                    header('Content-Type: application/json');
                     echo json_encode(['success' => false, 'message' => 'Acción no válida']);
                     break;
             }
         } catch (Exception $e) {
             http_response_code(500);
+            header('Content-Type: application/json');
             echo json_encode([
                 'success' => false, 
                 'message' => 'Error del servidor: ' . $e->getMessage()
@@ -83,115 +89,68 @@ class PorterController {
     }
     
     /**
-     * Guarda el análisis Porter completo (factores + FODA)
+     * Guarda el análisis Porter - COPIADO EXACTAMENTE DE VALUE CHAIN
      */
     private function savePorterAnalysis() {
-        $project_id = (int)($_POST['project_id'] ?? 0);
-        
-        if ($project_id === 0) {
-            throw new Exception('ID de proyecto no válido');
-        }
-        
-        // Verificar que el proyecto pertenece al usuario
-        if (!$this->verifyProjectOwnership($project_id)) {
-            throw new Exception('No tienes permisos para este proyecto');
-        }
-        
-        // Procesar factores Porter - organizar por categoría
-        $factorsData = [];
-        foreach ($_POST as $key => $value) {
-            if (strpos($key, 'factor_') === 0) {
-                // Extraer información del factor
-                $factorKey = str_replace('factor_', '', $key);
-                $parts = explode('_', $factorKey);
+        try {
+            // Verificar que el usuario esté logueado
+            if (!AuthController::isLoggedIn()) {
+                header("Location: " . getBaseUrl() . "/Views/Auth/login.php");
+                exit();
+            }
+            
+            // Validar datos
+            if (!isset($_POST['project_id']) || !isset($_POST['responses'])) {
+                throw new Exception("Datos incompletos");
+            }
+            
+            $project_id = (int)$_POST['project_id'];
+            $responses = $_POST['responses'];
+            
+            // Validar que el proyecto pertenezca al usuario
+            if (!$this->verifyProjectOwnership($project_id)) {
+                throw new Exception("Proyecto no encontrado o sin permisos");
+            }
+            
+            // Validar que todas las respuestas están en el rango 1-5
+            foreach ($responses as $factor_id => $rating) {
+                $rating = (int)$rating;
+                if ($rating < 1 || $rating > 5) {
+                    throw new Exception("Rating fuera del rango permitido (1-5)");
+                }
+            }
+            
+            // Guardar las respuestas
+            if ($this->porterModel->saveResponses($project_id, $responses)) {
                 
-                if (count($parts) >= 2) {
-                    $category = $parts[0];
-                    $factorName = str_replace('_', ' ', implode(' ', array_slice($parts, 1)));
+                // Procesar oportunidades y amenazas si existen
+                if (isset($_POST['oportunidades']) || isset($_POST['amenazas'])) {
+                    $oportunidades = $_POST['oportunidades'] ?? [];
+                    $amenazas = $_POST['amenazas'] ?? [];
                     
-                    // Organizar por categoría como espera el modelo
-                    if (!isset($factorsData[$category])) {
-                        $factorsData[$category] = [];
-                    }
+                    // Filtrar textos vacíos
+                    $oportunidades = array_filter($oportunidades, function($texto) {
+                        return !empty(trim($texto));
+                    });
+                    $amenazas = array_filter($amenazas, function($texto) {
+                        return !empty(trim($texto));
+                    });
                     
-                    $factorsData[$category][] = [
-                        'factor_name' => $factorName,
-                        'selected_value' => (int)$value
-                    ];
+                    // Guardar items FODA
+                    $this->porterModel->saveFodaItems($project_id, $oportunidades, $amenazas);
                 }
-            }
-        }
-        
-        // Guardar factores Porter
-        if (!empty($factorsData)) {
-            $result = $this->porterModel->saveAnalysis($project_id, $factorsData);
-            if (!$result) {
-                throw new Exception('Error al guardar el análisis Porter');
-            }
-        }
-        
-        // Procesar items FODA
-        $fodaData = [];
-        
-        // Oportunidades
-        if (isset($_POST['oportunidades']) && is_array($_POST['oportunidades'])) {
-            foreach ($_POST['oportunidades'] as $item) {
-                $item = trim($item);
-                if (!empty($item)) {
-                    $fodaData[] = [
-                        'type' => 'oportunidad',
-                        'item_text' => $item
-                    ];
-                }
-            }
-        }
-        
-        // Amenazas
-        if (isset($_POST['amenazas']) && is_array($_POST['amenazas'])) {
-            foreach ($_POST['amenazas'] as $item) {
-                $item = trim($item);
-                if (!empty($item)) {
-                    $fodaData[] = [
-                        'type' => 'amenaza',
-                        'item_text' => $item
-                    ];
-                }
-            }
-        }
-        
-        // Guardar items FODA
-        if (!empty($fodaData)) {
-            // Separar oportunidades y amenazas
-            $oportunidades = [];
-            $amenazas = [];
-            
-            foreach ($fodaData as $item) {
-                if ($item['type'] === 'oportunidad') {
-                    $oportunidades[] = $item['item_text'];
-                } elseif ($item['type'] === 'amenaza') {
-                    $amenazas[] = $item['item_text'];
-                }
+                
+                // Redirigir con éxito
+                header("Location: ../Views/Projects/porter-matrix.php?id=" . $project_id . "&success=1");
+                exit();
+            } else {
+                throw new Exception("Error al guardar las respuestas");
             }
             
-            $fodaResult = $this->porterModel->saveFodaItems($project_id, $oportunidades, $amenazas);
-            if (!$fodaResult) {
-                throw new Exception('Error al guardar los items FODA');
-            }
-        }
-        
-        // Respuesta exitosa
-        if (isset($_POST['ajax']) && $_POST['ajax'] === '1') {
-            // Respuesta AJAX
-            $score = $this->porterModel->calculateScore($project_id);
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Análisis Porter guardado exitosamente',
-                'score' => $score
-            ]);
-        } else {
-            // Redirección normal
-            $redirect_url = "../Views/Projects/porter-matrix.php?id=" . $project_id . "&success=1";
-            header("Location: " . $redirect_url);
+        } catch (Exception $e) {
+            // Redirigir con error
+            $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+            header("Location: ../Views/Projects/porter-matrix.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
             exit();
         }
     }
@@ -434,18 +393,73 @@ class PorterController {
         
         return $this->porterModel->isComplete($project_id);
     }
+    
+    /**
+     * Obtiene información básica del proyecto para vistas
+     */
+    public function getProjectForView($project_id) {
+        if (!$this->verifyProjectOwnership($project_id)) {
+            return null;
+        }
+        
+        require_once __DIR__ . '/../config/database.php';
+        
+        $database = new Database();
+        $conn = $database->getConnection();
+        
+        if ($conn instanceof PDO) {
+            // Conexión PDO
+            $query = "SELECT * FROM strategic_projects WHERE id = :project_id AND user_id = :user_id";
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(':project_id', $project_id, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            // Conexión MySQLi
+            $query = "SELECT * FROM strategic_projects WHERE id = ? AND user_id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param('ii', $project_id, $_SESSION['user_id']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_assoc();
+        }
+    }
 }
 
-// Manejar peticiones directas al controlador solo si hay una acción definida
-if (($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') && 
-    (isset($_POST['action']) || isset($_GET['action']))) {
+// Manejar peticiones directas al controlador
+if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Verificar si hay una acción definida
+    $action = $_POST['action'] ?? $_GET['action'] ?? '';
     
-    // Asegurar que la sesión esté iniciada
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
+    if (!empty($action)) {
+        // Limpiar buffer de salida para evitar HTML previo
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_start();
+        
+        // Asegurar que la sesión esté iniciada
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        try {
+            $controller = new PorterController();
+            $controller->handleRequest();
+        } catch (Exception $e) {
+            // Limpiar cualquier output previo
+            ob_clean();
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error fatal: ' . $e->getMessage()
+            ]);
+        }
+        
+        // Limpiar buffer
+        ob_end_flush();
     }
-    
-    $controller = new PorterController();
-    $controller->handleRequest();
 }
 ?>

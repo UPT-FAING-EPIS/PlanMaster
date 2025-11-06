@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calcular resultados iniciales
     setTimeout(() => {
         calculateResults();
-        console.log('✅ Sistema Porter inicializado correctamente');
     }, 100);
 });
 
@@ -34,7 +33,6 @@ function setupEventListeners() {
     // Event listener para cambios en radio buttons
     document.addEventListener('change', function(e) {
         if (e.target.type === 'radio' && e.target.name.startsWith('factor_')) {
-            console.log('📻 Radio button cambió:', e.target.name, 'a', e.target.value);
             updateFactorValue(e.target);
             calculateResults();
         }
@@ -50,16 +48,11 @@ function setupEventListeners() {
 
 // Inicializar matriz de Porter
 function initializePorterMatrix() {
-    console.log('🔧 Inicializando Matriz de Porter...');
-    
-    if (typeof EXISTING_PORTER_DATA !== 'undefined' && EXISTING_PORTER_DATA) {
-        console.log('📊 Cargando datos existentes:', EXISTING_PORTER_DATA);
-    }
+    // Inicialización silenciosa
 }
 
 // Cargar datos existentes
 function loadExistingData() {
-    console.log('📂 Cargando datos existentes del Porter...');
     
     if (typeof EXISTING_PORTER_DATA !== 'undefined' && EXISTING_PORTER_DATA) {
         // Cargar análisis de factores si existen
@@ -77,9 +70,6 @@ function loadExistingData() {
             }
         }
         
-        console.log('✅ Datos existentes cargados correctamente');
-    } else {
-        console.log('ℹ️ No hay datos existentes para cargar');
     }
 }
 
@@ -123,8 +113,6 @@ function updateFactorValue(radioElement) {
     const factorName = radioElement.name;
     const selectedValue = parseInt(radioElement.value);
     
-    console.log(`📊 Factor actualizado: ${factorName} = ${selectedValue}`);
-    
     // Efecto visual
     animateFactorUpdate(radioElement);
 }
@@ -153,7 +141,7 @@ function calculateResults() {
     const selectedRadios = document.querySelectorAll('input[type="radio"]:checked');
     
     selectedRadios.forEach(radio => {
-        if (radio.name.startsWith('factor_')) {
+        if (radio.name.startsWith('responses[')) {
             const value = parseInt(radio.value) || 3;
             totalScore += value;
             totalFactors++;
@@ -163,7 +151,7 @@ function calculateResults() {
     
     // Si no hay factores, obtener total de factores disponibles con valor por defecto
     if (totalFactors === 0) {
-        const allRadios = document.querySelectorAll('input[type="radio"][name^="factor_"]');
+        const allRadios = document.querySelectorAll('input[type="radio"][name^="responses["]');
         const factorNames = new Set();
         
         allRadios.forEach(radio => {
@@ -251,7 +239,6 @@ function updateResultCardsColor(level) {
 function renderPorterMatrix() {
     // Esta función se ejecuta después de que el HTML base ya está renderizado por PHP
     // Aquí solo agregamos interactividad adicional si es necesario
-    console.log('🎨 Matriz Porter renderizada');
 }
 
 // Renderizar sección FODA
@@ -360,55 +347,18 @@ function updateFodaIndices(type) {
     });
 }
 
-// Guardar análisis Porter
+// Guardar análisis Porter - SIMPLE COMO VALUE CHAIN
 function savePorterAnalysis() {
-    // Usar el formulario HTML existente
+    // El formulario se envía normalmente, no necesita AJAX
+    // Esta función se mantiene por compatibilidad pero no se usa
     const form = document.getElementById('porter-form');
-    if (!form) {
-        console.error('❌ No se encontró el formulario porter-form');
-        return;
+    if (form) {
+        form.submit();
     }
-    
-    const formData = new FormData(form);
-    
-    // Asegurar que el action esté incluido
-    formData.set('action', 'save_porter');
-    formData.set('project_id', PROJECT_ID);
-    
-    // Los datos FODA ya están incluidos en el FormData del formulario
-    
-    // Mostrar indicador de guardado
-    showSaveIndicator('Guardando análisis Porter...');
-    
-    console.log('📤 Enviando datos:', Object.fromEntries(formData.entries()));
-    
-    // Enviar datos
-    fetch(`${BASE_URL}/Controllers/PorterController.php`, {
-        method: 'POST',
-        credentials: 'same-origin', // Incluir cookies de sesión
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAlert('✅ Análisis Porter guardado exitosamente', 'success');
-            resetUnsavedChanges();
-        } else {
-            throw new Error(data.message || 'Error al guardar');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('❌ Error al guardar el análisis Porter: ' + error.message, 'error');
-    })
-    .finally(() => {
-        hideSaveIndicator();
-    });
 }
 
 // Auto-guardar
 function autoSavePorter() {
-    console.log('💾 Auto-guardando análisis Porter...');
     savePorterAnalysis();
 }
 

@@ -2,7 +2,6 @@
 // Incluir configuraciones necesarias
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
-require_once __DIR__ . '/../../Controllers/ProjectController.php';
 require_once __DIR__ . '/../../Controllers/PorterController.php';
 require_once __DIR__ . '/../../config/url_config.php';
 
@@ -19,12 +18,11 @@ if (!isset($_GET['id'])) {
 }
 
 $project_id = (int)$_GET['id'];
-$projectController = new ProjectController();
 $porterController = new PorterController();
 
-// Verificar que el proyecto existe y pertenece al usuario
-$project = $projectController->getProject($project_id);
-if (!$project || $project['user_id'] != $_SESSION['user_id']) {
+// Verificar que el proyecto existe y pertenece al usuario usando SOLO PorterController
+$project = $porterController->getProjectForView($project_id);
+if (!$project) {
     header("Location: " . getBaseUrl() . "/Views/Users/dashboard.php");
     exit();
 }
@@ -129,7 +127,7 @@ $standardFactors = $porterModel->getStandardFactors();
             </div>
 
             <!-- Formulario del análisis Porter -->
-            <form id="porter-form" action="<?php echo getBaseUrl(); ?>/Controllers/PorterController.php" method="POST">
+            <form id="porter-form" action="<?php echo getBaseUrl(); ?>/Controllers/PorterController.php?action=save_porter" method="POST">
                 <input type="hidden" name="action" value="save_porter">
                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
                 
@@ -171,17 +169,19 @@ $standardFactors = $porterModel->getStandardFactors();
                             </thead>
                             <tbody>
                                 <?php foreach ($factors as $factor): 
-                                    // Buscar valor existente
-                                    $selectedValue = 3; // Valor por defecto
+                                    // Buscar datos existentes de la BD - USAR ID REAL DE LA BD
+                                    $selectedValue = null;
+                                    $factorDbId = null;
+                                    
                                     if (isset($porterAnalysis[$category])) {
                                         foreach ($porterAnalysis[$category] as $existingFactor) {
                                             if ($existingFactor['factor_name'] === $factor['name']) {
                                                 $selectedValue = $existingFactor['selected_value'];
+                                                $factorDbId = $existingFactor['id'];  // USAR ID DE LA BD
                                                 break;
                                             }
                                         }
                                     }
-                                    $factorId = $category . '_' . str_replace(' ', '_', $factor['name']);
                                 ?>
                                 <tr>
                                     <td class="factor-name"><?php echo htmlspecialchars($factor['name']); ?></td>
@@ -192,9 +192,10 @@ $standardFactors = $porterModel->getStandardFactors();
                                         <div class="porter-radio-group">
                                             <label class="porter-radio">
                                                 <input type="radio" 
-                                                       name="factor_<?php echo $factorId; ?>" 
+                                                       name="responses[<?php echo $factorDbId; ?>]" 
                                                        value="<?php echo $i; ?>"
-                                                       <?php echo ($selectedValue == $i) ? 'checked' : ''; ?>>
+                                                       <?php echo ($selectedValue == $i) ? 'checked' : ''; ?>
+                                                       <?php echo $factorDbId ? '' : 'disabled'; ?>>
                                                 <span class="porter-radio-custom"><?php echo $i; ?></span>
                                             </label>
                                         </div>
@@ -211,48 +212,13 @@ $standardFactors = $porterModel->getStandardFactors();
                 
                 <?php endforeach; ?>
                 
-            </form>
-            
-            <!-- Resultados del análisis -->
-            <?php if ($porterScore && $porterScore['total_score'] > 0): ?>
-            <div class="porter-results">
-                <h3>📊 Resultados del Análisis Porter</h3>
-                <div class="results-grid">
-                    <div class="result-card">
-                        <div class="result-number" id="total-score"><?php echo $porterScore['total_score']; ?></div>
-                        <div class="result-label">Puntuación Total</div>
-                        <div class="result-sublabel">de <?php echo $porterScore['max_score']; ?> puntos máximos</div>
-                    </div>
-                    <div class="result-card">
-                        <div class="result-number" id="average-score"><?php echo $porterScore['average_score']; ?></div>
-                        <div class="result-label">Promedio por Factor</div>
-                        <div class="result-sublabel">Escala 1-5</div>
-                    </div>
-                    <div class="result-card highlight">
-                        <div class="result-number" id="percentage-score"><?php echo $porterScore['percentage']; ?>%</div>
-                        <div class="result-label">Competitividad</div>
-                        <div class="result-sublabel" id="competitiveness-level"><?php echo $porterScore['competitiveness']; ?></div>
-                    </div>
-                </div>
                 
-                <div class="porter-recommendation">
-                    <p class="recommendation-text" id="porter-recommendation">
-                        <?php echo htmlspecialchars($porterScore['recommendation']); ?>
+                <!-- Sección FODA derivada de Porter -->
+                <div class="porter-foda-section">
+                    <h3>🎯 Oportunidades y Amenazas del Entorno</h3>
+                    <p style="text-align: center; margin-bottom: 25px; color: #6b7280;">
+                        Una vez analizado el entorno próximo de su empresa (análisis externo del microentorno), identifique las <strong>oportunidades y amenazas</strong> más relevantes que desee que se reflejen en el análisis FODA de su Plan Estratégico.
                     </p>
-                </div>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Sección FODA derivada de Porter -->
-            <div class="porter-foda-section">
-                <h3>🎯 Oportunidades y Amenazas del Entorno</h3>
-                <p style="text-align: center; margin-bottom: 25px; color: #6b7280;">
-                    Una vez analizado el entorno próximo de su empresa (análisis externo del microentorno), identifique las <strong>oportunidades y amenazas</strong> más relevantes que desee que se reflejen en el análisis FODA de su Plan Estratégico.
-                </p>
-                
-                <form id="porter-foda-form" action="<?php echo getBaseUrl(); ?>/Controllers/PorterController.php" method="POST">
-                    <input type="hidden" name="action" value="save_porter">
-                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
                     
                     <div class="foda-grid">
                         <!-- Oportunidades -->
@@ -301,14 +267,49 @@ $standardFactors = $porterModel->getStandardFactors();
                             </button>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+                
+                <!-- Botón de guardar dentro del formulario -->
+                <div class="porter-actions">
+                    <button type="submit" class="btn-porter primary">
+                        💾 Guardar Análisis Porter
+                    </button>
+                </div>
             
-            <!-- Botones de acción -->
+            </form>
+            
+            <!-- Resultados del análisis -->
+            <?php if ($porterScore && $porterScore['total_score'] > 0): ?>
+            <div class="porter-results">
+                <h3>📊 Resultados del Análisis Porter</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-number" id="total-score"><?php echo $porterScore['total_score']; ?></div>
+                        <div class="result-label">Puntuación Total</div>
+                        <div class="result-sublabel">de <?php echo $porterScore['max_score']; ?> puntos máximos</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number" id="average-score"><?php echo $porterScore['average_score']; ?></div>
+                        <div class="result-label">Promedio por Factor</div>
+                        <div class="result-sublabel">Escala 1-5</div>
+                    </div>
+                    <div class="result-card highlight">
+                        <div class="result-number" id="percentage-score"><?php echo $porterScore['percentage']; ?>%</div>
+                        <div class="result-label">Competitividad</div>
+                        <div class="result-sublabel" id="competitiveness-level"><?php echo $porterScore['competitiveness']; ?></div>
+                    </div>
+                </div>
+                
+                <div class="porter-recommendation">
+                    <p class="recommendation-text" id="porter-recommendation">
+                        <?php echo htmlspecialchars($porterScore['recommendation']); ?>
+                    </p>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <!-- Botones de navegación -->
             <div class="porter-actions">
-                <button type="submit" form="porter-form" class="btn-porter primary">
-                    💾 Guardar Análisis Porter
-                </button>
                 <a href="project.php?id=<?php echo $project_id; ?>" class="btn-porter secondary">
                     ← Volver al Proyecto
                 </a>

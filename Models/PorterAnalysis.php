@@ -135,7 +135,7 @@ class PorterAnalysis {
                 $stmt = $this->conn->prepare("
                     INSERT IGNORE INTO project_porter_analysis 
                     (project_id, factor_category, factor_name, hostil_label, favorable_label, selected_value, factor_order) 
-                    VALUES (?, ?, ?, ?, ?, 3, ?)
+                    VALUES (?, ?, ?, ?, ?, NULL, ?)
                 ");
                 
                 $stmt->bind_param('issssi', 
@@ -176,26 +176,114 @@ class PorterAnalysis {
         return $analysis;
     }
 
-    // Guardar análisis Porter
+    // Guardar respuestas Porter - COPIADO EXACTAMENTE DE VALUE CHAIN
+    public function saveResponses($project_id, $responses) {
+        try {
+            $this->conn->autocommit(FALSE);
+            
+            // Actualizar respuestas existentes directamente (sin eliminar)
+            $query = "UPDATE project_porter_analysis 
+                     SET selected_value = ?, updated_at = CURRENT_TIMESTAMP
+                     WHERE project_id = ? AND id = ?";
+            $stmt = $this->conn->prepare($query);
+            
+            foreach ($responses as $factor_id => $rating) {
+                $rating_value = intval($rating);
+                if ($rating_value >= 1 && $rating_value <= 5) {
+                    $stmt->bind_param('iii', $rating_value, $project_id, $factor_id);
+                    $stmt->execute();
+                }
+            }
+            
+            $this->conn->commit();
+            $this->conn->autocommit(TRUE);
+            return true;
+            
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            $this->conn->autocommit(TRUE);
+            error_log("Error saving porter responses: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Guardar análisis Porter - MÉTODO ANTERIOR (mantener para compatibilidad)
     public function saveAnalysis($project_id, $analysisData) {
         $this->conn->begin_transaction();
         
         try {
             foreach ($analysisData as $category => $factors) {
                 foreach ($factors as $factor) {
+                    // Validar que el valor está en el rango correcto (1-5)
+                    $selectedValue = (int)$factor['selected_value'];
+                    if ($selectedValue < 1 || $selectedValue > 5) {
+                        error_log("WARNING: Invalid value $selectedValue for factor {$factor['factor_name']}, skipping");
+                        continue;
+                    }
+                    
+                    // DEBUG: Ver exactamente qué se está intentando actualizar
+                    error_log("UPDATE: project_id=$project_id, category=$category, factor_name={$factor['factor_name']}, value=$selectedValue");
+                    
+                    // Usar UPDATE directo ya que los registros ya existen
                     $stmt = $this->conn->prepare("
                         UPDATE project_porter_analysis 
-                        SET selected_value = ? 
+                        SET selected_value = ?, updated_at = CURRENT_TIMESTAMP
                         WHERE project_id = ? AND factor_category = ? AND factor_name = ?
                     ");
                     
+                    // Asegurar que todas las variables están definidas correctamente
+                    $projectId = (int)$project_id;
                     $stmt->bind_param('iiss', 
-                        $factor['selected_value'], 
-                        $project_id, 
+                        $selectedValue,
+                        $projectId,
                         $category, 
                         $factor['factor_name']
                     );
-                    $stmt->execute();
+                    
+                    $result = $stmt->execute();
+                    $affectedRows = $stmt->affected_rows;
+                    
+                    // DEBUG: Ver si la actualización funcionó
+                    error_log("Affected rows for {$factor['factor_name']}: $affectedRows");
+                    
+                    // Si no se actualizó ningún registro, insertar uno nuevo
+                    if ($affectedRows == 0) {
+                        error_log("No existing record found, inserting new one");
+                        $insertStmt = $this->conn->prepare("
+                            INSERT INTO project_porter_analysis 
+                            (project_id, factor_category, factor_name, selected_value, hostil_label, favorable_label, factor_order)
+                            VALUES (?, ?, ?, ?, '', '', 1)
+                        ");
+                        
+                        $insertStmt->bind_param('issi', 
+                            $projectId,
+                            $category, 
+                            $factor['factor_name'],
+                            $selectedValue
+                        );
+                        
+                        $insertResult = $insertStmt->execute();
+                        if (!$insertResult) {
+                            error_log("INSERT failed: " . $insertStmt->error);
+                        }
+                    } else {
+                        // Verificar que el valor se guardó correctamente
+                        $verifyStmt = $this->conn->prepare("
+                            SELECT selected_value FROM project_porter_analysis 
+                            WHERE project_id = ? AND factor_category = ? AND factor_name = ?
+                        ");
+                        $verifyStmt->bind_param('iss', $projectId, $category, $factor['factor_name']);
+                        $verifyStmt->execute();
+                        $verifyResult = $verifyStmt->get_result();
+                        $verifyRow = $verifyResult->fetch_assoc();
+                        $savedValue = $verifyRow['selected_value'];
+                        
+                        error_log("Verification: Expected $selectedValue, Found " . ($savedValue ?? 'NULL'));
+                        
+                        if ($savedValue != $selectedValue) {
+                            error_log("ERROR: Value mismatch! Expected $selectedValue but found " . ($savedValue ?? 'NULL'));
+                        }
+                    }
                 }
             }
             
@@ -293,6 +381,7 @@ class PorterAnalysis {
                 $order = 1;
                 foreach ($amenazas as $amenaza) {
                     if (!empty(trim($amenaza))) {
+                        error_log("Inserting amenaza: " . trim($amenaza));
                         $stmt = $this->conn->prepare("
                             INSERT INTO project_porter_foda (project_id, type, item_text, item_order) 
                             VALUES (?, 'amenaza', ?, ?)
