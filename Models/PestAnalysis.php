@@ -44,9 +44,10 @@ class PestAnalysis {
     // Obtener categorías PEST
     public function getPestCategories() {
         return [
+            'S' => 'Social y Demográfico',
+            'M' => 'Medioambiental',
             'P' => 'Político',
             'E' => 'Económico', 
-            'S' => 'Social',
             'T' => 'Tecnológico'
         ];
     }
@@ -54,10 +55,16 @@ class PestAnalysis {
     // Mapear preguntas por categorías PEST
     public function getQuestionsByCategory() {
         return [
-            'P' => [6, 7, 8, 9, 10], // Político (5 preguntas)
-            'E' => [11, 12, 13, 14, 15], // Económico (5 preguntas)
-            'S' => [1, 2, 3, 4, 5, 21, 22, 23, 24, 25], // Social (10 preguntas)
-            'T' => [16, 17, 18, 19, 20] // Tecnológico (5 preguntas)
+            // Social: preguntas 1-5
+            'S' => [1, 2, 3, 4, 5],
+            // Medioambiental: preguntas 21-25
+            'M' => [21, 22, 23, 24, 25],
+            // Político: preguntas 6-10
+            'P' => [6, 7, 8, 9, 10],
+            // Económico: preguntas 11-15
+            'E' => [11, 12, 13, 14, 15],
+            // Tecnológico: preguntas 16-20
+            'T' => [16, 17, 18, 19, 20]
         ];
     }
     

@@ -51,6 +51,163 @@ $pestSummary = $projectController->getPestSummary($project_id);
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_dashboard.css">
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_project.css">
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_pest_analysis.css">
+    
+    <style>
+        /* Estilos para el diagrama PEST mejorado */
+        .pest-chart-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .chart-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .chart-header h3 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .chart-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .pest-bars-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .pest-bar-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .pest-bar-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .bar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+        
+        .bar-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .bar-icon.social { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+        .bar-icon.political { background: linear-gradient(135deg, #f87171, #ef4444); }
+        .bar-icon.economic { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .bar-icon.tech { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+        .bar-icon.environmental { background: linear-gradient(135deg, #34d399, #10b981); }
+        
+        .bar-info {
+            flex: 1;
+        }
+        
+        .bar-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        .bar-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+        
+        .bar-score {
+            text-align: right;
+        }
+        
+        .score-number {
+            color: #fbbf24;
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .score-max {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+        }
+        
+        .bar-track {
+            position: relative;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-bar { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+        .political-bar { background: linear-gradient(90deg, #f87171, #ef4444); }
+        .economic-bar { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+        .tech-bar { background: linear-gradient(90deg, #a78bfa, #8b5cf6); }
+        .environmental-bar { background: linear-gradient(90deg, #34d399, #10b981); }
+        
+        .bar-markers {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            height: 16px;
+        }
+        
+        .marker {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            font-weight: 500;
+            transform: translateX(-50%);
+        }
+        
+        @media (min-width: 768px) {
+            .pest-bars-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .pest-bars-grid {
+                grid-template-columns: 1fr;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+        }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -69,7 +226,6 @@ $pestSummary = $projectController->getPestSummary($project_id);
             <div class="project-header">
                 <div class="project-info">
                     <h2>🏢 <?php echo htmlspecialchars($project['project_name']); ?></h2>
-                    <p class="project-description"><?php echo htmlspecialchars($project['project_description']); ?></p>
                     <p><strong>Paso 9:</strong> Análisis Externo Macroentorno (PEST)</p>
                 </div>
             </div>
@@ -141,27 +297,157 @@ $pestSummary = $projectController->getPestSummary($project_id);
             <?php endif; ?>
             
             <!-- Formulario de diagnóstico -->
-            <form action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_pest_analysis" method="POST" class="pest-form">
+            <form id="pest-form" action="<?php echo getBaseUrl(); ?>/Controllers/PestController.php?action=save_pest" method="POST" class="pest-form">
                 <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
                 
+                <!-- DIAGRAMA DE BARRAS PEST MEJORADO -->
+                <div class="pest-chart-container">
+                    <div class="chart-header">
+                        <h3>📊 Análisis en Tiempo Real por Factores PEST</h3>
+                        <p>Complete las preguntas para ver el impacto de cada factor en su entorno empresarial</p>
+                    </div>
+                    
+                    <div class="pest-bars-grid">
+                        <!-- Factor Social -->
+                        <div class="pest-bar-item">
+                            <div class="bar-header">
+                                <div class="bar-icon social">👥</div>
+                                <div class="bar-info">
+                                    <div class="bar-title">SOCIAL Y DEMOGRÁFICO</div>
+                                    <div class="bar-subtitle">Preguntas 1-5</div>
+                                </div>
+                                <div class="bar-score">
+                                    <span id="score-social" class="score-number">0</span>
+                                    <span class="score-max">/100</span>
+                                </div>
+                            </div>
+                            <div class="bar-track">
+                                <div id="bar-social" class="bar-fill social-bar"></div>
+                                <div class="bar-markers">
+                                    <span class="marker" style="left: 20%;">20</span>
+                                    <span class="marker" style="left: 40%;">40</span>
+                                    <span class="marker" style="left: 60%;">60</span>
+                                    <span class="marker" style="left: 80%;">80</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Factor Político -->
+                        <div class="pest-bar-item">
+                            <div class="bar-header">
+                                <div class="bar-icon political">🏛️</div>
+                                <div class="bar-info">
+                                    <div class="bar-title">POLÍTICO</div>
+                                    <div class="bar-subtitle">Preguntas 6-10</div>
+                                </div>
+                                <div class="bar-score">
+                                    <span id="score-politic" class="score-number">0</span>
+                                    <span class="score-max">/100</span>
+                                </div>
+                            </div>
+                            <div class="bar-track">
+                                <div id="bar-politic" class="bar-fill political-bar"></div>
+                                <div class="bar-markers">
+                                    <span class="marker" style="left: 20%;">20</span>
+                                    <span class="marker" style="left: 40%;">40</span>
+                                    <span class="marker" style="left: 60%;">60</span>
+                                    <span class="marker" style="left: 80%;">80</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Factor Económico -->
+                        <div class="pest-bar-item">
+                            <div class="bar-header">
+                                <div class="bar-icon economic">💰</div>
+                                <div class="bar-info">
+                                    <div class="bar-title">ECONÓMICO</div>
+                                    <div class="bar-subtitle">Preguntas 11-15</div>
+                                </div>
+                                <div class="bar-score">
+                                    <span id="score-econ" class="score-number">0</span>
+                                    <span class="score-max">/100</span>
+                                </div>
+                            </div>
+                            <div class="bar-track">
+                                <div id="bar-econ" class="bar-fill economic-bar"></div>
+                                <div class="bar-markers">
+                                    <span class="marker" style="left: 20%;">20</span>
+                                    <span class="marker" style="left: 40%;">40</span>
+                                    <span class="marker" style="left: 60%;">60</span>
+                                    <span class="marker" style="left: 80%;">80</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Factor Tecnológico -->
+                        <div class="pest-bar-item">
+                            <div class="bar-header">
+                                <div class="bar-icon tech">🔧</div>
+                                <div class="bar-info">
+                                    <div class="bar-title">TECNOLÓGICO</div>
+                                    <div class="bar-subtitle">Preguntas 16-20</div>
+                                </div>
+                                <div class="bar-score">
+                                    <span id="score-tech" class="score-number">0</span>
+                                    <span class="score-max">/100</span>
+                                </div>
+                            </div>
+                            <div class="bar-track">
+                                <div id="bar-tech" class="bar-fill tech-bar"></div>
+                                <div class="bar-markers">
+                                    <span class="marker" style="left: 20%;">20</span>
+                                    <span class="marker" style="left: 40%;">40</span>
+                                    <span class="marker" style="left: 60%;">60</span>
+                                    <span class="marker" style="left: 80%;">80</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Factor Medioambiental -->
+                        <div class="pest-bar-item">
+                            <div class="bar-header">
+                                <div class="bar-icon environmental">🌱</div>
+                                <div class="bar-info">
+                                    <div class="bar-title">MEDIOAMBIENTAL</div>
+                                    <div class="bar-subtitle">Preguntas 21-25</div>
+                                </div>
+                                <div class="bar-score">
+                                    <span id="score-env" class="score-number">0</span>
+                                    <span class="score-max">/100</span>
+                                </div>
+                            </div>
+                            <div class="bar-track">
+                                <div id="bar-env" class="bar-fill environmental-bar"></div>
+                                <div class="bar-markers">
+                                    <span class="marker" style="left: 20%;">20</span>
+                                    <span class="marker" style="left: 40%;">40</span>
+                                    <span class="marker" style="left: 60%;">60</span>
+                                    <span class="marker" style="left: 80%;">80</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="questions-container">
                     <h3>📋 Autodiagnóstico Entorno Global P.E.S.T.</h3>
                     
                     <?php foreach ($questions as $index => $question): ?>
                     <div class="question-item">
                         <div class="question-text">
-                            <span class="question-number"><?php echo ($index + 1); ?>.</span>
+                            <span class="question-number"><?php echo $index; ?>.</span>
                             <span><?php echo htmlspecialchars($question); ?></span>
                         </div>
                         <div class="rating-options">
                             <?php for ($rating = 0; $rating <= 4; $rating++): ?>
                             <div class="rating-option">
                                 <input type="radio" 
-                                       id="q<?php echo ($index + 1); ?>_r<?php echo $rating; ?>" 
-                                       name="responses[<?php echo ($index + 1); ?>]" 
+                                       id="q<?php echo $index; ?>_r<?php echo $rating; ?>" 
+                                       name="responses[<?php echo $index; ?>]" 
                                        value="<?php echo $rating; ?>"
-                                       <?php if (isset($pestData[$index + 1]) && $pestData[$index + 1]['rating'] == $rating): ?>checked<?php endif; ?>>
-                                <label for="q<?php echo ($index + 1); ?>_r<?php echo $rating; ?>"><?php echo $rating; ?></label>
+                                       <?php if (isset($pestData[$index]) && $pestData[$index]['rating'] == $rating): ?>checked<?php endif; ?>>
+                                <label for="q<?php echo $index; ?>_r<?php echo $rating; ?>"><?php echo $rating; ?></label>
                             </div>
                             <?php endfor; ?>
                         </div>
@@ -223,6 +509,7 @@ $pestSummary = $projectController->getPestSummary($project_id);
                 questionItem.querySelectorAll('.rating-option').forEach(option => option.classList.remove('selected'));
                 this.closest('.rating-option').classList.add('selected');
                 updateProgressCounter();
+                updatePestChart();
             });
         });
 
@@ -254,7 +541,57 @@ $pestSummary = $projectController->getPestSummary($project_id);
         // Inicializar al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             updateProgressCounter();
+            updatePestChart();
         });
+
+        // Actualizar diagrama de barras PEST
+        function updatePestChart() {
+            // Mapear preguntas por bloque (5 preguntas cada uno)
+            const groups = {
+                social: [1,2,3,4,5],
+                env: [21,22,23,24,25],
+                politic: [6,7,8,9,10],
+                econ: [11,12,13,14,15],
+                tech: [16,17,18,19,20]
+            };
+
+            function calcTotal(ids) {
+                let sum = 0;
+                ids.forEach(q => {
+                    const sel = document.querySelector('input[name="responses['+q+']"]:checked');
+                    if (sel) sum += parseInt(sel.value, 10);
+                });
+                // Cada pregunta 0-4 -> mapear a 0-20 puntos multiplicando por 5
+                return sum * 5;
+            }
+
+            const socialVal = calcTotal(groups.social);
+            const envVal = calcTotal(groups.env);
+            const politicVal = calcTotal(groups.politic);
+            const econVal = calcTotal(groups.econ);
+            const techVal = calcTotal(groups.tech);
+
+            function setBar(barId, scoreId, value) {
+                const pct = Math.max(0, Math.min(100, value));
+                const bar = document.getElementById(barId);
+                const scoreElement = document.getElementById(scoreId);
+                
+                if (bar) {
+                    bar.style.width = pct + '%';
+                    // Añadir animación suave
+                    bar.style.transition = 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                }
+                if (scoreElement) {
+                    scoreElement.innerText = value;
+                }
+            }
+
+            setBar('bar-social', 'score-social', socialVal);
+            setBar('bar-env', 'score-env', envVal);
+            setBar('bar-politic', 'score-politic', politicVal);
+            setBar('bar-econ', 'score-econ', econVal);
+            setBar('bar-tech', 'score-tech', techVal);
+        }
 
         // Función de cálculo
         function calculateSummary() {
