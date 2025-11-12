@@ -424,3 +424,14 @@ const animationStyles = `
 `;
 
 document.head.insertAdjacentHTML('beforeend', animationStyles);
+
+// Función para ver teoría de las secciones teóricas
+function viewTheory(sectionNumber) {
+    console.log('Viendo teoría de la sección:', sectionNumber);
+    
+    if (sectionNumber === 5) {
+        const targetUrl = `analisis-interno-externo.php?id=${projectData.id}`;
+        console.log('Redirigiendo a teoría:', targetUrl);
+        window.location.href = targetUrl;
+    }
+}

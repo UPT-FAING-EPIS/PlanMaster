@@ -273,13 +273,24 @@ class ProjectController {
             'vision' => $this->vision->getByProjectId($project_id) ? true : false,
             'values' => count($this->values->getByProjectId($project_id)) > 0 ? true : false,
             'objectives' => count($this->objectives->getStrategicObjectivesByProjectId($project_id)) > 0 ? true : false,
-            'analisis_interno_externo' => true, // Nueva sección siempre disponible (es informativa)
+            'analisis_interno_externo' => 'theoretical', // Sección teórica - no cuenta para el progreso
             'value_chain' => $this->isValueChainComplete($project_id) ? true : false,
-            'bcg_analysis' => $this->isBCGComplete($project_id) ? true : false
+            'bcg_analysis' => $this->isBCGComplete($project_id) ? true : false,
+            'porter_matrix' => $this->isPorterComplete($project_id) ? true : false,
+            'pest_analysis' => $this->isPestComplete($project_id) ? true : false,
+            'strategies' => $this->isStrategiesComplete($project_id) ? true : false,
+            'came_matrix' => $this->isCameComplete($project_id) ? true : false
         ];
         
-        $completed = array_sum($progress);
-        $total = count($progress);
+        // Contar solo las secciones prácticas (excluir las teóricas)
+        $practicalSections = array_filter($progress, function($value) {
+            return $value !== 'theoretical';
+        });
+        
+        $completed = count(array_filter($practicalSections, function($value) {
+            return $value === true;
+        }));
+        $total = count($practicalSections);
         $percentage = $total > 0 ? ($completed / $total) * 100 : 0;
         
         return [
@@ -436,17 +447,17 @@ class ProjectController {
             
             // Guardar las respuestas
             if ($this->valueChain->saveResponses($project_id, $responses)) {
-                // Redirigir con éxito
-                header("Location: " . getBaseUrl() . "/Views/Projects/value-chain.php?project_id=" . $project_id . "&success=1");
+                // Redirigir de vuelta al proyecto principal
+                header("Location: " . getBaseUrl() . "/Views/Projects/project.php?id=" . $project_id . "&success=value_chain_saved");
                 exit();
             } else {
                 throw new Exception("Error al guardar las respuestas");
             }
             
         } catch (Exception $e) {
-            // Redirigir con error
+            // Redirigir con error de vuelta a value-chain
             $project_id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
-            header("Location: " . getBaseUrl() . "/Views/Projects/value-chain.php?project_id=" . $project_id . "&error=" . urlencode($e->getMessage()));
+            header("Location: " . getBaseUrl() . "/Views/Projects/value-chain.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
             exit();
         }
     }
@@ -463,7 +474,17 @@ class ProjectController {
     
     // Verificar si la Cadena de Valor está completa
     public function isValueChainComplete($project_id) {
-        return $this->valueChain->isComplete($project_id);
+        // Verificar que las 25 preguntas estén completas
+        if (!$this->valueChain->isComplete($project_id)) {
+            return false;
+        }
+        
+        // Verificar que existan fortalezas y debilidades en FODA
+        $fodaData = $this->getFodaAnalysis($project_id);
+        $hasFortalezas = !empty($fodaData['fortalezas']) && count($fodaData['fortalezas']) > 0;
+        $hasDebilidades = !empty($fodaData['debilidades']) && count($fodaData['debilidades']) > 0;
+        
+        return $hasFortalezas && $hasDebilidades;
     }
     
     // Obtener estadísticas por categorías
@@ -1166,6 +1187,28 @@ class ProjectController {
         return $this->porterAnalysis->isComplete($project_id);
     }
     */
+    
+    // Métodos para verificar completitud de las secciones nuevas
+    private function isPorterComplete($project_id) {
+        // Usar PorterController para verificar completitud
+        require_once __DIR__ . '/PorterController.php';
+        $porterController = new PorterController();
+        return $porterController->isPorterCompleteForView($project_id);
+    }
+    
+
+    
+    private function isStrategiesComplete($project_id) {
+        // Verificar si existen estrategias definidas para este proyecto
+        // Como no tengo el modelo aquí, asumo que no está completo por ahora
+        return false;
+    }
+    
+    private function isCameComplete($project_id) {
+        // Verificar si existe matriz CAME completa para este proyecto
+        // Como no tengo el modelo aquí, asumo que no está completo por ahora
+        return false;
+    }
 }
 
 // Manejo de rutas
@@ -1319,4 +1362,5 @@ if (isset($_POST['action'])) {
             break;
     }
 }
+
 ?>

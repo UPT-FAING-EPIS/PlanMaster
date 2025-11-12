@@ -57,6 +57,14 @@ if (!$project) {
                     <p class="project-name"><?php echo htmlspecialchars($project['project_name']); ?></p>
                     <p class="company-name"><?php echo htmlspecialchars($project['company_name']); ?></p>
                 </div>
+                
+                <!-- Botón de continuar -->
+                <div class="continue-button-header">
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/value-chain.php?id=<?php echo $project_id; ?>" 
+                       class="btn-continue-analysis">
+                        ⛓️ Continuar a Cadena de Valor →
+                    </a>
+                </div>
             </div>
             
             <!-- Introducción -->
@@ -243,16 +251,10 @@ if (!$project) {
 
             <!-- Navegación -->
             <div class="form-actions">
-                <div class="actions-left">
+                <div class="actions-center">
                     <a href="<?php echo getBaseUrl(); ?>/Views/Projects/objectives.php?id=<?php echo $project_id; ?>" 
                        class="btn-back">
-                        ← Objetivos
-                    </a>
-                </div>
-                <div class="actions-right">
-                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/value-chain.php?id=<?php echo $project_id; ?>" 
-                       class="btn-continue">
-                        ⛓️ Continuar a Cadena de Valor →
+                        ← Regresar a Objetivos
                     </a>
                 </div>
             </div>

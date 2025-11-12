@@ -66,6 +66,46 @@ $debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : []; 
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?php echo getBaseUrl(); ?>/Resources/favicon.ico">
+    
+    <style>
+    .continue-button-header .btn-continue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    }
+    
+    .project-header {
+        animation: slideIn 0.6s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .project-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 20px;
+        }
+        
+        .continue-button-header {
+            width: 100%;
+        }
+        
+        .continue-button-header .btn-continue {
+            width: 100%;
+            padding: 18px 20px;
+        }
+    }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -75,19 +115,30 @@ $debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : []; 
     <main class="main-content">
         <div class="container">
             <!-- Información del proyecto -->
-            <div class="project-header">
+            <div class="project-header" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                 <div class="project-info">
-                    <h1>⛓️ Cadena de Valor</h1>
-                    <p class="project-name"><?php echo htmlspecialchars($project['project_name']); ?></p>
-                    <p class="company-name"><?php echo htmlspecialchars($project['company_name']); ?></p>
+                    <h1 style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 255, 255, 0.3); font-size: 2.5rem; font-weight: 700; margin: 0;">⛓️ Cadena de Valor</h1>
+                    <p class="project-name" style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 6px rgba(255, 255, 255, 0.2); font-size: 1.3rem; font-weight: 600; margin: 10px 0 5px 0;"><?php echo htmlspecialchars($project['project_name']); ?></p>
+                    <p class="company-name" style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 6px rgba(255, 255, 255, 0.2); font-size: 1.1rem; font-weight: 500; margin: 0;"><?php echo htmlspecialchars($project['company_name']); ?></p>
                 </div>
+                
+                <!-- Botón de continuar si está completo -->
+                <?php if ($projectController->isValueChainComplete($project_id)): ?>
+                <div class="continue-button-header">
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/bcg-test.php?id=<?php echo $project_id; ?>" 
+                       class="btn btn-continue" 
+                       style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 15px 25px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: all 0.3s ease; border: none; display: inline-block;">
+                        📊 Continuar a Matriz BCG
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
             
             <!-- Contexto de la Cadena de Valor -->
             <div class="context-box">
-                <h3>🎯 Diagnóstico de Cadena de Valor</h3>
-                <p>Evalúe cada aspecto de la gestión comercial de su empresa calificando del <strong>0 al 4</strong> según el siguiente criterio:</p>
                 <div class="rating-scale">
+                    <h3>🎯 Diagnóstico de Cadena de Valor</h3>
+                    <p>Evalúe cada aspecto de la gestión comercial de su empresa calificando del <strong>0 al 4</strong> según el siguiente criterio:</p>
                     <div class="rating-item">
                         <span class="rating-number">0</span>
                         <span class="rating-desc">No aplica / No se hace</span>
@@ -110,7 +161,7 @@ $debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : []; 
                     </div>
                 </div>
             </div>
-
+            <br>
             <!-- Mostrar resultados si existe cálculo -->
             <?php if ($improvement): ?>
             <div class="improvement-results">
@@ -272,28 +323,18 @@ $debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : []; 
                 </form>
             </div>
             
-            <!-- Navegación a siguiente sección -->
+            <!-- Mensaje de completitud -->
             <?php if ($projectController->isValueChainComplete($project_id)): ?>
             <div class="next-section">
                 <div class="completion-message">
-                    <h3>✅ Cadena de Valor Completada</h3>
-                    <p>Has completado exitosamente el diagnóstico de la Cadena de Valor.</p>
-                    
-                    <div class="next-section-info">
-                        <h4>Siguiente paso: Matriz BCG</h4>
-                        <p>El siguiente paso es realizar la <strong>Matriz BCG</strong> para analizar la cartera de productos.</p>
-                        <div class="action-buttons">
-                            <a href="bcg-test.php" class="btn btn-continue">
-                                📊 Continuar a Matriz BCG 
-                            </a>
-                        </div>
-                    </div>
+                    <h3 style="color: #16a34a;">✅ Cadena de Valor Completada</h3>
+                    <p>Has completado exitosamente el diagnóstico de la Cadena de Valor y el análisis FODA.</p>
                 </div>
             </div>
             <?php else: ?>
             <div class="incomplete-message">
-                <p><strong>⚠️ Complete todas las preguntas</strong></p>
-                <p>Una vez completado el diagnóstico, podrás ver tu potencial de mejora y continuar con la Matriz BCG.</p>
+                <p><strong>⚠️ Complete todas las preguntas y el análisis FODA</strong></p>
+                <p>Una vez completado el diagnóstico y definidas las fortalezas/debilidades, podrás continuar con la Matriz BCG.</p>
             </div>
             <?php endif; ?>
         </div>

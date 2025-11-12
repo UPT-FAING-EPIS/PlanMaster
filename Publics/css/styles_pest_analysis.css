@@ -3,18 +3,76 @@
    Estilos para la página de diagnóstico PEST
 ============================================================= */
 
+/* Header PEST */
+.pest-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 25px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.6s ease-out;
+}
+
+.pest-info h3 {
+    color: #1e293b;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.continue-button-pest .btn-continue-strategies {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-block;
+}
+
+.continue-button-pest .btn-continue-strategies:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Contexto y explicación PEST */
 .context-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    color: #1e293b;
     padding: 30px;
     border-radius: 16px;
     margin-bottom: 30px;
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .context-box h3 {
-    color: white;
+    color: #1e293b;
     margin-bottom: 20px;
     font-size: 24px;
     font-weight: 600;
@@ -40,9 +98,9 @@
     gap: 15px;
     margin-top: 25px;
     padding: 25px;
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     border-radius: 12px;
-    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .scale-item {
@@ -559,6 +617,21 @@
         right: 10px;
         left: 10px;
         max-width: none;
+    }
+    
+    .pest-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .continue-button-pest {
+        width: 100%;
+    }
+    
+    .continue-button-pest .btn-continue-strategies {
+        width: 100%;
+        padding: 15px 20px;
     }
 }
 

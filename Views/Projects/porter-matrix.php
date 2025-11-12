@@ -79,23 +79,45 @@ $standardFactors = $porterModel->getStandardFactors();
             <div class="porter-header">
                 <h1>🏛️ Matriz de Porter</h1>
                 <p class="subtitle">Análisis de las 5 Fuerzas Competitivas</p>
+                <?php if ($porterController->isPorterCompleteForView($project_id)): ?>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/pest-analysis.php?id=<?php echo $project_id; ?>" 
+                       class="btn-porter primary" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: 600;">
+                        📈 Continuar con el siguiente análisis
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
             
-            <!-- Información del proyecto -->
-            <div class="project-info-porter">
-                <div class="info-item">
-                    <div class="info-label">Proyecto</div>
-                    <div class="info-value"><?php echo htmlspecialchars($project['project_name']); ?></div>
+            <!-- Resultados del análisis -->
+            <?php if ($porterScore && $porterScore['total_score'] > 0): ?>
+            <div class="porter-results">
+                <h3>📊 Resultados del Análisis Porter</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-number" id="total-score"><?php echo $porterScore['total_score']; ?></div>
+                        <div class="result-label">Puntuación Total</div>
+                        <div class="result-sublabel">de <?php echo $porterScore['max_score']; ?> puntos máximos</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-number" id="average-score"><?php echo $porterScore['average_score']; ?></div>
+                        <div class="result-label">Promedio por Factor</div>
+                        <div class="result-sublabel">Escala 1-5</div>
+                    </div>
+                    <div class="result-card highlight">
+                        <div class="result-number" id="percentage-score"><?php echo $porterScore['percentage']; ?>%</div>
+                        <div class="result-label">Competitividad</div>
+                        <div class="result-sublabel" id="competitiveness-level"><?php echo $porterScore['competitiveness']; ?></div>
+                    </div>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Empresa</div>
-                    <div class="info-value"><?php echo htmlspecialchars($project['company_name']); ?></div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Usuario</div>
-                    <div class="info-value"><?php echo htmlspecialchars($user['name']); ?></div>
+                
+                <div class="porter-recommendation">
+                    <p class="recommendation-text" id="porter-recommendation">
+                        <?php echo htmlspecialchars($porterScore['recommendation']); ?>
+                    </p>
                 </div>
             </div>
+            <?php endif; ?>
             
             <!-- Instrucciones -->
             <div class="porter-instructions">
@@ -278,36 +300,6 @@ $standardFactors = $porterModel->getStandardFactors();
             
             </form>
             
-            <!-- Resultados del análisis -->
-            <?php if ($porterScore && $porterScore['total_score'] > 0): ?>
-            <div class="porter-results">
-                <h3>📊 Resultados del Análisis Porter</h3>
-                <div class="results-grid">
-                    <div class="result-card">
-                        <div class="result-number" id="total-score"><?php echo $porterScore['total_score']; ?></div>
-                        <div class="result-label">Puntuación Total</div>
-                        <div class="result-sublabel">de <?php echo $porterScore['max_score']; ?> puntos máximos</div>
-                    </div>
-                    <div class="result-card">
-                        <div class="result-number" id="average-score"><?php echo $porterScore['average_score']; ?></div>
-                        <div class="result-label">Promedio por Factor</div>
-                        <div class="result-sublabel">Escala 1-5</div>
-                    </div>
-                    <div class="result-card highlight">
-                        <div class="result-number" id="percentage-score"><?php echo $porterScore['percentage']; ?>%</div>
-                        <div class="result-label">Competitividad</div>
-                        <div class="result-sublabel" id="competitiveness-level"><?php echo $porterScore['competitiveness']; ?></div>
-                    </div>
-                </div>
-                
-                <div class="porter-recommendation">
-                    <p class="recommendation-text" id="porter-recommendation">
-                        <?php echo htmlspecialchars($porterScore['recommendation']); ?>
-                    </p>
-                </div>
-            </div>
-            <?php endif; ?>
-            
             <!-- Botones de navegación -->
             <div class="porter-actions">
                 <a href="project.php?id=<?php echo $project_id; ?>" class="btn-porter secondary">
@@ -315,18 +307,13 @@ $standardFactors = $porterModel->getStandardFactors();
                 </a>
             </div>
             
-            <!-- Navegación a siguiente sección -->
+            <!-- Mensaje de completitud -->
             <?php if ($porterController->isPorterCompleteForView($project_id)): ?>
             <div class="porter-results" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-color: #22c55e;">
                 <h3 style="color: #16a34a;">✅ Análisis Porter Completado</h3>
-                <p style="text-align: center; margin-bottom: 20px;">
+                <p style="text-align: center; margin-bottom: 0;">
                     Has completado exitosamente el análisis de las 5 fuerzas competitivas de Porter.
                 </p>
-                <div style="text-align: center;">
-                    <a href="#" class="btn-porter primary">
-                        📈 Continuar con el siguiente análisis
-                    </a>
-                </div>
             </div>
             <?php else: ?>
             <div class="porter-alert" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">

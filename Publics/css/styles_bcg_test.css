@@ -8,22 +8,51 @@
 
 body { 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background: #f8fafc; 
-    padding: 20px; 
+    background-image: url('../../Resources/fondo11.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.main-content {
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.main-content::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .container { 
     max-width: 1400px; 
-    margin: 0 auto; 
+    margin: 0 auto;
+    position: relative;
+    z-index: 3;
 }
 
 .section { 
-    background: white; 
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     margin: 20px 0; 
     padding: 25px; 
     border-radius: 12px; 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-    border: 1px solid #e2e8f0; 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .section h2 { 
@@ -343,4 +372,82 @@ body {
     padding: 4px 8px; 
     border-radius: 4px; 
     font-weight: bold; 
+}
+
+/* ===== ESTILOS PARA HEADER BCG ===== */
+.bcg-header {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 25px !important;
+    margin-bottom: 30px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    animation: slideIn 0.6s ease-out;
+}
+
+.bcg-info h1 {
+    color: #1e293b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.bcg-info .subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 8px 0 0 0;
+}
+
+.continue-button-bcg .btn-continue-porter {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-block;
+}
+
+.continue-button-bcg .btn-continue-porter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .bcg-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .continue-button-bcg {
+        width: 100%;
+    }
+    
+    .continue-button-bcg .btn-continue-porter {
+        width: 100%;
+        padding: 18px 20px;
+    }
 }

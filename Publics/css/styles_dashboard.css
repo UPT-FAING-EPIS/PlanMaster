@@ -292,7 +292,30 @@ body {
 /* === MAIN CONTENT === */
 .main-content {
     padding: 40px 0;
-    min-height: calc(100vh - 200px);
+    background-image: url('../../Resources/fondo11.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+}
+
+.main-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+}
+
+.main-content .container {
+    position: relative;
+    z-index: 2;
 }
 
 /* Alertas */
@@ -352,10 +375,12 @@ body {
 }
 
 .summary-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     animation: fadeInUp 0.8s ease-out;
 }
 
@@ -411,7 +436,7 @@ body {
 
 .sections-title {
     font-size: 2rem;
-    color: #333;
+    color: white;
     text-align: center;
     margin-bottom: 40px;
     font-weight: 600;
@@ -424,10 +449,12 @@ body {
 }
 
 .section-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
     padding: 25px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
     border-left: 4px solid #42a5f5;
     position: relative;
@@ -552,10 +579,12 @@ body {
 }
 
 .projects-container {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 15px;
     padding: 40px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .empty-projects {

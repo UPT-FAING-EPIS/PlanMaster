@@ -42,12 +42,6 @@ $user = AuthController::getCurrentUser();
                 </div>
             <?php endif; ?>
             
-            <!-- Título del dashboard -->
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">¡Hola, <?php echo htmlspecialchars($user['name']); ?>! 👋</h1>
-                <p class="dashboard-subtitle">Bienvenido a tu espacio de planificación estratégica</p>
-            </div>
-            
             <!-- Botón para iniciar proyecto -->
             <div class="start-project-section">
                 <div class="start-project-card">
@@ -181,17 +175,6 @@ $user = AuthController::getCurrentUser();
                 </div>
             </div>
             
-            <!-- Proyectos existentes (placeholder) -->
-            <div class="existing-projects">
-                <h2>Tus Proyectos</h2>
-                <div class="projects-container">
-                    <div class="empty-projects">
-                        <div class="empty-icon">📁</div>
-                        <p>Aún no tienes proyectos creados</p>
-                        <small>Inicia tu primer proyecto estratégico usando el botón de arriba</small>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
     

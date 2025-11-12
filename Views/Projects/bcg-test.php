@@ -29,6 +29,11 @@ if (!$project) {
     header("Location: " . getBaseUrl() . "/Views/Users/projects.php");
     exit();
 }
+
+// Obtener datos FODA existentes para Fortalezas y Debilidades
+$fodaData = $projectController->getFodaAnalysis($project_id);
+$fortalezas = isset($fodaData['fortalezas']) ? $fodaData['fortalezas'] : [];
+$debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -44,14 +49,28 @@ if (!$project) {
 <body>
     <?php include 'header.php'; ?>
     
-    <div class="container">
-        <!-- Notificación modo test -->
+    <main class="main-content">
+        <div class="container">
         
-        
-        <h1 style="text-align: center; color: #1e293b; margin-bottom: 40px; font-size: 32px;">📊 ANÁLISIS BCG - MATRIZ INTERACTIVA</h1>
-        
+        <!-- Header del BCG Analysis -->
+        <div class="bcg-header">
+            <div class="bcg-info">
+                <h1>📊 ANÁLISIS BCG - MATRIZ INTERACTIVA</h1>
+                <p class="subtitle"><?php echo htmlspecialchars($project['project_name']); ?></p>
+                <p class="subtitle" style="color: #475569; font-size: 1rem;"><?php echo htmlspecialchars($project['company_name']); ?></p>
+            </div>
+            
+            <!-- Botón de continuar si está completo -->
+            <?php if ($projectController->isBCGComplete($project_id)): ?>
+            <div class="continue-button-bcg">
+                <a href="<?php echo getBaseUrl(); ?>/Views/Projects/porter-matrix.php?id=<?php echo $project_id; ?>" 
+                   class="btn-continue-porter">
+                    🏛️ Continuar a Matriz de Porter
+                </a>
+            </div>
+            <?php endif; ?>
+        </div>
 
-        
         <!-- TABLA 1: PREVISIÓN DE VENTAS -->
         <div class="section">
             <h2>📈 1. PREVISIÓN DE VENTAS</h2>
@@ -163,6 +182,22 @@ if (!$project) {
                 </button>
             </div>
         </div>
+        
+        <!-- Mensaje de completitud -->
+        <?php if ($projectController->isBCGComplete($project_id)): ?>
+        <div class="section" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #22c55e; border-radius: 10px;">
+            <h3 style="color: #16a34a; text-align: center;">✅ Análisis BCG Completado</h3>
+            <p style="text-align: center; margin-bottom: 0; color: #15803d;">
+                Has completado exitosamente el análisis BCG. Todos los datos han sido guardados correctamente.
+            </p>
+        </div>
+        <?php else: ?>
+        <div class="section" style="background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; border-radius: 10px;">
+            <p style="text-align: center; margin: 0;">
+                ⚠️ <strong>Complete todas las tablas y guarde el análisis</strong> para poder continuar con la Matriz de Porter.
+            </p>
+        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Scripts del sistema -->
@@ -317,6 +352,14 @@ if (!$project) {
                     ];
                 }
                 
+                // Inicializar arrays de fortalezas y debilidades
+                if (!isset($existingData['strengths'])) {
+                    $existingData['strengths'] = [];
+                }
+                if (!isset($existingData['weaknesses'])) {
+                    $existingData['weaknesses'] = [];
+                }
+                
                 // Cargar fortalezas y debilidades
                 $stmt = $conn->prepare("SELECT * FROM project_foda_analysis WHERE project_id = ? AND type IN ('fortaleza', 'debilidad') ORDER BY type, item_order");
                 $stmt->bind_param('i', $project['id']);
@@ -340,7 +383,38 @@ if (!$project) {
             // Error al cargar datos, continuar sin datos existentes
         }
         
-        if ($existingData) {
+        // Si no hay datos BCG pero sí hay datos FODA, cargar solo los FODA
+        if (!$existingData) {
+            try {
+                $existingData = [
+                    'strengths' => [],
+                    'weaknesses' => []
+                ];
+                
+                // Cargar solo fortalezas y debilidades si existen
+                $stmt = $conn->prepare("SELECT * FROM project_foda_analysis WHERE project_id = ? AND type IN ('fortaleza', 'debilidad') ORDER BY type, item_order");
+                $stmt->bind_param('i', $project['id']);
+                $stmt->execute();
+                $fodas = $stmt->get_result();
+                while ($row = $fodas->fetch_assoc()) {
+                    if ($row['type'] === 'fortaleza') {
+                        $existingData['strengths'][] = [
+                            'id' => (int)$row['id'],
+                            'text' => $row['item_text']
+                        ];
+                    } else {
+                        $existingData['weaknesses'][] = [
+                            'id' => (int)$row['id'],
+                            'text' => $row['item_text']
+                        ];
+                    }
+                }
+            } catch (Exception $e) {
+                // Error al cargar FODA
+            }
+        }
+        
+        if ($existingData && (count($existingData) > 0 || count($existingData['strengths'] ?? []) > 0 || count($existingData['weaknesses'] ?? []) > 0)) {
             echo 'const EXISTING_BCG_DATA = ' . json_encode($existingData) . ';';
         } else {
             echo 'const EXISTING_BCG_DATA = null;';
@@ -350,7 +424,8 @@ if (!$project) {
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/dashboard.js"></script>
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/bcg-test.js"></script>
     
-    </div> <!-- Cerrar container -->
+        </div> <!-- Cerrar container -->
+    </main> <!-- Cerrar main-content -->
     
     <?php include __DIR__ . '/../Users/footer.php'; ?>
     

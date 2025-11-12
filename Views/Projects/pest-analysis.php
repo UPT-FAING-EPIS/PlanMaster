@@ -222,17 +222,25 @@ $pestSummary = $projectController->getPestSummary($project_id);
     <!-- Contenido principal -->
     <main class="main-content">
         <div class="container">
-            <!-- Información del proyecto -->
-            <div class="project-header">
-                <div class="project-info">
-                    <h2>🏢 <?php echo htmlspecialchars($project['project_name']); ?></h2>
-                    <p><strong>Paso 9:</strong> Análisis Externo Macroentorno (PEST)</p>
+            <!-- Header PEST -->
+            <div class="pest-header">
+                <div class="pest-info">
+                    <h3>🎯 Diagnóstico PEST</h3>
                 </div>
+                
+                <!-- Botón de continuar si está completo -->
+                <?php if ($projectController->isPestComplete($project_id)): ?>
+                <div class="continue-button-pest">
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Projects/strategies.php?id=<?php echo $project_id; ?>" 
+                       class="btn-continue-strategies">
+                        📈 Continuar con el siguiente análisis 🧠 Estrategias
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
-            
+
             <!-- Contexto PEST -->
             <div class="context-box">
-                <h3>🎯 Diagnóstico PEST</h3>
                 <p><strong>PEST</strong> es un acrónimo que representa el macroentorno de la empresa:</p>
                 <ul style="margin: 15px 0; padding-left: 20px;">
                     <li><strong>Políticos:</strong> Factores que determinan la actividad empresarial (legislación, normas, tratados comerciales)</li>

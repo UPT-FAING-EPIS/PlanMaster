@@ -37,13 +37,29 @@ $progress = $projectController->getProjectProgress($project_id);
     
     <!-- CSS -->
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_dashboard.css">
-    <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_project.css">
+    <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_projects.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?php echo getBaseUrl(); ?>/Resources/favicon.ico">
+    
+    <style>
+    .progress-display {
+        text-align: center;
+        color: white;
+    }
+    .progress-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: block;
+    }
+    .progress-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -53,23 +69,17 @@ $progress = $projectController->getProjectProgress($project_id);
     <main class="main-content">
         <div class="container">
             <!-- Header del proyecto -->
-            <div class="project-header-section">
-                <div class="project-info">
-                    <h1 class="project-title"><?php echo htmlspecialchars($project['project_name']); ?></h1>
-                    <p class="company-title"><?php echo htmlspecialchars($project['company_name']); ?></p>
-                </div>
+            <div class="page-header">
+                <h1 class="page-title"><?php echo htmlspecialchars($project['project_name']); ?></h1>
+                <p class="page-subtitle"><?php echo htmlspecialchars($project['company_name']); ?></p>
                 
-                <div class="project-progress-circle">
-                    <div class="circle-progress" data-progress="<?php echo round($progress['percentage']); ?>">
-                        <div class="circle-inner">
-                            <span class="progress-value"><?php echo round($progress['percentage']); ?>%</span>
-                            <span class="progress-label">Completado</span>
-                        </div>
+                <div style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 30px;">
+                    <div class="progress-display">
+                        <span class="progress-value"><?php echo round($progress['percentage']); ?>%</span>
+                        <span class="progress-label">Completado</span>
                     </div>
-                </div>
-                
-                <div class="project-actions-header">
-                    <button class="btn-save-exit" onclick="saveAndExit()">
+                    
+                    <button class="btn-save-exit" onclick="saveAndExit()" style="background: white; color: #1e88e5; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">
                         <span class="btn-icon">💾</span>
                         Salir y Guardar
                     </button>
@@ -89,7 +99,7 @@ $progress = $projectController->getProjectProgress($project_id);
             
             <!-- Los 11 apartados del plan estratégico -->
             <div class="strategic-sections">
-                <h2 class="sections-title">Apartados del Plan Estratégico</h2>
+                <h2 class="sections-title" style="color: white;">Apartados del Plan Estratégico</h2>
                 
                 <div class="sections-grid">
                     <?php 
@@ -108,9 +118,18 @@ $progress = $projectController->getProjectProgress($project_id);
                     ];
                     
                     foreach ($sections as $number => $section): 
-                        $isCompleted = isset($progress['sections'][$section['key']]) && $progress['sections'][$section['key']];
-                        $statusClass = $isCompleted ? 'completed' : 'pending';
-                        $statusIcon = $isCompleted ? '✅' : '⏳';
+                        $sectionStatus = $progress['sections'][$section['key']] ?? false;
+                        
+                        if ($sectionStatus === 'theoretical') {
+                            $statusClass = 'theoretical';
+                            $statusIcon = '📖';
+                        } elseif ($sectionStatus === true) {
+                            $statusClass = 'completed';
+                            $statusIcon = '✅';
+                        } else {
+                            $statusClass = 'pending';
+                            $statusIcon = '⏳';
+                        }
                     ?>
                     <div class="section-card <?php echo $statusClass; ?>" data-section="<?php echo $number; ?>">
                         <div class="section-header">
@@ -125,7 +144,12 @@ $progress = $projectController->getProjectProgress($project_id);
                         </div>
                         
                         <div class="section-actions">
-                            <?php if ($isCompleted): ?>
+                            <?php if ($sectionStatus === 'theoretical'): ?>
+                                <button class="btn-theoretical-section" onclick="viewTheory(<?php echo $number; ?>)">
+                                    <span class="btn-icon">📖</span>
+                                    Ver Teoría
+                                </button>
+                            <?php elseif ($sectionStatus === true): ?>
                                 <button class="btn-edit-section" onclick="editSection(<?php echo $number; ?>)">
                                     <span class="btn-icon">✏️</span>
                                     Editar
@@ -144,6 +168,13 @@ $progress = $projectController->getProjectProgress($project_id);
         </div>
     </main>
     
+    <!-- Mensajes de éxito -->
+    <?php if (isset($_GET['success']) && $_GET['success'] == 'value_chain_saved'): ?>
+    <div class="alert alert-success" id="alertMessage" style="position: fixed; top: 20px; right: 20px; background: #4caf50; color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; font-weight: 600;">
+        ✅ Cadena de Valor guardada exitosamente
+    </div>
+    <?php endif; ?>
+    
     <!-- Footer -->
     <?php include '../Users/footer.php'; ?>
     
@@ -152,6 +183,20 @@ $progress = $projectController->getProjectProgress($project_id);
         // Datos del proyecto
         const projectData = <?php echo json_encode($project); ?>;
         const progressData = <?php echo json_encode($progress); ?>;
+        
+        // Auto-ocultar alertas después de 5 segundos
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertMessage = document.getElementById('alertMessage');
+            if (alertMessage) {
+                setTimeout(() => {
+                    alertMessage.style.opacity = '0';
+                    alertMessage.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        alertMessage.style.display = 'none';
+                    }, 300);
+                }, 4000);
+            }
+        });
     </script>
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/dashboard.js"></script>
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/project.js"></script>
