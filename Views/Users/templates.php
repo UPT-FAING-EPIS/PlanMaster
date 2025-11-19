@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
+require_once __DIR__ . '/../../Controllers/ReportController.php';
 require_once __DIR__ . '/../../config/url_config.php';
 
 // Verificar que el usuario esté logueado
@@ -8,6 +9,10 @@ AuthController::requireLogin();
 
 // Obtener datos del usuario
 $user = AuthController::getCurrentUser();
+
+// Obtener proyectos del usuario
+$reportController = new ReportController();
+$projects = $reportController->getUserProjects($user['id']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,6 +23,7 @@ $user = AuthController::getCurrentUser();
     
     <!-- CSS -->
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_dashboard.css">
+    <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_templates.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -33,21 +39,273 @@ $user = AuthController::getCurrentUser();
     <main class="main-content">
         <div class="container">
             <div class="page-header">
-                <h1 class="page-title">📋 Plantillas</h1>
-                <p class="page-subtitle">Próximamente - Plantillas predefinidas para acelerar tu planificación estratégica</p>
+                <h1 class="page-title">📋 Plantillas de Informe</h1>
+                <p class="page-subtitle">Genera reportes ejecutivos en PDF de tus planes estratégicos</p>
             </div>
             
-            <div class="coming-soon">
-                <div class="coming-soon-icon">🚧</div>
-                <h2>Funcionalidad en Desarrollo</h2>
-                <p>Estamos trabajando en traerte las mejores plantillas para tu planificación estratégica.</p>
-                <a href="dashboard.php" class="btn-back">Volver al Dashboard</a>
+            <?php if (empty($projects)): ?>
+            <div class="no-projects">
+                <div class="no-projects-icon">📄</div>
+                <h3>No tienes proyectos disponibles</h3>
+                <p>Crea un proyecto estratégico primero para poder generar reportes.</p>
+                <a href="dashboard.php" class="btn-primary">Ir al Dashboard</a>
             </div>
+            <?php else: ?>
+            
+            <!-- Selector de Proyecto -->
+            <div class="report-generator">
+                <div class="generator-section">
+                    <h3>🎯 Seleccionar Proyecto</h3>
+                    <select id="project-select" class="form-control">
+                        <option value="">Selecciona un proyecto...</option>
+                        <?php foreach ($projects as $project): ?>
+                        <option value="<?php echo $project['id']; ?>" 
+                                data-name="<?php echo htmlspecialchars($project['project_name']); ?>"
+                                data-company="<?php echo htmlspecialchars($project['company_name']); ?>">
+                            <?php echo htmlspecialchars($project['project_name']); ?> - <?php echo htmlspecialchars($project['company_name']); ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <!-- Participantes -->
+                <div class="generator-section">
+                    <h3>👥 Emprendedores/Promotores</h3>
+                    <textarea id="participants" class="form-control" rows="3" 
+                              placeholder="Ingresa los nombres de los participantes del proyecto, separados por comas..."></textarea>
+                </div>
+                
+                <!-- Plantillas de Carátula -->
+                <div class="generator-section">
+                    <h3>🎨 Plantillas de Carátula</h3>
+                    <div class="templates-grid">
+                        <div class="template-card" data-template="default">
+                            <div class="template-preview template-default">
+                                <div class="preview-content">
+                                    <h4>Clásica</h4>
+                                    <p>Gradiente azul elegante</p>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <h5>🔷 Plantilla Clásica</h5>
+                                <p>Diseño profesional con gradiente azul</p>
+                            </div>
+                        </div>
+                        
+                        <div class="template-card" data-template="corporate">
+                            <div class="template-preview template-corporate">
+                                <div class="preview-content">
+                                    <h4>Corporativa</h4>
+                                    <p>Estilo empresarial</p>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <h5>🏢 Plantilla Corporativa</h5>
+                                <p>Diseño sobrio para empresas</p>
+                            </div>
+                        </div>
+                        
+                        <div class="template-card" data-template="modern">
+                            <div class="template-preview template-modern">
+                                <div class="preview-content">
+                                    <h4>Moderna</h4>
+                                    <p>Diseño contemporáneo</p>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <h5>✨ Plantilla Moderna</h5>
+                                <p>Gradientes vibrantes y efectos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="template-card" data-template="elegant">
+                            <div class="template-preview template-elegant">
+                                <div class="preview-content">
+                                    <h4>Elegante</h4>
+                                    <p>Tonos oscuros sofisticados</p>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <h5>🌙 Plantilla Elegante</h5>
+                                <p>Diseño minimalista y sofisticado</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botón de Generar -->
+                <div class="generator-section">
+                    <button id="generate-report" class="btn-generate" disabled>
+                        📄 Generar Reporte PDF
+                    </button>
+                </div>
+            </div>
+            
+            <?php endif; ?>
         </div>
     </main>
     
     <!-- Footer -->
     <?php include 'footer.php'; ?>
+    
+    <!-- JavaScript -->
+    <script>
+        const BASE_URL = '<?php echo getBaseUrl(); ?>';
+        let selectedProject = null;
+        let selectedTemplate = 'default';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listeners
+            document.getElementById('project-select').addEventListener('change', handleProjectSelect);
+            document.getElementById('participants').addEventListener('input', validateForm);
+            document.getElementById('generate-report').addEventListener('click', generateReport);
+            
+            // Template selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    selectTemplate(this.dataset.template);
+                });
+            });
+            
+            // Select default template
+            selectTemplate('default');
+        });
+        
+        function handleProjectSelect(e) {
+            const select = e.target;
+            if (select.value) {
+                selectedProject = {
+                    id: select.value,
+                    name: select.options[select.selectedIndex].dataset.name,
+                    company: select.options[select.selectedIndex].dataset.company
+                };
+            } else {
+                selectedProject = null;
+            }
+            validateForm();
+        }
+        
+        function selectTemplate(template) {
+            // Remove previous selection
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select new template
+            document.querySelector(`[data-template="${template}"]`).classList.add('selected');
+            selectedTemplate = template;
+        }
+        
+        function validateForm() {
+            const generateBtn = document.getElementById('generate-report');
+            const participants = document.getElementById('participants').value.trim();
+            
+            if (selectedProject && participants.length > 0) {
+                generateBtn.disabled = false;
+                generateBtn.classList.add('enabled');
+            } else {
+                generateBtn.disabled = true;
+                generateBtn.classList.remove('enabled');
+            }
+        }
+        
+        function generateReport() {
+            if (!selectedProject) {
+                alert('Por favor selecciona un proyecto');
+                return;
+            }
+            
+            const participants = document.getElementById('participants').value.trim();
+            if (!participants) {
+                alert('Por favor ingresa los nombres de los participantes');
+                return;
+            }
+            
+            console.log('🚀 Iniciando generación de PDF...');
+            console.log('📊 Proyecto:', selectedProject);
+            console.log('👥 Participantes:', participants);
+            console.log('🎨 Template:', selectedTemplate);
+            
+            // Show loading
+            const btn = document.getElementById('generate-report');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Generando PDF...';
+            btn.disabled = true;
+            
+            // Create FormData for AJAX
+            const formData = new FormData();
+            formData.append('action', 'generate_pdf');
+            formData.append('project_id', selectedProject.id);
+            formData.append('participants', participants);
+            formData.append('template', selectedTemplate);
+            
+            // Log form data
+            console.log('📤 Datos enviados:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            
+            // Use direct PDF generator without complex authentication
+            fetch('/PlanMaster/generate_pdf_direct.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('📥 Respuesta recibida:', response);
+                console.log('Status:', response.status);
+                console.log('Content-Type:', response.headers.get('content-type'));
+                
+                if (response.headers.get('content-type')?.includes('application/pdf')) {
+                    console.log('✅ PDF detectado, iniciando descarga...');
+                    return response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        // Sanitizar nombre del archivo
+                        const sanitizedName = selectedProject.name.replace(/[^a-zA-Z0-9]/g, '_');
+                        a.download = `Reporte_${sanitizedName}_${new Date().toISOString().slice(0,10)}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                        // Restore button
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        btn.classList.add('enabled');
+                    });
+                } else {
+                    console.log('⚠️ No es PDF, mostrando debug...');
+                    return response.text().then(text => {
+                        // Open debug window
+                        const newWindow = window.open('', '_blank', 'width=800,height=600');
+                        newWindow.document.write(`
+                            <html>
+                                <head><title>Debug PDF Generation</title></head>
+                                <body style="font-family: monospace; padding: 20px;">
+                                    ${text}
+                                </body>
+                            </html>
+                        `);
+                        
+                        // Restore button
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        btn.classList.add('enabled');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error:', error);
+                alert('Error al generar el reporte: ' + error.message);
+                
+                // Restore button
+                btn.textContent = originalText;
+                btn.disabled = false;
+                btn.classList.add('enabled');
+            });
+        }
+    </script>
 </body>
 </html>
 

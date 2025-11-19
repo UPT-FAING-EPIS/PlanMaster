@@ -1,0 +1,364 @@
+/* ========================================
+   ESTILOS PARA PLANTILLAS DE INFORME - PLANMASTER
+   ======================================== */
+
+/* Variables CSS */
+:root {
+    --template-primary: #667eea;
+    --template-secondary: #764ba2;
+    --template-corporate: #2c3e50;
+    --template-modern: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --template-elegant: #1a1a2e;
+    --template-border: #e2e8f0;
+    --template-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --template-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Contenedor principal */
+.main-content {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header de página */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--template-primary);
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* Estado sin proyectos */
+.no-projects {
+    text-align: center;
+    background: white;
+    padding: 4rem 2rem;
+    border-radius: 16px;
+    box-shadow: var(--template-shadow);
+    margin: 2rem 0;
+}
+
+.no-projects-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+}
+
+.no-projects h3 {
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.no-projects p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+/* Generador de reportes */
+.report-generator {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--template-shadow);
+    overflow: hidden;
+}
+
+.generator-section {
+    padding: 2rem;
+    border-bottom: 1px solid var(--template-border);
+}
+
+.generator-section:last-child {
+    border-bottom: none;
+}
+
+.generator-section h3 {
+    color: #374151;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Controles de formulario */
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--template-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--template-primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Grid de plantillas */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.template-card {
+    border: 2px solid var(--template-border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--template-shadow-lg);
+    border-color: var(--template-primary);
+}
+
+.template-card.selected {
+    border-color: var(--template-primary);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.template-preview {
+    height: 180px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+}
+
+.preview-content {
+    text-align: center;
+    z-index: 2;
+    position: relative;
+}
+
+.preview-content h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.preview-content p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Plantillas específicas */
+.template-default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.template-default::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.template-corporate {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+}
+
+.template-corporate::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white' fill-opacity='0.05'%3E%3Cpath d='M20 20c0 5.5-4.5 10-10 10s-10-4.5-10-10 4.5-10 10-10 10 4.5 10 10zM30 10c0 5.5-4.5 10-10 10s-10-4.5-10-10 4.5-10 10-10 10 4.5 10 10z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.template-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+}
+
+.template-modern::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+}
+
+.template-elegant {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.template-elegant::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.03) 2px,
+        rgba(255,255,255,0.03) 4px
+    );
+}
+
+.template-info {
+    padding: 1.5rem;
+}
+
+.template-info h5 {
+    color: #374151;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.template-info p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Botón de generar */
+.btn-generate {
+    background: linear-gradient(135deg, var(--template-primary) 0%, var(--template-secondary) 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: var(--template-shadow);
+}
+
+.btn-generate:hover.enabled {
+    transform: translateY(-2px);
+    box-shadow: var(--template-shadow-lg);
+}
+
+.btn-generate:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-generate.enabled {
+    background: linear-gradient(135deg, var(--template-primary) 0%, var(--template-secondary) 100%);
+    color: white;
+    cursor: pointer;
+}
+
+/* Botones generales */
+.btn-primary {
+    background: var(--template-primary);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--template-secondary);
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .generator-section {
+        padding: 1.5rem;
+    }
+    
+    .templates-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .template-preview {
+        height: 140px;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.report-generator {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.template-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.template-card:nth-child(1) { animation-delay: 0.1s; }
+.template-card:nth-child(2) { animation-delay: 0.2s; }
+.template-card:nth-child(3) { animation-delay: 0.3s; }
+.template-card:nth-child(4) { animation-delay: 0.4s; }
