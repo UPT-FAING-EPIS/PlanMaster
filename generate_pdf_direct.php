@@ -650,11 +650,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         $html .= '</div></body></html>';
         
-        // Generar PDF con configuración simple
-        $mpdf = new \Mpdf\Mpdf([
-            'format' => 'A4',
-            'orientation' => 'P'
-        ]);
+        // Intentar múltiples configuraciones para Azure
+        $mpdf = null;
+        $errors = [];
+        
+        // Configuración 1: Usar directorio temporal del sistema
+        try {
+            $tempDir = sys_get_temp_dir() . '/mpdf_temp';
+            if (!is_dir($tempDir)) {
+                @mkdir($tempDir, 0755, true);
+            }
+            
+            $mpdf = new \Mpdf\Mpdf([
+                'format' => 'A4',
+                'orientation' => 'P',
+                'tempDir' => $tempDir
+            ]);
+        } catch (Exception $e1) {
+            $errors[] = "Config 1 falló: " . $e1->getMessage();
+            
+            // Configuración 2: Configuración mínima sin tempDir
+            try {
+                $mpdf = new \Mpdf\Mpdf([
+                    'format' => 'A4',
+                    'orientation' => 'P',
+                    'mode' => 'utf-8'
+                ]);
+            } catch (Exception $e2) {
+                $errors[] = "Config 2 falló: " . $e2->getMessage();
+                
+                // Configuración 3: Ultra básica
+                try {
+                    $mpdf = new \Mpdf\Mpdf(['format' => 'A4']);
+                } catch (Exception $e3) {
+                    $errors[] = "Config 3 falló: " . $e3->getMessage();
+                    throw new Exception("Todas las configuraciones fallaron: " . implode("; ", $errors));
+                }
+            }
+        }
         
         $mpdf->WriteHTML($html);
         $pdfContent = $mpdf->Output('', 'S');
@@ -677,7 +710,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } catch (Exception $e) {
         if (ob_get_level()) ob_clean();
         header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        
+        // Información adicional para debug en Azure
+        $debugInfo = [
+            'sys_temp_dir' => sys_get_temp_dir(),
+            'temp_dir_writable' => is_writable(sys_get_temp_dir()),
+            'current_dir' => __DIR__,
+            'vendor_path' => __DIR__ . '/vendor/mpdf/mpdf/',
+            'vendor_exists' => file_exists(__DIR__ . '/vendor/mpdf/mpdf/'),
+        ];
+        
+        echo json_encode([
+            'success' => false, 
+            'error' => $e->getMessage(),
+            'debug' => $debugInfo
+        ]);
         exit;
     }
 }
