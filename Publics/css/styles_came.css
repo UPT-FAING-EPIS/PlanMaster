@@ -1,322 +1,387 @@
-/* Estilos específicos para Matriz CAME - PlanMaster */
+/* ========================================
+   ESTILOS PARA LA MATRIZ CAME - PLANMASTER
+   ======================================== */
 
-/* Estructura general */
-.main-content {
-    min-height: calc(100vh - 160px);
-    padding: 2rem 0;
+/* Variables CSS */
+:root {
+    --primary-color: #667eea;
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-color: #764ba2;
+    --success-color: #48bb78;
+    --danger-color: #f56565;
+    --warning-color: #ed8936;
+    --info-color: #4299e1;
+    --light-bg: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-primary: #2d3748;
+    --text-secondary: #4a5568;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
 }
 
-.container {
-    max-width: 1400px;
+/* Contenedor principal */
+.came-container {
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 2rem;
 }
 
-/* Header del proyecto */
+/* Header del proyecto mejorado */
 .project-header {
-    background: linear-gradient(135deg, #1a567a 0%, #2d7a9e 100%);
-    color: white;
-    padding: 2.5rem;
-    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
     margin-bottom: 2rem;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(26, 86, 122, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.project-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+}
+
+.project-header .project-info {
+    position: relative;
+    z-index: 1;
 }
 
 .project-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    color: white;
+    background: var(--primary-gradient);
+    padding: 1.2rem 2rem;
+    border-radius: var(--border-radius);
+    margin: 0 0 1rem 0;
+    font-size: 1.6rem;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    letter-spacing: 0.5px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-.project-name {
+.project-info .project-name {
+    color: var(--text-primary);
     font-size: 1.2rem;
-    font-weight: 500;
-    opacity: 0.95;
+    font-weight: 600;
+    margin: 0;
+    padding: 0.5rem 0;
+    opacity: 0.85;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--border-radius);
+    display: inline-block;
+    box-shadow: var(--shadow-sm);
 }
 
-/* Sección de descripción */
+/* Descripción de la matriz CAME */
 .came-description {
-    background: #fff;
+    background: var(--light-bg);
     padding: 2rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    border-left: 5px solid #1a567a;
+    border-radius: var(--border-radius-lg);
+    margin: 2rem 0;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .came-description p {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: #374151;
-    margin-bottom: 1.5rem;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 1rem;
 }
 
 .came-reflection-box {
-    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-    border-radius: 12px;
+    background: linear-gradient(135deg, #e6fffa 0%, #f0fff4 100%);
+    border: 2px solid var(--success-color);
+    border-radius: var(--border-radius);
     padding: 1.5rem;
-    margin-bottom: 0;
-    text-align: center;
+    margin-top: 1.5rem;
+    font-style: italic;
+    color: var(--text-primary);
     font-weight: 500;
-    color: #1a567a;
-    border: 2px solid #bae6fd;
-    box-shadow: 0 2px 10px rgba(26, 86, 122, 0.1);
+    position: relative;
 }
 
 .came-reflection-box::before {
-    content: "💡 ";
-    font-size: 1.3rem;
-    margin-right: 0.5rem;
+    content: "💡";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    font-size: 1.2rem;
 }
 
-/* Sección de la tabla CAME */
-.came-matrix-table {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    overflow-x: auto;
-}
-
-/* Tabla CAME */
-.came-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 12px;
+/* Matriz CAME principal */
+.came-matrix-container {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
-    box-shadow: 0 0 0 1px #e5e7eb;
+    margin: 2rem 0;
 }
 
-.came-table thead tr {
-    background: linear-gradient(135deg, #1a567a 0%, #2d7a9e 100%);
+/* Tabla de acciones dinámicas */
+.came-actions-container {
+    padding: 2rem;
 }
 
-.came-table thead th {
-    padding: 1.5rem 1rem;
-    text-align: center;
-    color: #fff;
+.came-section {
+    margin-bottom: 3rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.came-section:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.came-section-header {
+    padding: 1.5rem;
+    color: white;
     font-weight: 600;
-    font-size: 1rem;
-    border-right: 1px solid rgba(255,255,255,0.2);
-    vertical-align: middle;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.came-table thead th:last-child {
-    border-right: none;
+/* Colores específicos para cada tipo de acción */
+.came-section.type-c .came-section-header {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
 }
 
-.came-table thead th span {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    margin-top: 0.5rem;
-    letter-spacing: 2px;
+.came-section.type-a .came-section-header {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
 }
 
-/* Colores específicos para cada columna del encabezado */
-.came-table thead th:nth-child(2) {
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+.came-section.type-m .came-section-header {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
 }
 
-.came-table thead th:nth-child(3) {
-    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+.came-section.type-e .came-section-header {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
 }
 
-.came-table thead th:nth-child(4) {
-    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+.came-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.came-table thead th:nth-child(5) {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+.came-letter {
+    background: rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
 }
 
-/* Filas del cuerpo */
-.came-table tbody tr {
-    border-bottom: 1px solid #e5e7eb;
-    transition: background-color 0.3s ease;
+.add-action-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-.came-table tbody tr:hover {
-    background-color: #f9fafb;
+.add-action-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
 }
 
-.came-table tbody tr:last-child {
+/* Lista de acciones */
+.came-actions-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.came-action-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: background 0.3s ease;
+}
+
+.came-action-item:hover {
+    background: #f8fafc;
+}
+
+.came-action-item:last-child {
     border-bottom: none;
 }
 
-/* Celdas del número de acción */
-.came-table tbody td:first-child {
-    text-align: center;
-    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-    font-weight: 700;
-    color: #1a567a;
-    font-size: 1.1rem;
-    padding: 1rem;
-    border-right: 2px solid #bae6fd;
-    width: 60px;
+.action-number {
+    background: var(--primary-gradient);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
 }
 
-/* Celdas de contenido */
-.came-table tbody td {
-    padding: 0.75rem;
-    vertical-align: middle;
-    border-right: 1px solid #e5e7eb;
+.action-content {
+    flex: 1;
 }
 
-.came-table tbody td:last-child {
-    border-right: none;
-}
-
-/* Textareas */
-.came-table textarea {
+.action-textarea {
     width: 100%;
-    padding: 0.75rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    min-height: 80px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
     font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
     resize: vertical;
     transition: all 0.3s ease;
-    background: #fff;
-    color: #374151;
-    min-height: 60px;
+    background: white;
 }
 
-.came-table textarea:focus {
+.action-textarea:focus {
     outline: none;
-    border-color: #1a567a;
-    box-shadow: 0 0 0 3px rgba(26, 86, 122, 0.1);
-    background: #fafbfc;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
 }
 
-.came-table textarea:disabled {
-    background: #f9fafb;
-    cursor: not-allowed;
-    border-color: #e5e7eb;
+.action-textarea::placeholder {
+    color: #a0aec0;
+    font-style: italic;
 }
 
-/* Colores de borde para cada columna */
-.came-table tbody td:nth-child(2) textarea:focus {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+.action-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
 }
 
-.came-table tbody td:nth-child(3) textarea:focus {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+.delete-action-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.came-table tbody td:nth-child(4) textarea:focus {
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+.delete-action-btn:hover {
+    background: #e53e3e;
+    transform: scale(1.05);
 }
 
-.came-table tbody td:nth-child(5) textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state-text {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 /* Navegación */
 .came-navigation {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 2rem;
     margin-top: 3rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-.btn-main {
-    background: linear-gradient(135deg, #1a567a 0%, #2d7a9e 100%);
+.came-nav-btn {
+    background: var(--primary-gradient);
     color: white;
-    padding: 1rem 2rem;
-    border-radius: 10px;
+    padding: 0.875rem 1.75rem;
     text-decoration: none;
+    border-radius: var(--border-radius);
     font-weight: 600;
-    font-size: 1rem;
     transition: all 0.3s ease;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(26, 86, 122, 0.25);
-    min-width: 220px;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
 }
 
-.btn-main:hover {
+.came-nav-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(26, 86, 122, 0.35);
-    background: linear-gradient(135deg, #2d7a9e 0%, #1a567a 100%);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    text-decoration: none;
+    color: white;
 }
 
-.btn-main:active {
-    transform: translateY(0);
+/* Mensajes de estado */
+.came-message {
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Indicadores de sección activa */
-.section-indicator {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 0.5rem;
+.came-message.success {
+    background: #f0fff4;
+    color: #38a169;
+    border: 1px solid #9ae6b4;
 }
 
-.section-c { background: #dc2626; }
-.section-a { background: #f59e0b; }
-.section-m { background: #10b981; }
-.section-e { background: #3b82f6; }
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .container {
-        max-width: 100%;
-    }
-    
-    .came-table thead th {
-        padding: 1rem 0.5rem;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .project-header h1 {
-        font-size: 1.8rem;
-    }
-    
-    .came-navigation {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .btn-main {
-        width: 100%;
-        min-width: auto;
-    }
-    
-    .came-table {
-        font-size: 0.85rem;
-    }
-    
-    .came-table thead th {
-        padding: 0.75rem 0.25rem;
-        font-size: 0.8rem;
-    }
-    
-    .came-table tbody td {
-        padding: 0.5rem 0.25rem;
-    }
-    
-    .came-table textarea {
-        font-size: 0.85rem;
-        padding: 0.5rem;
-    }
+.came-message.error {
+    background: #fed7d7;
+    color: #e53e3e;
+    border: 1px solid #feb2b2;
 }
 
 /* Animaciones */
-@keyframes fadeInUp {
+@keyframes slideInUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -327,6 +392,95 @@
     }
 }
 
-.came-matrix-table {
-    animation: fadeInUp 0.6s ease-out;
+.came-action-item {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Contenedor principal mejorado */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.main-content {
+    background-image: url('../../Resources/fondo11.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    position: relative;
+}
+
+.main-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 0;
+}
+
+.main-content > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Asegurar que todos los elementos estén bien contenidos */
+.came-actions-container {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 0;
+    margin: 2rem 0;
+    overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .came-container {
+        padding: 1rem;
+    }
+    
+    .project-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .project-header h1 {
+        font-size: 1.2rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    .came-description {
+        padding: 1.5rem;
+    }
+    
+    .came-actions-container {
+        padding: 0;
+        margin: 1rem 0;
+    }
+    
+    .came-action-item {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .action-number {
+        align-self: flex-start;
+    }
+    
+    .came-navigation {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .came-nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }

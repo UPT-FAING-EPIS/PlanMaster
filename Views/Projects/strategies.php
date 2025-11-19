@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
-require_once __DIR__ . '/../../Controllers/ProjectController.php';
+require_once __DIR__ . '/../../Controllers/StrategicAnalysisController.php';
 require_once __DIR__ . '/../../config/url_config.php';
 
 // Verificar que el usuario esté logueado
@@ -15,25 +15,33 @@ if ($project_id === 0) {
 }
 
 // Obtener datos del proyecto y del usuario
-$projectController = new ProjectController();
-$project = $projectController->getProject($project_id);
+$strategicController = new StrategicAnalysisController();
 $user = AuthController::getCurrentUser();
 
-if (!$project) {
-    $_SESSION['error'] = "Proyecto no encontrado";
-    header("Location: " . getBaseUrl() . "/Views/Users/projects.php");
-    exit();
-}
+// Obtener datos FODA del proyecto
+$fodaData = $strategicController->getFodaData($project_id);
+$strategicAnalysis = $strategicController->getStrategicAnalysis($project_id);
+$relations = $strategicController->getStrategicRelations($project_id);
 
-// Obtener estrategias existentes
-$strategiesData = $projectController->getStrategiesAnalysis($project_id);
+// Definir variables globales para usar en las matrices
+$fortalezas = isset($fodaData['fortalezas']) ? $fodaData['fortalezas'] : [];
+$debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : [];
+$oportunidades = isset($fodaData['oportunidades']) ? $fodaData['oportunidades'] : [];
+$amenazas = isset($fodaData['amenazas']) ? $fodaData['amenazas'] : [];
+
+// Debug: Información sobre los datos obtenidos (comentado para producción)
+// echo "DEBUG: " . count($fodaData['fortalezas']) . " fortalezas, " . count($fodaData['debilidades']) . " debilidades";
+
+// Verificar si hay datos FODA
+$hasFodaData = !empty($fodaData['fortalezas']) || !empty($fodaData['debilidades']) || 
+               !empty($fodaData['oportunidades']) || !empty($fodaData['amenazas']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Identificación de Estrategias - <?php echo htmlspecialchars($project['project_name']); ?></title>
+    <title>Análisis Estratégico - PlanMaster</title>
     
     <!-- CSS -->
     <link rel="stylesheet" href="<?php echo getBaseUrl(); ?>/Publics/css/styles_dashboard.css">
@@ -50,532 +58,701 @@ $strategiesData = $projectController->getStrategiesAnalysis($project_id);
     <!-- Header -->
     <?php include 'header.php'; ?>
 
-    <!-- Hero Section -->
-    <section class="hero-section strategies-hero">
+    <div class="strategic-container" style="background-image: url('<?php echo getBaseUrl(); ?>/Resources/fondo11.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <div class="hero-content">
-                        <div class="breadcrumb-nav">
-                            <a href="<?php echo getBaseUrl(); ?>/Views/Users/dashboard.php" class="breadcrumb-link">Dashboard</a>
-                            <span class="breadcrumb-separator">></span>
-                            <a href="project.php?id=<?php echo $project_id; ?>" class="breadcrumb-link">Proyecto</a>
-                            <span class="breadcrumb-separator">></span>
-                            <span class="breadcrumb-current">Identificación de Estrategias</span>
-                        </div>
-                        
-                        <h1 class="hero-title">
-                            <span class="step-number">10.</span>
-                            IDENTIFICACIÓN DE ESTRATEGIAS
-                        </h1>
-                        
-                        <div class="project-info">
-                            <div class="project-badge">
-                                <i class="icon-briefcase"></i>
-                                <span><?php echo htmlspecialchars($project['project_name']); ?></span>
-                            </div>
-                            <div class="company-badge">
-                                <i class="icon-building"></i>
-                                <span><?php echo htmlspecialchars($project['company_name']); ?></span>
-                            </div>
-                        </div>
+            <!-- Header del análisis estratégico -->
+            <div class="strategic-header">
+                <div class="breadcrumb-nav" style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1rem;">
+                    <a href="<?php echo getBaseUrl(); ?>/Views/Users/dashboard.php" style="color: rgba(255, 255, 255, 0.8);">Dashboard</a>
+                    <span> > </span>
+                    <a href="project.php?id=<?php echo $project_id; ?>" style="color: rgba(255, 255, 255, 0.8);">Proyecto</a>
+                    <span> > </span>
+                    <span style="color: white;">Análisis Estratégico</span>
+                </div>
+                
+                <h1 class="strategic-title">Análisis Estratégico FODA</h1>
+                <p class="strategic-subtitle">
+                    Identifique las estrategias más apropiadas relacionando fortalezas, debilidades, 
+                    oportunidades y amenazas de su organización.
+                </p>
+            </div>
+
+            <?php 
+                // Debug temporal
+                echo "<!-- DEBUG: ";
+                echo "Fortalezas: " . count($fodaData['fortalezas']) . " ";
+                echo "Debilidades: " . count($fodaData['debilidades']) . " ";
+                echo "Oportunidades: " . count($fodaData['oportunidades']) . " ";
+                echo "Amenazas: " . count($fodaData['amenazas']) . " ";
+                echo "-->";
+                ?>
+                
+                <?php if (!$hasFodaData): ?>
+                <div class="alert alert-warning" style="background: rgba(255, 193, 7, 0.9); color: #856404; padding: 2rem; border-radius: 15px; text-align: center;">
+                    <h4>⚠️ Datos FODA Requeridos</h4>
+                    <p>Para realizar el análisis estratégico, primero debe completar el análisis FODA en las siguientes secciones:</p>
+                    <div style="margin: 1rem 0;">
+                        <a href="porter-matrix.php?id=<?php echo $project_id; ?>" class="btn btn-primary" style="margin: 0.5rem;">Porter Matrix (Fortalezas/Oportunidades)</a>
+                        <a href="pest-analysis.php?id=<?php echo $project_id; ?>" class="btn btn-primary" style="margin: 0.5rem;">PEST Analysis (Amenazas)</a>
+                        <a href="value-chain.php?id=<?php echo $project_id; ?>" class="btn btn-primary" style="margin: 0.5rem;">Cadena de Valor (Fortalezas/Debilidades)</a>
                     </div>
                 </div>
-                <div class="col-lg-4 text-lg-end">
-                    <div class="hero-icon">
-                        🧠
+            <?php else: ?>
+                
+                <!-- Leyenda de puntuación -->
+                <div class="legend-section">
+                    <h4 class="legend-title">Escala de Puntuación</h4>
+                    <div class="legend-content">
+                        <strong>0</strong> = En total desacuerdo | 
+                        <strong>1</strong> = No está de acuerdo | 
+                        <strong>2</strong> = Está de acuerdo | 
+                        <strong>3</strong> = Bastante de acuerdo | 
+                        <strong>4</strong> = En total acuerdo
                     </div>
                 </div>
+
+                <div class="strategic-content">
+                    <!-- 1. Matriz FO (Fortalezas - Oportunidades) -->
+                    <div class="matrix-section">
+                        <h3 class="matrix-title">Fortalezas x Oportunidades (Estrategia Ofensiva)</h3>
+                        <p class="matrix-description">Las fortalezas se usan para tomar ventaja en cada una de las oportunidades.</p>
+                        
+                        <?php if (empty($fodaData['fortalezas']) || empty($fodaData['oportunidades'])): ?>
+                            <div class="alert alert-info" style="background: rgba(52, 152, 219, 0.1); color: #2980b9; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                                <p><strong>⚠️ Datos insuficientes</strong></p>
+                                <p>Se requieren fortalezas y oportunidades para esta matriz.</p>
+                            </div>
+                        <?php else: ?>
+                            <table class="strategic-matrix" id="fo-matrix">
+                                <thead>
+                                    <tr>
+                                        <th>FORTALEZAS</th>
+                                        <?php 
+                                        $oportunidades = isset($fodaData['oportunidades']) ? $fodaData['oportunidades'] : [];
+                                        foreach ($oportunidades as $index => $oportunidad): 
+                                        ?>
+                                            <th class="popup-trigger" 
+                                                data-popup-title="<?php echo htmlspecialchars($oportunidad['item_text'] ?? 'Oportunidad'); ?>"
+                                                data-popup-content="<?php echo htmlspecialchars($oportunidad['item_text'] ?? 'Sin descripción'); ?>">
+                                                O<?php echo $index + 1; ?>
+                                            </th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    $fortalezas = isset($fodaData['fortalezas']) ? $fodaData['fortalezas'] : [];
+                                    foreach ($fortalezas as $fIndex => $fortaleza): 
+                                    ?>
+                                        <tr>
+                                            <td class="row-header">
+                                                <?php echo htmlspecialchars($fortaleza['item_text'] ?? 'Sin descripción'); ?>
+                                            </td>
+                                            <?php foreach ($oportunidades as $oIndex => $oportunidad): ?>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="score-input" 
+                                                           min="0" 
+                                                           max="4" 
+                                                           value="0"
+                                                           data-relation-type="FO"
+                                                           data-fortaleza-id="<?php echo $fortaleza['id'] ?? 0; ?>"
+                                                           data-oportunidad-id="<?php echo $oportunidad['id'] ?? 0; ?>">
+                                                </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <tr class="total-row">
+                                        <td><strong>Total</strong></td>
+                                        <?php foreach ($oportunidades as $oportunidad): ?>
+                                            <td class="total-cell">0</td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- 2. Matriz FA (Fortalezas - Amenazas) -->
+                    <div class="matrix-section">
+                        <h3 class="matrix-title">Fortalezas x Amenazas (Estrategia Defensiva)</h3>
+                        <p class="matrix-description">Las fortalezas evaden el efecto negativo de las amenazas.</p>
+                        
+                        <?php if (empty($fodaData['fortalezas']) || empty($fodaData['amenazas'])): ?>
+                            <div class="alert alert-info" style="background: rgba(52, 152, 219, 0.1); color: #2980b9; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                                <p><strong>⚠️ Datos insuficientes</strong></p>
+                                <p>Se requieren fortalezas y amenazas para esta matriz.</p>
+                            </div>
+                        <?php else: ?>
+                            <table class="strategic-matrix" id="fa-matrix">
+                                <thead>
+                                    <tr>
+                                        <th>FORTALEZAS</th>
+                                        <?php 
+                                        $amenazas = isset($fodaData['amenazas']) ? $fodaData['amenazas'] : [];
+                                        foreach ($amenazas as $index => $amenaza): 
+                                        ?>
+                                            <th class="popup-trigger" 
+                                                data-popup-title="<?php echo htmlspecialchars($amenaza['item_text'] ?? 'Amenaza'); ?>"
+                                                data-popup-content="<?php echo htmlspecialchars($amenaza['item_text'] ?? 'Sin descripción'); ?>">
+                                                A<?php echo $index + 1; ?>
+                                            </th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($fortalezas as $fIndex => $fortaleza): ?>
+                                        <tr>
+                                            <td class="row-header">
+                                                <?php echo htmlspecialchars($fortaleza['item_text'] ?? 'Sin descripción'); ?>
+                                            </td>
+                                            <?php foreach ($amenazas as $aIndex => $amenaza): ?>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="score-input" 
+                                                           min="0" 
+                                                           max="4" 
+                                                           value="0"
+                                                           data-relation-type="FA"
+                                                           data-fortaleza-id="<?php echo $fortaleza['id']; ?>"
+                                                           data-amenaza-id="<?php echo $amenaza['id']; ?>">
+                                                </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <tr class="total-row">
+                                        <td><strong>Total</strong></td>
+                                        <?php foreach ($amenazas as $amenaza): ?>
+                                            <td class="total-cell">0</td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- 3. Matriz DO (Debilidades - Oportunidades) -->
+                    <div class="matrix-section">
+                        <h3 class="matrix-title">Debilidades x Oportunidades (Estrategia Adaptativa)</h3>
+                        <p class="matrix-description">Superamos las debilidades tomando ventaja de las oportunidades.</p>
+                        
+                        <?php if (empty($fodaData['debilidades']) || empty($fodaData['oportunidades'])): ?>
+                            <div class="alert alert-info" style="background: rgba(52, 152, 219, 0.1); color: #2980b9; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                                <p><strong>⚠️ Datos insuficientes</strong></p>
+                                <p>Se requieren debilidades y oportunidades para esta matriz.</p>
+                            </div>
+                        <?php else: ?>
+                            <table class="strategic-matrix" id="do-matrix">
+                                <thead>
+                                    <tr>
+                                        <th>DEBILIDADES</th>
+                                        <?php foreach ($oportunidades as $index => $oportunidad): ?>
+                                            <th class="popup-trigger" 
+                                                data-popup-title="<?php echo htmlspecialchars($oportunidad['item_text'] ?? 'Oportunidad'); ?>"
+                                                data-popup-content="<?php echo htmlspecialchars($oportunidad['item_text'] ?? 'Sin descripción'); ?>">
+                                                O<?php echo $index + 1; ?>
+                                            </th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    $debilidades = isset($fodaData['debilidades']) ? $fodaData['debilidades'] : [];
+                                    foreach ($debilidades as $dIndex => $debilidad): 
+                                    ?>
+                                        <tr>
+                                            <td class="row-header">
+                                                <?php echo htmlspecialchars($debilidad['item_text'] ?? 'Sin descripción'); ?>
+                                            </td>
+                                            <?php foreach ($oportunidades as $oIndex => $oportunidad): ?>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="score-input" 
+                                                           min="0" 
+                                                           max="4" 
+                                                           value="0"
+                                                           data-relation-type="DO"
+                                                           data-debilidad-id="<?php echo $debilidad['id'] ?? 0; ?>"
+                                                           data-oportunidad-id="<?php echo $oportunidad['id'] ?? 0; ?>">
+                                                </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <tr class="total-row">
+                                        <td><strong>Total</strong></td>
+                                        <?php foreach ($oportunidades as $oportunidad): ?>
+                                            <td class="total-cell">0</td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- 4. Matriz DA (Debilidades - Amenazas) -->
+                    <div class="matrix-section">
+                        <h3 class="matrix-title">Debilidades x Amenazas (Estrategia de Supervivencia)</h3>
+                        <p class="matrix-description">Las debilidades intensifican notablemente el efecto negativo de las amenazas.</p>
+                        
+                        <?php if (empty($fodaData['debilidades']) || empty($fodaData['amenazas'])): ?>
+                            <div class="alert alert-info" style="background: rgba(52, 152, 219, 0.1); color: #2980b9; padding: 1.5rem; border-radius: 10px; text-align: center;">
+                                <p><strong>⚠️ Datos insuficientes</strong></p>
+                                <p>Se requieren debilidades y amenazas para esta matriz.</p>
+                            </div>
+                        <?php else: ?>
+                            <table class="strategic-matrix" id="da-matrix">
+                                <thead>
+                                    <tr>
+                                        <th>DEBILIDADES</th>
+                                        <?php foreach ($amenazas as $index => $amenaza): ?>
+                                            <th class="popup-trigger" 
+                                                data-popup-title="<?php echo htmlspecialchars($amenaza['item_text'] ?? 'Amenaza'); ?>"
+                                                data-popup-content="<?php echo htmlspecialchars($amenaza['item_text'] ?? 'Sin descripción'); ?>">
+                                                A<?php echo $index + 1; ?>
+                                            </th>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($debilidades as $dIndex => $debilidad): ?>
+                                        <tr>
+                                            <td class="row-header">
+                                                <?php echo htmlspecialchars($debilidad['item_text'] ?? 'Sin descripción'); ?>
+                                            </td>
+                                            <?php foreach ($amenazas as $aIndex => $amenaza): ?>
+                                                <td>
+                                                    <input type="number" 
+                                                           class="score-input" 
+                                                           min="0" 
+                                                           max="4" 
+                                                           value="0"
+                                                           data-relation-type="DA"
+                                                           data-debilidad-id="<?php echo $debilidad['id'] ?? 0; ?>"
+                                                           data-amenaza-id="<?php echo $amenaza['id'] ?? 0; ?>">
+                                                </td>
+                                            <?php endforeach; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <tr class="total-row">
+                                        <td><strong>Total</strong></td>
+                                        <?php foreach ($amenazas as $amenaza): ?>
+                                            <td class="total-cell">0</td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Sección de Resultados -->
+                <div class="results-section">
+                    <h2 class="results-title">Síntesis de Resultados</h2>
+                    
+                    <div class="results-grid">
+                        <div class="result-card" id="fo-result">
+                            <div class="result-label">Estrategia Ofensiva (FO)</div>
+                            <div class="result-value">0</div>
+                            <div class="result-type">Fortalezas + Oportunidades</div>
+                        </div>
+                        
+                        <div class="result-card" id="fa-result">
+                            <div class="result-label">Estrategia Defensiva (FA)</div>
+                            <div class="result-value">0</div>
+                            <div class="result-type">Fortalezas + Amenazas</div>
+                        </div>
+                        
+                        <div class="result-card" id="do-result">
+                            <div class="result-label">Estrategia Adaptativa (DO)</div>
+                            <div class="result-value">0</div>
+                            <div class="result-type">Debilidades + Oportunidades</div>
+                        </div>
+                        
+                        <div class="result-card" id="da-result">
+                            <div class="result-label">Estrategia de Supervivencia (DA)</div>
+                            <div class="result-value">0</div>
+                            <div class="result-type">Debilidades + Amenazas</div>
+                        </div>
+                    </div>
+
+                    <!-- Recomendación estratégica -->
+                    <div class="strategy-recommendation">
+                        <div class="strategy-type" id="strategy-type">Determine su estrategia</div>
+                        <div class="strategy-description" id="strategy-description">Complete las evaluaciones para obtener la recomendación estratégica.</div>
+                    </div>
+                </div>
+
+                <!-- Botón de guardado -->
+                <button type="button" id="saveStrategicAnalysis" class="save-button">
+                    Guardar Análisis Estratégico
+                </button>
+
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Popup para mostrar descripciones -->
+    <div id="foda-popup" class="foda-popup" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h4 id="popup-title"></h4>
+                <button class="popup-close">&times;</button>
+            </div>
+            <div class="popup-body">
+                <p id="popup-text"></p>
             </div>
         </div>
-    </section>
-    
-    <!-- Contenido principal -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Contexto del análisis DAFO -->
-            <div class="context-box">
-                <h3>🎯 Análisis DAFO para Identificación de Estrategias</h3>
-                <p>A partir del análisis FODA previo, ahora evaluaremos las relaciones entre factores internos y externos para identificar las estrategias más apropiadas para su organización.</p>
-                <p><strong>Este análisis le permitirá determinar:</strong></p>
-                <ul>
-                    <li><strong>Estrategias Ofensivas (FO):</strong> Aprovechar fortalezas para capitalizar oportunidades</li>
-                    <li><strong>Estrategias Defensivas (FA):</strong> Usar fortalezas para enfrentar amenazas</li>
-                    <li><strong>Estrategias de Reorientación (DO):</strong> Superar debilidades aprovechando oportunidades</li>
-                    <li><strong>Estrategias de Supervivencia (DA):</strong> Minimizar debilidades y evitar amenazas</li>
-                </ul>
-            </div>
+    </div>
 
-            <!-- Matriz DAFO Visual -->
-            <div class="dafo-matrix-container">
-                <h2 class="section-title">📊 Matriz DAFO Estratégica</h2>
-                
-                <div class="matrix-2x2">
-                    <div class="matrix-quadrant quadrant-fo">
-                        <h3>🚀 Estrategias Ofensivas</h3>
-                        <p class="quadrant-subtitle">(Fortalezas + Oportunidades)</p>
-                        <div class="quadrant-content">
-                            <p>Aprovechar las fortalezas internas para capitalizar las oportunidades externas</p>
-                        </div>
-                    </div>
-                    
-                    <div class="matrix-quadrant quadrant-fa">
-                        <h3>🛡️ Estrategias Defensivas</h3>
-                        <p class="quadrant-subtitle">(Fortalezas + Amenazas)</p>
-                        <div class="quadrant-content">
-                            <p>Utilizar las fortalezas para enfrentar y neutralizar las amenazas</p>
-                        </div>
-                    </div>
-                    
-                    <div class="matrix-quadrant quadrant-do">
-                        <h3>🔄 Estrategias de Reorientación</h3>
-                        <p class="quadrant-subtitle">(Debilidades + Oportunidades)</p>
-                        <div class="quadrant-content">
-                            <p>Superar las debilidades aprovechando las oportunidades del entorno</p>
-                        </div>
-                    </div>
-                    
-                    <div class="matrix-quadrant quadrant-da">
-                        <h3>⚠️ Estrategias de Supervivencia</h3>
-                        <p class="quadrant-subtitle">(Debilidades + Amenazas)</p>
-                        <div class="quadrant-content">
-                            <p>Minimizar debilidades y evitar amenazas para asegurar la supervivencia</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Formulario de evaluación DAFO -->
-            <form action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_strategies" method="POST" class="dafo-evaluation-form">
-                <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
-                
-                <!-- Leyenda de escala -->
-                <div class="scale-legend">
-                    <h3>📏 Escala de Evaluación</h3>
-                    <div class="scale-items">
-                        <span class="scale-item"><strong>0</strong> = En total desacuerdo</span>
-                        <span class="scale-item"><strong>1</strong> = No está de acuerdo</span>
-                        <span class="scale-item"><strong>2</strong> = Está de acuerdo</span>
-                        <span class="scale-item"><strong>3</strong> = Bastante de acuerdo</span>
-                        <span class="scale-item"><strong>4</strong> = En total acuerdo</span>
-                    </div>
-                </div>
-
-                <!-- Tablas de evaluación -->
-                <div class="evaluation-tables">
-                    <!-- Tabla FO (Fortalezas-Oportunidades) -->
-                    <div class="evaluation-table-container">
-                        <h3 class="table-title fo-title">🚀 Tabla FO (Fortalezas-Oportunidades)</h3>
-                        <div class="table-wrapper">
-                            <table class="evaluation-table fo-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>O1</th>
-                                        <th>O2</th>
-                                        <th>O3</th>
-                                        <th>O4</th>
-                                        <th class="total-column">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th>F1</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f1][o4]" value="0"></td>
-                                        <td class="total-cell" id="fo-f1-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>F2</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f2][o4]" value="0"></td>
-                                        <td class="total-cell" id="fo-f2-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>F3</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f3][o4]" value="0"></td>
-                                        <td class="total-cell" id="fo-f3-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>F4</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fo[f4][o4]" value="0"></td>
-                                        <td class="total-cell" id="fo-f4-total">0</td>
-                                    </tr>
-                                    <tr class="total-row">
-                                        <th>Total</th>
-                                        <td class="total-cell" id="fo-o1-total">0</td>
-                                        <td class="total-cell" id="fo-o2-total">0</td>
-                                        <td class="total-cell" id="fo-o3-total">0</td>
-                                        <td class="total-cell" id="fo-o4-total">0</td>
-                                        <td class="grand-total" id="fo-grand-total">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Tabla FA (Fortalezas-Amenazas) -->
-                    <div class="evaluation-table-container">
-                        <h3 class="table-title fa-title">🛡️ Tabla FA (Fortalezas-Amenazas)</h3>
-                        <div class="table-wrapper">
-                            <table class="evaluation-table fa-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>A1</th>
-                                        <th>A2</th>
-                                        <th>A3</th>
-                                        <th>A4</th>
-                                        <th class="total-column">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th>F1</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f1][a4]" value="0"></td>
-                                        <td class="total-cell" id="fa-f1-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>F2</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f2][a4]" value="0"></td>
-                                        <td class="total-cell" id="fa-f2-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>F3</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f3][a4]" value="0"></td>
-                                        <td class="total-cell" id="fa-f3-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>F4</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="fa[f4][a4]" value="0"></td>
-                                        <td class="total-cell" id="fa-f4-total">0</td>
-                                    </tr>
-                                    <tr class="total-row">
-                                        <th>Total</th>
-                                        <td class="total-cell" id="fa-a1-total">0</td>
-                                        <td class="total-cell" id="fa-a2-total">0</td>
-                                        <td class="total-cell" id="fa-a3-total">0</td>
-                                        <td class="total-cell" id="fa-a4-total">0</td>
-                                        <td class="grand-total" id="fa-grand-total">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Tabla DO (Debilidades-Oportunidades) -->
-                    <div class="evaluation-table-container">
-                        <h3 class="table-title do-title">🔄 Tabla DO (Debilidades-Oportunidades)</h3>
-                        <div class="table-wrapper">
-                            <table class="evaluation-table do-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>O1</th>
-                                        <th>O2</th>
-                                        <th>O3</th>
-                                        <th>O4</th>
-                                        <th class="total-column">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th>D1</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d1][o4]" value="0"></td>
-                                        <td class="total-cell" id="do-d1-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>D2</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d2][o4]" value="0"></td>
-                                        <td class="total-cell" id="do-d2-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>D3</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d3][o4]" value="0"></td>
-                                        <td class="total-cell" id="do-d3-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>D4</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="do[d4][o4]" value="0"></td>
-                                        <td class="total-cell" id="do-d4-total">0</td>
-                                    </tr>
-                                    <tr class="total-row">
-                                        <th>Total</th>
-                                        <td class="total-cell" id="do-o1-total">0</td>
-                                        <td class="total-cell" id="do-o2-total">0</td>
-                                        <td class="total-cell" id="do-o3-total">0</td>
-                                        <td class="total-cell" id="do-o4-total">0</td>
-                                        <td class="grand-total" id="do-grand-total">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Tabla DA (Debilidades-Amenazas) -->
-                    <div class="evaluation-table-container">
-                        <h3 class="table-title da-title">⚠️ Tabla DA (Debilidades-Amenazas)</h3>
-                        <div class="table-wrapper">
-                            <table class="evaluation-table da-table">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>A1</th>
-                                        <th>A2</th>
-                                        <th>A3</th>
-                                        <th>A4</th>
-                                        <th class="total-column">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th>D1</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d1][a4]" value="0"></td>
-                                        <td class="total-cell" id="da-d1-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>D2</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d2][a4]" value="0"></td>
-                                        <td class="total-cell" id="da-d2-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>D3</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d3][a4]" value="0"></td>
-                                        <td class="total-cell" id="da-d3-total">0</td>
-                                    </tr>
-                                    <tr>
-                                        <th>D4</th>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a1]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a2]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a3]" value="0"></td>
-                                        <td><input type="number" min="0" max="4" class="evaluation-input" name="da[d4][a4]" value="0"></td>
-                                        <td class="total-cell" id="da-d4-total">0</td>
-                                    </tr>
-                                    <tr class="total-row">
-                                        <th>Total</th>
-                                        <td class="total-cell" id="da-a1-total">0</td>
-                                        <td class="total-cell" id="da-a2-total">0</td>
-                                        <td class="total-cell" id="da-a3-total">0</td>
-                                        <td class="total-cell" id="da-a4-total">0</td>
-                                        <td class="grand-total" id="da-grand-total">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sección de Síntesis de Resultados -->
-                <div class="synthesis-section">
-                    <h2 class="section-title">📈 Síntesis de Resultados</h2>
-                    
-                    <div class="synthesis-table-container">
-                        <table class="synthesis-table">
-                            <thead>
-                                <tr>
-                                    <th>Relaciones</th>
-                                    <th>Puntuación</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="relation-name">FO (Fortalezas-Oportunidades)</td>
-                                    <td class="synthesis-score" id="synthesis-fo">0</td>
-                                </tr>
-                                <tr>
-                                    <td class="relation-name">FA (Fortalezas-Amenazas)</td>
-                                    <td class="synthesis-score" id="synthesis-fa">0</td>
-                                </tr>
-                                <tr>
-                                    <td class="relation-name">DO (Debilidades-Oportunidades)</td>
-                                    <td class="synthesis-score" id="synthesis-do">0</td>
-                                </tr>
-                                <tr>
-                                    <td class="relation-name">DA (Debilidades-Amenazas)</td>
-                                    <td class="synthesis-score" id="synthesis-da">0</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <div class="synthesis-note">
-                            <p><strong>Nota:</strong> La puntuación mayor le indica la estrategia que deberá llevar a cabo</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabla de Tipología de Estrategias -->
-                <div class="typology-section">
-                    <h2 class="section-title">🎯 Tipología de Estrategias</h2>
-                    
-                    <div class="typology-table-container">
-                        <table class="typology-table">
-                            <tbody>
-                                <tr class="strategy-offensive">
-                                    <td class="strategy-type">
-                                        <div class="strategy-icon">🚀</div>
-                                        <strong>Estrategia Ofensiva</strong>
-                                    </td>
-                                    <td class="strategy-description">
-                                        Deberá adoptar estrategias de crecimiento
-                                    </td>
-                                </tr>
-                                <tr class="strategy-defensive">
-                                    <td class="strategy-type">
-                                        <div class="strategy-icon">�️</div>
-                                        <strong>Estrategia Defensiva</strong>
-                                    </td>
-                                    <td class="strategy-description">
-                                        La empresa está preparada para enfrentarse a las amenazas
-                                    </td>
-                                </tr>
-                                <tr class="strategy-reorientation">
-                                    <td class="strategy-type">
-                                        <div class="strategy-icon">🔄</div>
-                                        <strong>Estrategia de Reorientación</strong>
-                                    </td>
-                                    <td class="strategy-description">
-                                        La empresa no puede aprovechar las oportunidades
-                                    </td>
-                                </tr>
-                                <tr class="strategy-survival">
-                                    <td class="strategy-type">
-                                        <div class="strategy-icon">⚠️</div>
-                                        <strong>Estrategia de Supervivencia</strong>
-                                    </td>
-                                    <td class="strategy-description">
-                                        Se enfrenta a amenazas externas sin las fortalezas necesarias
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Recomendación estratégica -->
-                <div class="strategic-recommendation">
-                    <h3>🎯 Recomendación Estratégica</h3>
-                    <div class="recommendation-content" id="strategy-recommendation">
-                        <p>Complete la evaluación para obtener su recomendación estratégica personalizada.</p>
-                    </div>
-                </div>
-
-                <!-- Botones de acción -->
-                <div class="form-actions">
-                    <button type="submit" class="btn-save-evaluation">
-                        <span class="btn-icon">💾</span>
-                        Guardar Evaluación
-                    </button>
-                    
-                    <button type="button" class="btn-calculate" id="calculate-btn">
-                        <span class="btn-icon">🧮</span>
-                        Calcular Estrategias
-                    </button>
-                    
-                    <button type="button" class="btn-reset" id="reset-btn">
-                        <span class="btn-icon">🔄</span>
-                        Limpiar Evaluación
-                    </button>
-                    
-                    <a href="project.php?id=<?php echo $project_id; ?>" class="btn-back">
-                        <span class="btn-icon">←</span>
-                        Volver al Proyecto
-                    </a>
-                </div>
-            </form>
-
-            <!-- Mensaje de ayuda -->
-            <div class="help-box">
-                <h4>💡 Consejos para identificar estrategias efectivas:</h4>
-                <ul>
-                    <li><strong>Base tus estrategias en los análisis previos:</strong> Utiliza la información del FODA, BCG y Porter</li>
-                    <li><strong>Sé específico y medible:</strong> Define acciones concretas con resultados cuantificables</li>
-                    <li><strong>Considera los recursos disponibles:</strong> Asegúrate de que las estrategias sean viables</li>
-                    <li><strong>Establece prioridades:</strong> No todas las estrategias tienen la misma urgencia</li>
-                    <li><strong>Piensa a largo plazo:</strong> Considera el impacto futuro de cada estrategia</li>
-                </ul>
-            </div>
-        </div>
-    </main>
-    
-    <!-- Footer -->
-    <?php include '../Users/footer.php'; ?>
-    
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script src="<?php echo getBaseUrl(); ?>/Publics/js/strategies.js"></script>
     
-    <!-- Guardado automático -->
     <script>
-        // Configurar guardado automático cada 30 segundos
-        let autoSaveInterval;
-        let isAutoSaveEnabled = true;
+    // Cargar datos guardados de las relaciones estratégicas
+    const savedRelations = <?php echo json_encode($relations); ?>;
+    
+    // Función para cargar datos guardados en los inputs
+    function loadSavedData() {
+        console.log('Cargando datos guardados:', savedRelations);
         
-        document.addEventListener('DOMContentLoaded', function() {
-            updateStrategyCounts();
-            setupAutoSave();
+        // Iterar por cada tipo de relación
+        Object.keys(savedRelations).forEach(relationType => {
+            savedRelations[relationType].forEach(relation => {
+                // Encontrar el input correspondiente basado en los data attributes
+                let input = null;
+                
+                if (relationType === 'FO') {
+                    input = document.querySelector(`input[data-relation-type="FO"][data-fortaleza-id="${relation.fortaleza_id}"][data-oportunidad-id="${relation.oportunidad_id}"]`);
+                } else if (relationType === 'FA') {
+                    input = document.querySelector(`input[data-relation-type="FA"][data-fortaleza-id="${relation.fortaleza_id}"][data-amenaza-id="${relation.amenaza_id}"]`);
+                } else if (relationType === 'DO') {
+                    input = document.querySelector(`input[data-relation-type="DO"][data-debilidad-id="${relation.debilidad_id}"][data-oportunidad-id="${relation.oportunidad_id}"]`);
+                } else if (relationType === 'DA') {
+                    input = document.querySelector(`input[data-relation-type="DA"][data-debilidad-id="${relation.debilidad_id}"][data-amenaza-id="${relation.amenaza_id}"]`);
+                }
+                
+                if (input && relation.value_score) {
+                    input.value = relation.value_score;
+                }
+            });
         });
         
-        function setupAutoSave() {
-            if (isAutoSaveEnabled) {
-                autoSaveInterval = setInterval(function() {
-                    saveStrategiesAuto();
-                }, 30000); // 30 segundos
+        // Calcular totales después de cargar los datos
+        setTimeout(() => {
+            calculateAllTotals();
+        }, 100);
+    }
+    
+    // Función para calcular totales de todas las matrices
+    function calculateAllTotals() {
+        calculateMatrixTotals('fo-matrix');
+        calculateMatrixTotals('fa-matrix');
+        calculateMatrixTotals('do-matrix');
+        calculateMatrixTotals('da-matrix');
+    }
+    
+    // Función para calcular totales de una matriz específica
+    function calculateMatrixTotals(matrixId) {
+        const matrix = document.getElementById(matrixId);
+        if (!matrix) return;
+        
+        const totalCells = matrix.querySelectorAll('.total-cell');
+        let matrixGrandTotal = 0;
+        
+        // Obtener todas las filas de datos (excluir total-row)
+        const dataRows = matrix.querySelectorAll('tbody tr:not(.total-row)');
+        const numCols = totalCells.length;
+        
+        // Calcular totales por columna
+        for (let col = 0; col < numCols; col++) {
+            let columnTotal = 0;
+            
+            // Sumar valores de cada fila en esta columna
+            dataRows.forEach(row => {
+                const input = row.querySelector(`td:nth-child(${col + 2}) input.score-input`);
+                if (input) {
+                    const value = parseInt(input.value) || 0;
+                    columnTotal += value;
+                }
+            });
+            
+            // Actualizar celda total
+            if (totalCells[col]) {
+                totalCells[col].textContent = columnTotal;
+                matrixGrandTotal += columnTotal;
             }
         }
         
-        function updateStrategyCounts() {
-            const categories = ['competitive', 'growth', 'innovation', 'differentiation'];
-            categories.forEach(category => {
-                const items = document.querySelectorAll(`#${category}-strategies-container .strategy-item`);
-                const count = items.length;
-                const countElement = document.getElementById(`${category}-count`);
-                if (countElement) {
-                    countElement.textContent = `${count} ${count === 1 ? 'estrategia' : 'estrategias'}`;
+        // Actualizar el total general de esta matriz en la síntesis
+        updateSynthesisTotal(matrixId, matrixGrandTotal);
+        
+        return matrixGrandTotal;
+    }
+    
+    // Función para actualizar totales en la síntesis de resultados
+    function updateSynthesisTotal(matrixId, total) {
+        let resultCardId = '';
+        
+        switch(matrixId) {
+            case 'fo-matrix':
+                resultCardId = 'fo-result';
+                break;
+            case 'fa-matrix':
+                resultCardId = 'fa-result';
+                break;
+            case 'do-matrix':
+                resultCardId = 'do-result';
+                break;
+            case 'da-matrix':
+                resultCardId = 'da-result';
+                break;
+        }
+        
+        // Actualizar el valor en la tarjeta de resultados
+        const resultValue = document.querySelector(`#${resultCardId} .result-value`);
+        if (resultValue) {
+            resultValue.textContent = total;
+        }
+        
+        // Actualizar recomendación estratégica
+        updateStrategyRecommendation();
+    }
+    
+    // Función para determinar la estrategia recomendada
+    function updateStrategyRecommendation() {
+        const fo = parseInt(document.querySelector('#fo-result .result-value')?.textContent) || 0;
+        const fa = parseInt(document.querySelector('#fa-result .result-value')?.textContent) || 0;
+        const do_total = parseInt(document.querySelector('#do-result .result-value')?.textContent) || 0;
+        const da = parseInt(document.querySelector('#da-result .result-value')?.textContent) || 0;
+        
+        const max = Math.max(fo, fa, do_total, da);
+        let strategy = 'Determine su estrategia';
+        let description = 'Complete las evaluaciones para obtener la recomendación estratégica.';
+        
+        if (max > 0) {
+            if (max === fo) {
+                strategy = 'Estrategia Ofensiva';
+                description = 'Deberá adoptar estrategias de crecimiento. Las fortalezas de la organización pueden aprovecharse para capitalizar las oportunidades del entorno.';
+            } else if (max === fa) {
+                strategy = 'Estrategia Defensiva';
+                description = 'Deberá adoptar estrategias defensivas. Use las fortalezas para evitar o reducir el impacto de las amenazas externas.';
+            } else if (max === do_total) {
+                strategy = 'Estrategia Adaptativa';
+                description = 'Deberá adoptar estrategias de reorientación. Supere las debilidades internas aprovechando las oportunidades externas.';
+            } else if (max === da) {
+                strategy = 'Estrategia de Supervivencia';
+                description = 'Deberá adoptar estrategias de supervivencia. Minimice las debilidades y evite las amenazas para mantener la competitividad.';
+            }
+        }
+        
+        const strategyType = document.getElementById('strategy-type');
+        const strategyDescription = document.getElementById('strategy-description');
+        
+        if (strategyType) strategyType.textContent = strategy;
+        if (strategyDescription) strategyDescription.textContent = description;
+    }
+    
+    // Sistema de popups para FODA
+    document.addEventListener('DOMContentLoaded', function() {
+        const popup = document.getElementById('foda-popup');
+        const popupTitle = document.getElementById('popup-title');
+        const popupText = document.getElementById('popup-text');
+        const closeBtn = document.querySelector('.popup-close');
+        
+        // Agregar event listeners a todos los elementos con popup
+        document.querySelectorAll('.popup-trigger').forEach(element => {
+            element.addEventListener('click', function() {
+                const title = this.getAttribute('data-popup-title');
+                const content = this.getAttribute('data-popup-content');
+                
+                popupTitle.textContent = title;
+                popupText.textContent = content;
+                popup.style.display = 'flex';
+            });
+        });
+        
+        // Cerrar popup
+        closeBtn.addEventListener('click', function() {
+            popup.style.display = 'none';
+        });
+        
+        // Cerrar popup al hacer clic fuera
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+        
+        // Cerrar popup con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && popup.style.display === 'flex') {
+                popup.style.display = 'none';
+            }
+        });
+        
+        // Agregar event listeners a todos los inputs para actualizar totales y guardar
+        document.querySelectorAll('.score-input').forEach(input => {
+            input.addEventListener('input', function() {
+                // Encontrar la matriz padre y recalcular totales
+                const matrix = this.closest('.strategic-matrix');
+                if (matrix) {
+                    calculateMatrixTotals(matrix.id);
                 }
+                
+                // Guardar automáticamente el valor
+                saveRelation(this);
+            });
+        });
+        
+        // Función para guardar relación estratégica
+        function saveRelation(input) {
+            const relationType = input.dataset.relationType;
+            const value = parseInt(input.value) || 0;
+            
+            // Preparar datos según el tipo de relación
+            let data = {
+                project_id: <?php echo $project_id; ?>,
+                relation_type: relationType,
+                value_score: value
+            };
+            
+            // Agregar IDs específicos según el tipo
+            if (relationType === 'FO') {
+                data.fortaleza_id = input.dataset.fortalezaId;
+                data.oportunidad_id = input.dataset.oportunidadId;
+            } else if (relationType === 'FA') {
+                data.fortaleza_id = input.dataset.fortalezaId;
+                data.amenaza_id = input.dataset.amenazaId;
+            } else if (relationType === 'DO') {
+                data.debilidad_id = input.dataset.debilidadId;
+                data.oportunidad_id = input.dataset.oportunidadId;
+            } else if (relationType === 'DA') {
+                data.debilidad_id = input.dataset.debilidadId;
+                data.amenaza_id = input.dataset.amenazaId;
+            }
+            
+            // Enviar datos al servidor usando FormData
+            const formData = new FormData();
+            formData.append('action', 'save_relation');
+            formData.append('project_id', data.project_id);
+            formData.append('relation_type', data.relation_type);
+            formData.append('value_score', data.value_score);
+            
+            // Agregar IDs específicos
+            if (data.fortaleza_id) formData.append('fortaleza_id', data.fortaleza_id);
+            if (data.debilidad_id) formData.append('debilidad_id', data.debilidad_id);
+            if (data.oportunidad_id) formData.append('oportunidad_id', data.oportunidad_id);
+            if (data.amenaza_id) formData.append('amenaza_id', data.amenaza_id);
+            
+            fetch('<?php echo getBaseUrl(); ?>/Controllers/StrategicAnalysisController.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Relación guardada exitosamente');
+                } else {
+                    console.error('Error al guardar relación:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
         }
+        
+        // Cargar datos guardados al inicializar
+        loadSavedData();
+    });
     </script>
+
+    <style>
+    /* Estilos para el popup */
+    .foda-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+    
+    .popup-content {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 90%;
+        max-height: 70vh;
+        overflow: hidden;
+    }
+    
+    .popup-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .popup-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .popup-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+    }
+    
+    .popup-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .popup-body {
+        padding: 1.5rem;
+        overflow-y: auto;
+        max-height: 50vh;
+    }
+    
+    .popup-body p {
+        margin: 0;
+        line-height: 1.6;
+        color: #333;
+    }
+    
+    /* Estilos para elementos clickeables */
+    .popup-trigger {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+    
+    .popup-trigger:hover {
+        background: rgba(102, 126, 234, 0.1) !important;
+        transform: scale(1.05);
+    }
+    
+    .strategic-matrix .popup-trigger {
+        font-weight: 600;
+        text-align: center;
+    }
+    </style>
 </body>
 </html>

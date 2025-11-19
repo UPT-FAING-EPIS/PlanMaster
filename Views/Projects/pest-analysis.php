@@ -39,6 +39,9 @@ $questions = $pestAnalysisModel->getStandardQuestions();
 // Obtener respuestas existentes de PEST (si las hay)
 $pestData = $projectController->getPestAnalysis($project_id);
 $pestSummary = $projectController->getPestSummary($project_id);
+
+// Obtener datos FODA existentes (oportunidades y amenazas del PEST)
+$pestFoda = $projectController->getFodaAnalysis($project_id);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -471,6 +474,75 @@ $pestSummary = $projectController->getPestSummary($project_id);
                 </div>
             </form>
             
+            <!-- Sección FODA derivada del PEST -->
+            <div class="pest-foda-section">
+                <h3>🎯 Oportunidades y Amenazas del Entorno</h3>
+                <p style="text-align: center; margin-bottom: 25px; color: #6b7280;">
+                    Una vez analizado el entorno externo PEST, identifique las <strong>oportunidades y amenazas</strong> más relevantes que desee que se reflejen en el análisis FODA de su Plan Estratégico.
+                </p>
+                
+                <form id="pest-foda-form" action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_foda" method="POST">
+                    <input type="hidden" name="action" value="save_foda">
+                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                    <input type="hidden" name="source" value="pest-analysis">
+                    
+                    <div class="foda-grid">
+                        <!-- Oportunidades -->
+                        <div class="foda-column oportunidades">
+                            <h4>🌟 OPORTUNIDADES</h4>
+                            <div class="foda-items" id="oportunidades-container">
+                                <?php if (!empty($pestFoda['oportunidades'])): ?>
+                                    <?php foreach ($pestFoda['oportunidades'] as $oportunidad): ?>
+                                        <div class="foda-item">
+                                            <textarea name="oportunidades[]" placeholder="Escriba una oportunidad..." maxlength="500"><?php echo htmlspecialchars($oportunidad['item_text']); ?></textarea>
+                                            <button type="button" class="btn-remove-foda" onclick="removeFodaItem(this, 'oportunidades')">❌</button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                <!-- Campo vacío por defecto -->
+                                <div class="foda-item">
+                                    <textarea name="oportunidades[]" placeholder="Escriba una oportunidad..." maxlength="500"></textarea>
+                                    <button type="button" class="btn-remove-foda" onclick="removeFodaItem(this, 'oportunidades')">❌</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-foda" onclick="addOportunidad()">
+                                ➕ Agregar Oportunidad
+                            </button>
+                        </div>
+                        
+                        <!-- Amenazas -->
+                        <div class="foda-column amenazas">
+                            <h4>⚠️ AMENAZAS</h4>
+                            <div class="foda-items" id="amenazas-container">
+                                <?php if (!empty($pestFoda['amenazas'])): ?>
+                                    <?php foreach ($pestFoda['amenazas'] as $amenaza): ?>
+                                        <div class="foda-item">
+                                            <textarea name="amenazas[]" placeholder="Escriba una amenaza..." maxlength="500"><?php echo htmlspecialchars($amenaza['item_text']); ?></textarea>
+                                            <button type="button" class="btn-remove-foda" onclick="removeFodaItem(this, 'amenazas')">❌</button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                <!-- Campo vacío por defecto -->
+                                <div class="foda-item">
+                                    <textarea name="amenazas[]" placeholder="Escriba una amenaza..." maxlength="500"></textarea>
+                                    <button type="button" class="btn-remove-foda" onclick="removeFodaItem(this, 'amenazas')">❌</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-foda" onclick="addAmenaza()">
+                                ➕ Agregar Amenaza
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón de guardar FODA -->
+                    <div class="pest-actions" style="margin-top: 30px; text-align: center;">
+                        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(34, 197, 94, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(34, 197, 94, 0.3)'">
+                            💾 Guardar Oportunidades y Amenazas
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
             <!-- Navegación a siguiente sección -->
             <?php if ($projectController->isPestComplete($project_id)): ?>
             <div class="next-section">
@@ -494,6 +566,12 @@ $pestSummary = $projectController->getPestSummary($project_id);
     <?php if (isset($_GET['success'])): ?>
     <div class="alert alert-success" id="alertMessage">
         ✅ Diagnóstico guardado exitosamente
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['success_foda'])): ?>
+    <div class="alert alert-success" id="alertMessage">
+        ✅ Oportunidades y amenazas guardadas exitosamente
     </div>
     <?php endif; ?>
 
@@ -628,6 +706,84 @@ $pestSummary = $projectController->getPestSummary($project_id);
             
             alert(`Resumen Análisis PEST:\n\nPuntuación total: ${sum}/${totalQuestions * 4}\nMedia: ${avg}/4\n\nInterpretación: ${interpretation}\n\n(Este cálculo es informativo. Use "Guardar" para almacenar las respuestas)`);
         }
+
+        // ===============================================
+        // FUNCIONES CRUD PARA OPORTUNIDADES Y AMENAZAS
+        // ===============================================
+
+        // Agregar elemento FODA
+        function addFodaItem(type, text = '', index = null) {
+            const container = document.getElementById(`${type}-container`);
+            if (!container) return;
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'foda-item';
+            itemDiv.innerHTML = `
+                <textarea 
+                    name="${type}[]" 
+                    placeholder="Escriba una ${type.slice(0, -1)}..." 
+                    maxlength="500"
+                    data-index="${index !== null ? index : container.children.length}"
+                >${text}</textarea>
+                <button type="button" class="btn-remove-foda" onclick="removeFodaItem(this, '${type}')">
+                    ❌
+                </button>
+            `;
+
+            container.appendChild(itemDiv);
+
+            // Focus en el nuevo textarea si está vacío
+            if (!text) {
+                const textarea = itemDiv.querySelector('textarea');
+                textarea.focus();
+            }
+        }
+
+        // Remover elemento FODA
+        function removeFodaItem(button, type) {
+            const item = button.closest('.foda-item');
+            const container = document.getElementById(`${type}-container`);
+
+            // No permitir eliminar si es el único elemento
+            if (container.children.length <= 1) {
+                const textarea = item.querySelector('textarea');
+                textarea.value = '';
+                textarea.focus();
+                return;
+            }
+
+            // Animación de salida
+            item.style.transform = 'translateX(-100%)';
+            item.style.opacity = '0';
+
+            setTimeout(() => {
+                item.remove();
+                updateFodaIndices(type);
+            }, 300);
+        }
+
+        // Actualizar índices de elementos FODA
+        function updateFodaIndices(type) {
+            const container = document.getElementById(`${type}-container`);
+            Array.from(container.children).forEach((item, index) => {
+                const textarea = item.querySelector('textarea');
+                textarea.setAttribute('data-index', index);
+            });
+        }
+
+        // Funciones auxiliares para los botones
+        function addOportunidad() {
+            addFodaItem('oportunidades');
+        }
+
+        function addAmenaza() {
+            addFodaItem('amenazas');
+        }
+
+        // Hacer funciones disponibles globalmente
+        window.addOportunidad = addOportunidad;
+        window.addAmenaza = addAmenaza;
+        window.removeFodaItem = removeFodaItem;
     </script>
 </body>
 </html>

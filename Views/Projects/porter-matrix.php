@@ -3,6 +3,7 @@
 session_start();
 require_once __DIR__ . '/../../Controllers/AuthController.php';
 require_once __DIR__ . '/../../Controllers/PorterController.php';
+require_once __DIR__ . '/../../Controllers/ProjectController.php';
 require_once __DIR__ . '/../../config/url_config.php';
 
 // Verificar que el usuario esté logueado
@@ -19,6 +20,7 @@ if (!isset($_GET['id'])) {
 
 $project_id = (int)$_GET['id'];
 $porterController = new PorterController();
+$projectController = new ProjectController();
 
 // Verificar que el proyecto existe y pertenece al usuario usando SOLO PorterController
 $project = $porterController->getProjectForView($project_id);
@@ -42,7 +44,8 @@ if (empty($porterAnalysis)) {
 }
 
 $porterScore = $porterController->getPorterScoreForView($project_id);
-$porterFoda = $porterController->getPorterFodaForView($project_id);
+// Obtener datos FODA usando ProjectController (project_foda_analysis)
+$porterFoda = $projectController->getFodaAnalysis($project_id);
 
 // Obtener modelo para factores estándar
 require_once __DIR__ . '/../../Models/PorterAnalysis.php';
@@ -235,8 +238,14 @@ $standardFactors = $porterModel->getStandardFactors();
                 <?php endforeach; ?>
                 
                 
+                </form>
+                
                 <!-- Sección FODA derivada de Porter -->
                 <div class="porter-foda-section">
+                <form id="porter-foda-form" action="<?php echo getBaseUrl(); ?>/Controllers/ProjectController.php?action=save_foda" method="POST">
+                    <input type="hidden" name="action" value="save_foda">
+                    <input type="hidden" name="project_id" value="<?php echo $project_id; ?>">
+                    <input type="hidden" name="source" value="porter-matrix">
                     <h3>🎯 Oportunidades y Amenazas del Entorno</h3>
                     <p style="text-align: center; margin-bottom: 25px; color: #6b7280;">
                         Una vez analizado el entorno próximo de su empresa (análisis externo del microentorno), identifique las <strong>oportunidades y amenazas</strong> más relevantes que desee que se reflejen en el análisis FODA de su Plan Estratégico.
@@ -291,14 +300,13 @@ $standardFactors = $porterModel->getStandardFactors();
                     </div>
                 </div>
                 
-                <!-- Botón de guardar dentro del formulario -->
-                <div class="porter-actions">
-                    <button type="submit" class="btn-porter primary">
-                        💾 Guardar Análisis Porter
+                <!-- Botón de guardar FODA -->
+                <div class="porter-actions" style="margin-top: 30px;">
+                    <button type="submit" class="btn-porter primary" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                        💾 Guardar Oportunidades y Amenazas
                     </button>
                 </div>
-            
-            </form>
+                </form>
             
             <!-- Botones de navegación -->
             <div class="porter-actions">
@@ -331,6 +339,12 @@ $standardFactors = $porterModel->getStandardFactors();
     <?php if (isset($_GET['success']) && $_GET['success'] == '1'): ?>
     <div class="porter-alert success" id="alertMessage">
         ✅ Análisis Porter guardado exitosamente
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['success_foda'])): ?>
+    <div class="porter-alert success" id="alertMessage">
+        ✅ Oportunidades y amenazas guardadas exitosamente
     </div>
     <?php endif; ?>
 

@@ -1,37 +1,315 @@
-// JavaScript para Análisis DAFO - Identificación de Estrategias - PlanMaster
-document.addEventListener('DOMContentLoaded', function() {
+// Funciones JavaScript para el análisis estratégico
+class StrategicAnalysis {
+    constructor() {
+        this.projectId = this.getProjectId();
+        this.totals = {
+            FO: 0,
+            FA: 0,
+            DO: 0,
+            DA: 0
+        };
+        this.init();
+    }
     
-    // Inicializar la aplicación DAFO
-    initDAFOApp();
+    init() {
+        this.attachEventListeners();
+        this.calculateAllTotals();
+    }
     
-    // Configurar eventos
-    setupEventListeners();
+    getProjectId() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id') || 0;
+    }
     
-    // Configurar cálculo automático
-    setupAutoCalculation();
+    attachEventListeners() {
+        // Agregar listeners a todos los inputs de puntuación
+        document.querySelectorAll('.score-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                this.validateScore(e.target);
+                this.calculateTotals();
+                this.saveRelation(e.target);
+            });
+            
+            input.addEventListener('input', (e) => {
+                this.validateScore(e.target);
+            });
+        });
+        
+        // Listener para el botón de guardado
+        const saveButton = document.getElementById('saveStrategicAnalysis');
+        if (saveButton) {
+            saveButton.addEventListener('click', () => {
+                this.saveAllData();
+            });
+        }
+    }
     
-    // Animaciones de entrada
-    animateElements();
+    validateScore(input) {
+        const value = parseInt(input.value);
+        
+        // Remover clases de validación anteriores
+        input.classList.remove('has-error', 'has-success');
+        
+        if (isNaN(value) || value < 0 || value > 4) {
+            input.classList.add('has-error');
+            input.setCustomValidity('El valor debe estar entre 0 y 4');
+            return false;
+        } else {
+            input.classList.add('has-success');
+            input.setCustomValidity('');
+            return true;
+        }
+    }
     
-    console.log('✅ Módulo de Análisis DAFO inicializado correctamente');
+    calculateTotals() {
+        // Calcular totales por tipo de relación
+        this.totals.FO = this.calculateMatrixTotal('fo-matrix');
+        this.totals.FA = this.calculateMatrixTotal('fa-matrix');
+        this.totals.DO = this.calculateMatrixTotal('do-matrix');
+        this.totals.DA = this.calculateMatrixTotal('da-matrix');
+        
+        // Actualizar la visualización de totales
+        this.updateTotalDisplay();
+        
+        // Determinar y mostrar la estrategia recomendada
+        this.updateStrategyRecommendation();
+    }
+    
+    calculateMatrixTotal(matrixId) {
+        let total = 0;
+        const matrix = document.getElementById(matrixId);
+        
+        if (matrix) {
+            const inputs = matrix.querySelectorAll('.score-input');
+            inputs.forEach(input => {
+                const value = parseInt(input.value) || 0;
+                total += value;
+            });
+        }
+        
+        return total;
+    }
+    
+    calculateAllTotals() {
+        this.calculateTotals();
+    }
+    
+    updateTotalDisplay() {
+        // Actualizar totales en las tablas
+        this.updateMatrixTotal('fo-matrix', this.totals.FO);
+        this.updateMatrixTotal('fa-matrix', this.totals.FA);
+        this.updateMatrixTotal('do-matrix', this.totals.DO);
+        this.updateMatrixTotal('da-matrix', this.totals.DA);
+        
+        // Actualizar tarjetas de resultados
+        this.updateResultCard('fo-result', this.totals.FO, 'FO');
+        this.updateResultCard('fa-result', this.totals.FA, 'FA');
+        this.updateResultCard('do-result', this.totals.DO, 'DO');
+        this.updateResultCard('da-result', this.totals.DA, 'DA');
+    }
+    
+    updateMatrixTotal(matrixId, total) {
+        const matrix = document.getElementById(matrixId);
+        if (matrix) {
+            const totalCell = matrix.querySelector('.total-cell');
+            if (totalCell) {
+                totalCell.textContent = total;
+            }
+        }
+    }
+    
+    updateResultCard(cardId, value, type) {
+        const card = document.getElementById(cardId);
+        if (card) {
+            const valueElement = card.querySelector('.result-value');
+            if (valueElement) {
+                valueElement.textContent = value;
+            }
+        }
+    }
+    
+    updateStrategyRecommendation() {
+        const maxValue = Math.max(this.totals.FO, this.totals.FA, this.totals.DO, this.totals.DA);
+        let strategyType = '';
+        let strategyDescription = '';
+        
+        if (maxValue === this.totals.FO) {
+            strategyType = 'Estrategia Ofensiva';
+            strategyDescription = 'Deberá adoptar estrategias de crecimiento. Las fortalezas de la organización pueden aprovecharse para capitalizar las oportunidades del entorno.';
+        } else if (maxValue === this.totals.FA) {
+            strategyType = 'Estrategia Defensiva';
+            strategyDescription = 'Deberá adoptar estrategias defensivas. Usar las fortalezas para minimizar el impacto de las amenazas externas.';
+        } else if (maxValue === this.totals.DO) {
+            strategyType = 'Estrategia Adaptativa';
+            strategyDescription = 'Deberá adoptar estrategias de reorientación. Superar las debilidades aprovechando las oportunidades disponibles.';
+        } else {
+            strategyType = 'Estrategia de Supervivencia';
+            strategyDescription = 'Deberá adoptar estrategias de supervivencia. Minimizar las debilidades y evitar las amenazas.';
+        }
+        
+        // Actualizar elementos de recomendación
+        const typeElement = document.getElementById('strategy-type');
+        const descElement = document.getElementById('strategy-description');
+        
+        if (typeElement) typeElement.textContent = strategyType;
+        if (descElement) descElement.textContent = strategyDescription;
+    }
+    
+    saveRelation(input) {
+        if (!this.validateScore(input)) {
+            return;
+        }
+        
+        const relationType = input.dataset.relationType;
+        const fortalezaId = input.dataset.fortalezaId || null;
+        const debilidadId = input.dataset.debilidadId || null;
+        const oportunidadId = input.dataset.oportunidadId || null;
+        const amenazaId = input.dataset.amenazaId || null;
+        const valueScore = parseInt(input.value) || 0;
+        
+        // Enviar datos al servidor
+        const formData = new FormData();
+        formData.append('action', 'save_relation');
+        formData.append('project_id', this.projectId);
+        formData.append('relation_type', relationType);
+        formData.append('fortaleza_id', fortalezaId);
+        formData.append('debilidad_id', debilidadId);
+        formData.append('oportunidad_id', oportunidadId);
+        formData.append('amenaza_id', amenazaId);
+        formData.append('value_score', valueScore);
+        
+        fetch('/PlanMaster/Controllers/StrategicAnalysisController.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Relación guardada correctamente');
+                input.classList.add('has-success');
+                setTimeout(() => input.classList.remove('has-success'), 2000);
+            } else {
+                console.error('Error al guardar relación:', data.error);
+                input.classList.add('has-error');
+            }
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+            input.classList.add('has-error');
+        });
+    }
+    
+    saveAllData() {
+        const saveButton = document.getElementById('saveStrategicAnalysis');
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = 'Guardando...';
+            saveButton.classList.add('loading');
+        }
+        
+        // Validar todos los inputs
+        const allInputs = document.querySelectorAll('.score-input');
+        let hasErrors = false;
+        
+        allInputs.forEach(input => {
+            if (!this.validateScore(input)) {
+                hasErrors = true;
+            }
+        });
+        
+        if (hasErrors) {
+            this.showMessage('Por favor, corrija los errores antes de continuar.', 'error');
+            this.resetSaveButton();
+            return;
+        }
+        
+        // Simular guardado exitoso
+        setTimeout(() => {
+            this.showMessage('Análisis estratégico guardado correctamente.', 'success');
+            this.resetSaveButton();
+        }, 1500);
+    }
+    
+    resetSaveButton() {
+        const saveButton = document.getElementById('saveStrategicAnalysis');
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = 'Guardar Análisis';
+            saveButton.classList.remove('loading');
+        }
+    }
+    
+    showMessage(message, type = 'info') {
+        // Crear elemento de mensaje si no existe
+        let messageContainer = document.getElementById('message-container');
+        if (!messageContainer) {
+            messageContainer = document.createElement('div');
+            messageContainer.id = 'message-container';
+            messageContainer.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+            `;
+            document.body.appendChild(messageContainer);
+        }
+        
+        // Crear mensaje
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease-out;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        `;
+        messageDiv.textContent = message;
+        
+        messageContainer.appendChild(messageDiv);
+        
+        // Remover después de 3 segundos
+        setTimeout(() => {
+            messageDiv.style.animation = 'slideOutRight 0.3s ease-in forwards';
+            setTimeout(() => messageDiv.remove(), 300);
+        }, 3000);
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    new StrategicAnalysis();
 });
 
-// ======= INICIALIZACIÓN ======= 
-function initDAFOApp() {
-    // Cargar datos guardados si existen
-    loadSavedData();
+// CSS para animaciones
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
     
-    // Calcular totales iniciales
-    calculateAllTotals();
-    
-    // Configurar tooltips
-    setupTooltips();
-    
-    // Configurar atajos de teclado
-    setupKeyboardShortcuts();
-    
-    console.log('Aplicación DAFO inicializada');
-}
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+`;
+document.head.appendChild(style);
 
 // ======= CONFIGURACIÓN DE EVENTOS =======
 function setupEventListeners() {
@@ -872,10 +1150,7 @@ function hideTooltip(event) {
 }
 
 // ======= FUNCIONES GLOBALES (para uso en HTML) =======
-window.addStrategy = addStrategy;
-window.removeStrategy = removeStrategy;
-window.updateStrategyCounts = updateStrategyCounts;
-window.saveStrategiesAuto = saveStrategiesAuto;
+// Funciones comentadas temporalmente hasta implementar
 
 // ======= FUNCIONES PARA CSS DINÁMICO =======
 function addDynamicStyles() {

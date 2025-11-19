@@ -1,5 +1,6 @@
 <?php
 // session_start(); // Removido para evitar conflicto - la sesión se maneja en AuthController
+require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../Models/Project.php';
 require_once __DIR__ . '/../Models/Mission.php';
 require_once __DIR__ . '/../Models/Vision.php';
@@ -314,19 +315,28 @@ class ProjectController {
             $project = $this->getProject($project_id);
             
             try {
-                // Limpiar análisis FODA anterior
-                $this->fodaAnalysis->deleteByProject($project_id);
+                // Determinar qué tipos de FODA están siendo enviados
+                $typesToUpdate = [];
+                $typeMapping = [
+                    'oportunidades' => 'oportunidad',
+                    'amenazas' => 'amenaza', 
+                    'fortalezas' => 'fortaleza',
+                    'debilidades' => 'debilidad'
+                ];
                 
-                // Procesar cada tipo de análisis FODA
-                $types = ['oportunidad', 'amenaza', 'fortaleza', 'debilidad'];
+                foreach ($typeMapping as $plural => $singular) {
+                    if (isset($_POST[$plural])) {
+                        $typesToUpdate[] = $singular;
+                    }
+                }
                 
-                foreach ($types as $type) {
-                    $plural_type = $type . 'es'; // oportunidades, amenazas, etc.
-                    if ($type == 'oportunidad') $plural_type = 'oportunidades';
-                    if ($type == 'amenaza') $plural_type = 'amenazas';
-                    if ($type == 'fortaleza') $plural_type = 'fortalezas';
-                    if ($type == 'debilidad') $plural_type = 'debilidades';
-                    
+                // Solo limpiar los tipos que están siendo actualizados
+                foreach ($typesToUpdate as $type) {
+                    $this->fodaAnalysis->deleteByProjectAndType($project_id, $type);
+                }
+                
+                // Procesar cada tipo de análisis FODA que está siendo enviado
+                foreach ($typeMapping as $plural_type => $type) {
                     if (isset($_POST[$plural_type]) && is_array($_POST[$plural_type])) {
                         $order = 1;
                         foreach ($_POST[$plural_type] as $item_text) {
@@ -353,10 +363,19 @@ class ProjectController {
                 } else {
                     // Verificar desde dónde se envió el formulario
                     $source = $_POST['source'] ?? 'foda-analysis';
-                    if ($source === 'value-chain') {
-                        header("Location: ../Views/Projects/value-chain.php?id=" . $project_id . "&success=1");
-                    } else {
-                        header("Location: ../Views/Projects/foda-analysis.php?id=" . $project_id);
+                    switch ($source) {
+                        case 'value-chain':
+                            header("Location: ../Views/Projects/value-chain.php?id=" . $project_id . "&success=1");
+                            break;
+                        case 'porter-matrix':
+                            header("Location: ../Views/Projects/porter-matrix.php?id=" . $project_id . "&success_foda=1");
+                            break;
+                        case 'pest-analysis':
+                            header("Location: ../Views/Projects/pest-analysis.php?id=" . $project_id . "&success_foda=1");
+                            break;
+                        default:
+                            header("Location: ../Views/Projects/foda-analysis.php?id=" . $project_id);
+                            break;
                     }
                 }
                 exit();
@@ -365,10 +384,19 @@ class ProjectController {
                 $_SESSION['error'] = $e->getMessage();
                 // Redirigir al origen en caso de error
                 $source = $_POST['source'] ?? 'foda-analysis';
-                if ($source === 'value-chain') {
-                    header("Location: ../Views/Projects/value-chain.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
-                } else {
-                    header("Location: ../Views/Projects/foda-analysis.php?id=" . $project_id);
+                switch ($source) {
+                    case 'value-chain':
+                        header("Location: ../Views/Projects/value-chain.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
+                        break;
+                    case 'porter-matrix':
+                        header("Location: ../Views/Projects/porter-matrix.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
+                        break;
+                    case 'pest-analysis':
+                        header("Location: ../Views/Projects/pest-analysis.php?id=" . $project_id . "&error=" . urlencode($e->getMessage()));
+                        break;
+                    default:
+                        header("Location: ../Views/Projects/foda-analysis.php?id=" . $project_id);
+                        break;
                 }
                 exit();
             }
@@ -1199,15 +1227,43 @@ class ProjectController {
 
     
     private function isStrategiesComplete($project_id) {
-        // Verificar si existen estrategias definidas para este proyecto
-        // Como no tengo el modelo aquí, asumo que no está completo por ahora
-        return false;
+        try {
+            // Crear conexión de base de datos
+            $database = new Database();
+            $db = $database->getConnection();
+            
+            // Verificar si existen análisis estratégicos (relaciones FO, FA, DO, DA)
+            $query = "SELECT COUNT(*) as count FROM project_strategic_relations WHERE project_id = ?";
+            $stmt = $db->prepare($query);
+            $stmt->bind_param("i", $project_id);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            
+            return $result['count'] > 0;
+        } catch (Exception $e) {
+            error_log("Error verificando estrategias completas: " . $e->getMessage());
+            return false;
+        }
     }
     
     private function isCameComplete($project_id) {
-        // Verificar si existe matriz CAME completa para este proyecto
-        // Como no tengo el modelo aquí, asumo que no está completo por ahora
-        return false;
+        try {
+            // Crear conexión de base de datos
+            $database = new Database();
+            $db = $database->getConnection();
+            
+            // Verificar si existen acciones CAME definidas
+            $query = "SELECT COUNT(*) as count FROM project_came_matrix WHERE project_id = ?";
+            $stmt = $db->prepare($query);
+            $stmt->bind_param("i", $project_id);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            
+            return $result['count'] > 0;
+        } catch (Exception $e) {
+            error_log("Error verificando matriz CAME completa: " . $e->getMessage());
+            return false;
+        }
     }
 }
 

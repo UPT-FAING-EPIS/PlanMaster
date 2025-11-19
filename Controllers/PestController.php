@@ -20,6 +20,9 @@ class PestController {
                 case 'save_pest':
                     $this->savePestAnalysis();
                     break;
+                case 'save_pest_foda':
+                    $this->savePestFoda();
+                    break;
                 default:
                     http_response_code(400);
                     echo json_encode(['success' => false, 'message' => 'Acción no válida']);
@@ -67,6 +70,26 @@ class PestController {
             } else {
                 throw new Exception('Error al guardar respuestas');
             }
+
+        } catch (Exception $e) {
+            $pid = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+            header("Location: ../Views/Projects/pest-analysis.php?id=" . $pid . "&error=" . urlencode($e->getMessage()));
+            exit();
+        }
+    }
+
+    // Guardar oportunidades y amenazas del PEST
+    private function savePestFoda() {
+        try {
+            if (!AuthController::isLoggedIn()) {
+                header("Location: ../Views/Auth/login.php");
+                exit();
+            }
+
+            // Usar el ProjectController para mantener consistencia
+            require_once __DIR__ . '/ProjectController.php';
+            $projectController = new ProjectController();
+            $projectController->saveFodaAnalysis();
 
         } catch (Exception $e) {
             $pid = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;

@@ -1,13 +1,324 @@
-/* Estilos específicos para Identificación de Estrategias - PlanMaster */
+/* Estilos para la vista de Análisis Estratégico */
+.strategic-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 0;
+}
 
-/* ======= VARIABLES DE COLORES ======= */
-:root {
-    /* Colores principales */
-    --color-primary: #6366f1;
-    --color-secondary: #3b82f6;
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-danger: #ef4444;
+.strategic-header {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.strategic-title {
+    color: white;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.strategic-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.strategic-content {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.matrix-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.matrix-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #667eea;
+}
+
+.matrix-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.strategic-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.strategic-matrix th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.strategic-matrix td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    font-size: 0.85rem;
+}
+
+.strategic-matrix .row-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    padding-left: 12px;
+    max-width: 150px;
+    word-wrap: break-word;
+}
+
+.strategic-matrix .total-row {
+    background: #e3f2fd;
+    font-weight: 700;
+    color: #1565c0;
+}
+
+.strategic-matrix .total-cell {
+    background: #bbdefb;
+    font-weight: 700;
+    color: #0d47a1;
+}
+
+.score-input {
+    width: 50px;
+    padding: 5px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.score-input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.score-input:invalid {
+    border-color: #f44336;
+    box-shadow: 0 0 5px rgba(244, 67, 54, 0.3);
+}
+
+.legend-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.legend-title {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.legend-content {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.results-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.results-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.result-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.result-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.result-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.result-type {
+    font-size: 0.8rem;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.strategy-recommendation {
+    background: #f8f9fa;
+    border-left: 5px solid #667eea;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+}
+
+.strategy-type {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-description {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.save-button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 2rem auto;
+    min-width: 200px;
+}
+
+.save-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.save-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .strategic-container {
+        padding: 1rem;
+    }
+    
+    .strategic-header,
+    .matrix-section,
+    .results-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .strategic-title {
+        font-size: 1.8rem;
+    }
+    
+    .strategic-matrix {
+        font-size: 0.75rem;
+    }
+    
+    .strategic-matrix th,
+    .strategic-matrix td {
+        padding: 8px 4px;
+    }
+    
+    .score-input {
+        width: 40px;
+        padding: 3px;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.matrix-section,
+.results-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.matrix-section:nth-child(2) { animation-delay: 0.1s; }
+.matrix-section:nth-child(3) { animation-delay: 0.2s; }
+.matrix-section:nth-child(4) { animation-delay: 0.3s; }
+.matrix-section:nth-child(5) { animation-delay: 0.4s; }
     --color-info: #06b6d4;
     
     /* Colores para categorías de estrategias */
