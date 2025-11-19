@@ -245,8 +245,12 @@ $projects = $reportController->getUserProjects($user['id']);
                 console.log(`${key}: ${value}`);
             }
             
-            // Use direct PDF generator without complex authentication
-            fetch('/PlanMaster/generate_pdf_direct.php', {
+            // Use the correct URL for PDF generation
+            const pdfUrl = `${BASE_URL}/generate_pdf_direct.php`;
+            console.log('🌐 URL completa:', pdfUrl);
+            
+            // Use direct PDF generator
+            fetch(pdfUrl, {
                 method: 'POST',
                 body: formData
             })
@@ -254,6 +258,15 @@ $projects = $reportController->getUserProjects($user['id']);
                 console.log('📥 Respuesta recibida:', response);
                 console.log('Status:', response.status);
                 console.log('Content-Type:', response.headers.get('content-type'));
+                console.log('URL final:', response.url);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error(`El archivo generate_pdf_direct.php no se encuentra en: ${pdfUrl}`);
+                    } else {
+                        throw new Error(`Error del servidor: ${response.status} - ${response.statusText}`);
+                    }
+                }
                 
                 if (response.headers.get('content-type')?.includes('application/pdf')) {
                     console.log('✅ PDF detectado, iniciando descarga...');
@@ -273,20 +286,16 @@ $projects = $reportController->getUserProjects($user['id']);
                         btn.textContent = originalText;
                         btn.disabled = false;
                         btn.classList.add('enabled');
+                        
+                        alert('✅ PDF generado y descargado correctamente');
                     });
                 } else {
                     console.log('⚠️ No es PDF, mostrando debug...');
                     return response.text().then(text => {
-                        // Open debug window
-                        const newWindow = window.open('', '_blank', 'width=800,height=600');
-                        newWindow.document.write(`
-                            <html>
-                                <head><title>Debug PDF Generation</title></head>
-                                <body style="font-family: monospace; padding: 20px;">
-                                    ${text}
-                                </body>
-                            </html>
-                        `);
+                        console.log('Contenido de respuesta:', text);
+                        
+                        // Show error in alert instead of opening new window
+                        alert(`Error en la generación del PDF:\n\nStatus: ${response.status}\nContenido: ${text.substring(0, 200)}...`);
                         
                         // Restore button
                         btn.textContent = originalText;
@@ -297,7 +306,7 @@ $projects = $reportController->getUserProjects($user['id']);
             })
             .catch(error => {
                 console.error('❌ Error:', error);
-                alert('Error al generar el reporte: ' + error.message);
+                alert(`Error al generar el reporte:\n\n${error.message}\n\nVerifica que el archivo generate_pdf_direct.php esté en la raíz del proyecto en el servidor.`);
                 
                 // Restore button
                 btn.textContent = originalText;

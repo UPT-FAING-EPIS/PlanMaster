@@ -21,8 +21,10 @@ if (!function_exists('getBaseUrl')) {
         
         // Detectar si estamos en localhost o en Azure/producción
         if (strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false) {
+            // En localhost, el proyecto está en la carpeta /PlanMaster
             return $protocol . '://' . $host . '/PlanMaster';
         } else {
+            // En Azure/producción, el proyecto está en la raíz
             return $protocol . '://' . $host;
         }
     }
