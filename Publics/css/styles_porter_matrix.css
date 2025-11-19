@@ -561,6 +561,23 @@
     color: var(--porter-primary);
 }
 
+/* Sección de guardado Porter */
+.porter-save-section {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.porter-save-section .btn-porter {
+    font-size: 1.1rem;
+    padding: 12px 30px;
+    min-width: 250px;
+}
+
 /* Alertas */
 .porter-alert {
     padding: 15px 20px;

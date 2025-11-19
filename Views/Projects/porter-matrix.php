@@ -237,6 +237,12 @@ $standardFactors = $porterModel->getStandardFactors();
                 
                 <?php endforeach; ?>
                 
+                <!-- Botón de guardar análisis Porter -->
+                <div class="porter-save-section">
+                    <button type="submit" class="btn-porter primary" id="save-porter-btn">
+                        💾 Guardar Análisis Porter
+                    </button>
+                </div>
                 
                 </form>
                 

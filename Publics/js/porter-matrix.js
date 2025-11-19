@@ -38,6 +38,15 @@ function setupEventListeners() {
         }
     });
 
+    // Event listener para el botón de guardar Porter
+    const savePorterBtn = document.getElementById('save-porter-btn');
+    if (savePorterBtn) {
+        savePorterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            savePorterAnalysis();
+        });
+    }
+
     // Auto-guardar deshabilitado por ahora
     // setInterval(() => {
     //     if (hasUnsavedChanges()) {
