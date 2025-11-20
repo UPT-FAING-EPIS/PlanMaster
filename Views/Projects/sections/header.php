@@ -26,10 +26,6 @@ $baseUrl = getBaseUrl();
                     <span class="nav-icon">📋</span>
                     Plantillas
                 </a>
-                <a href="<?php echo $baseUrl; ?>/Views/Users/reports.php" class="nav-link">
-                    <span class="nav-icon">📈</span>
-                    Reportes
-                </a>
             </nav>
         </div>
         

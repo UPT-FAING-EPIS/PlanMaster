@@ -22,10 +22,6 @@
                     <span class="nav-icon">📋</span>
                     Plantillas
                 </a>
-                <a href="reports.php" class="nav-link">
-                    <span class="nav-icon">📈</span>
-                    Reportes
-                </a>
             </nav>
         </div>
         

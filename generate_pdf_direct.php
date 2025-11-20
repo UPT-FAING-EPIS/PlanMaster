@@ -1030,7 +1030,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         if ($bcg_data) {
-            $totalProducts = array_sum($bcg_data);
+            $totalProducts = $bcg_data['estrella']['count'] + $bcg_data['interrogante']['count'] + $bcg_data['vaca_lechera']['count'] + $bcg_data['perro']['count'];
             $html .= '<li class="justified-text"><strong>Matriz BCG:</strong> Se analizaron ' . $totalProducts . ' productos distribuidos en los cuadrantes estratégicos para optimizar la gestión del portafolio.</li>';
         }
         
@@ -1041,11 +1041,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if ($pest_data) {
             $pest_categories_evaluated = count($pest_data);
             $html .= '<li class="justified-text"><strong>Diagnóstico PEST:</strong> Se evaluaron ' . $pest_categories_evaluated . ' categorías del entorno empresarial (Político, Económico, Social, Tecnológico, Medioambiental) identificando oportunidades y amenazas estratégicas.</li>';
-        }
-        
-        if (!empty($foda['fortalezas']) || !empty($foda['debilidades']) || !empty($foda['oportunidades']) || !empty($foda['amenazas'])) {
-            $fodaCount = count($foda['fortalezas']) + count($foda['debilidades']) + count($foda['oportunidades']) + count($foda['amenazas']);
-            $html .= '<li class="justified-text"><strong>Análisis Estratégico:</strong> El análisis FODA ha identificado ' . $fodaCount . ' factores críticos que influirán en el éxito organizacional.</li>';
         }
         
         if (!empty($came_actions['C']) || !empty($came_actions['A']) || !empty($came_actions['M']) || !empty($came_actions['E'])) {
