@@ -644,14 +644,17 @@ $hasFodaData = !empty($fodaData['fortalezas']) || !empty($fodaData['debilidades'
             if (data.oportunidad_id) formData.append('oportunidad_id', data.oportunidad_id);
             if (data.amenaza_id) formData.append('amenaza_id', data.amenaza_id);
             
-            fetch('<?php echo getBaseUrl(); ?>/Controllers/StrategicAnalysisController.php', {
+            fetch('../../Controllers/StrategicAnalysisController.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Relación guardada exitosamente');
+                    console.log('Relación guardada exitosamente:', data);
+                    if (data.debug) {
+                        console.log('Debug info:', data.debug);
+                    }
                 } else {
                     console.error('Error al guardar relación:', data.error);
                 }

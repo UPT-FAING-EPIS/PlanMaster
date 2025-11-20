@@ -224,14 +224,14 @@ class ProjectController {
             // Verificar que el proyecto pertenece al usuario
             $project = $this->getProject($project_id);
             
-            // Validar objetivos estratégicos
-            if (empty($strategic_objectives) || count($strategic_objectives) > 3) {
-                $_SESSION['error'] = "Debe ingresar entre 1 y 3 objetivos estratégicos";
+            // Validar objetivos estratégicos (dinámico)
+            if (empty($strategic_objectives)) {
+                $_SESSION['error'] = "Debe ingresar al menos un objetivo estratégico";
                 header("Location: ../Views/Projects/objectives.php?id=" . $project_id);
                 exit();
             }
             
-            // Validar que cada objetivo tenga título y exactamente 2 objetivos específicos
+            // Validar que cada objetivo tenga título y al menos un objetivo específico
             foreach ($strategic_objectives as $index => $strategic) {
                 if (empty(trim($strategic['title']))) {
                     $_SESSION['error'] = "Todos los objetivos estratégicos deben tener título";
@@ -240,8 +240,8 @@ class ProjectController {
                 }
                 
                 $specific_objectives = $strategic['specific_objectives'] ?? [];
-                if (count($specific_objectives) != 2) {
-                    $_SESSION['error'] = "Cada objetivo estratégico debe tener exactamente 2 objetivos específicos";
+                if (count($specific_objectives) < 1) {
+                    $_SESSION['error'] = "Cada objetivo estratégico debe tener al menos un objetivo específico";
                     header("Location: ../Views/Projects/objectives.php?id=" . $project_id);
                     exit();
                 }

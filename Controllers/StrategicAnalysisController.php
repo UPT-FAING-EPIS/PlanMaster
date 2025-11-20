@@ -81,13 +81,59 @@ class StrategicAnalysisController {
     // Guardar una relación estratégica
     public function saveStrategicRelation($project_id, $relation_type, $fortaleza_id = null, $debilidad_id = null, $oportunidad_id = null, $amenaza_id = null, $value_score = 0) {
         try {
+            // Convertir valores a enteros o null
+            $project_id = intval($project_id);
+            $fortaleza_id = ($fortaleza_id !== null && $fortaleza_id !== '') ? intval($fortaleza_id) : null;
+            $debilidad_id = ($debilidad_id !== null && $debilidad_id !== '') ? intval($debilidad_id) : null;
+            $oportunidad_id = ($oportunidad_id !== null && $oportunidad_id !== '') ? intval($oportunidad_id) : null;
+            $amenaza_id = ($amenaza_id !== null && $amenaza_id !== '') ? intval($amenaza_id) : null;
+            $value_score = intval($value_score);
+            
+            // Crear condición WHERE considerando NULLs
+            $whereCondition = "project_id = ? AND relation_type = ?";
+            $params = [$project_id, $relation_type];
+            $types = "is";
+            
+            if ($fortaleza_id !== null) {
+                $whereCondition .= " AND fortaleza_id = ?";
+                $params[] = $fortaleza_id;
+                $types .= "i";
+            } else {
+                $whereCondition .= " AND fortaleza_id IS NULL";
+            }
+            
+            if ($debilidad_id !== null) {
+                $whereCondition .= " AND debilidad_id = ?";
+                $params[] = $debilidad_id;
+                $types .= "i";
+            } else {
+                $whereCondition .= " AND debilidad_id IS NULL";
+            }
+            
+            if ($oportunidad_id !== null) {
+                $whereCondition .= " AND oportunidad_id = ?";
+                $params[] = $oportunidad_id;
+                $types .= "i";
+            } else {
+                $whereCondition .= " AND oportunidad_id IS NULL";
+            }
+            
+            if ($amenaza_id !== null) {
+                $whereCondition .= " AND amenaza_id = ?";
+                $params[] = $amenaza_id;
+                $types .= "i";
+            } else {
+                $whereCondition .= " AND amenaza_id IS NULL";
+            }
+            
             // Verificar si ya existe la relación
-            $checkQuery = "SELECT id FROM project_strategic_relations 
-                          WHERE project_id = ? AND relation_type = ? 
-                          AND fortaleza_id = ? AND debilidad_id = ? 
-                          AND oportunidad_id = ? AND amenaza_id = ?";
+            $checkQuery = "SELECT id FROM project_strategic_relations WHERE " . $whereCondition;
             $checkStmt = $this->db->prepare($checkQuery);
-            $checkStmt->bind_param("isiiii", $project_id, $relation_type, $fortaleza_id, $debilidad_id, $oportunidad_id, $amenaza_id);
+            
+            if (count($params) > 0) {
+                $checkStmt->bind_param($types, ...$params);
+            }
+            
             $checkStmt->execute();
             $checkResult = $checkStmt->get_result();
             
@@ -95,11 +141,13 @@ class StrategicAnalysisController {
                 // Actualizar relación existente
                 $updateQuery = "UPDATE project_strategic_relations 
                                SET value_score = ?, updated_at = CURRENT_TIMESTAMP 
-                               WHERE project_id = ? AND relation_type = ? 
-                               AND fortaleza_id = ? AND debilidad_id = ? 
-                               AND oportunidad_id = ? AND amenaza_id = ?";
+                               WHERE " . $whereCondition;
                 $updateStmt = $this->db->prepare($updateQuery);
-                $updateStmt->bind_param("iisiiii", $value_score, $project_id, $relation_type, $fortaleza_id, $debilidad_id, $oportunidad_id, $amenaza_id);
+                
+                $updateParams = [$value_score, ...$params];
+                $updateTypes = "i" . $types;
+                
+                $updateStmt->bind_param($updateTypes, ...$updateParams);
                 return $updateStmt->execute();
             } else {
                 // Crear nueva relación
@@ -305,10 +353,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         case 'save_relation':
             $project_id = intval($_POST['project_id']);
             $relation_type = $_POST['relation_type'];
-            $fortaleza_id = $_POST['fortaleza_id'] ?? null;
-            $debilidad_id = $_POST['debilidad_id'] ?? null;
-            $oportunidad_id = $_POST['oportunidad_id'] ?? null;
-            $amenaza_id = $_POST['amenaza_id'] ?? null;
+            $fortaleza_id = ($_POST['fortaleza_id'] !== 'null' && !empty($_POST['fortaleza_id'])) ? intval($_POST['fortaleza_id']) : null;
+            $debilidad_id = ($_POST['debilidad_id'] !== 'null' && !empty($_POST['debilidad_id'])) ? intval($_POST['debilidad_id']) : null;
+            $oportunidad_id = ($_POST['oportunidad_id'] !== 'null' && !empty($_POST['oportunidad_id'])) ? intval($_POST['oportunidad_id']) : null;
+            $amenaza_id = ($_POST['amenaza_id'] !== 'null' && !empty($_POST['amenaza_id'])) ? intval($_POST['amenaza_id']) : null;
             $value_score = intval($_POST['value_score']);
             
             $result = $controller->saveStrategicRelation(
@@ -323,7 +371,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if ($result) {
                 $controller->calculateStrategicAnalysis($project_id);
-                echo json_encode(['success' => true]);
+                
+                // Obtener totales actualizados para respuesta
+                $analysis = $controller->getStrategicAnalysis($project_id);
+                
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'Relación guardada correctamente',
+                    'analysis' => $analysis,
+                    'debug' => [
+                        'project_id' => $project_id,
+                        'relation_type' => $relation_type,
+                        'fortaleza_id' => $fortaleza_id,
+                        'debilidad_id' => $debilidad_id,
+                        'oportunidad_id' => $oportunidad_id,
+                        'amenaza_id' => $amenaza_id,
+                        'value_score' => $value_score
+                    ]
+                ]);
             } else {
                 echo json_encode(['success' => false, 'error' => 'Error al guardar relación']);
             }

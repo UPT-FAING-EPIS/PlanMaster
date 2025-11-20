@@ -14,15 +14,16 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Volcando datos para la tabla planmaster.project_bcg_analysis: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_analysis: ~5 rows (aproximadamente)
 INSERT INTO `project_bcg_analysis` (`id`, `project_id`, `analysis_name`, `analysis_status`, `total_sales_forecast`, `average_tcm`, `average_prm`, `created_at`, `updated_at`) VALUES
 	(1, 10, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-10-30 01:21:51', '2025-10-30 01:26:01'),
 	(3, 7, 'Análisis BCG', 'completed', 28700.00, 13.22, 0.55, '2025-10-30 01:31:07', '2025-11-05 17:55:30'),
 	(13, 11, 'Análisis BCG', 'completed', 30022.00, 13.11, 0.67, '2025-11-05 17:02:14', '2025-11-05 20:18:12'),
 	(32, 12, 'Análisis BCG', 'completed', 28700.00, 13.22, 0.55, '2025-11-06 22:34:40', '2025-11-19 06:20:31'),
-	(36, 13, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-11-19 14:23:47', '2025-11-19 14:23:47');
+	(36, 13, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
+	(37, 14, 'Análisis BCG', 'completed', 0.00, 0.00, 0.00, '2025-11-19 20:17:24', '2025-11-19 20:17:24');
 
--- Volcando datos para la tabla planmaster.project_bcg_competitors: ~37 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_competitors: ~44 rows (aproximadamente)
 INSERT INTO `project_bcg_competitors` (`id`, `project_id`, `product_id`, `competitor_name`, `competitor_sales`, `market_share_percentage`, `is_main_competitor`, `is_max_sales`, `competitor_order`, `notes`, `created_at`, `updated_at`) VALUES
 	(8, 10, 4, 'Apple iPhone', 25000.00, 0.00, 0, 0, 1, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(9, 10, 4, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
@@ -60,9 +61,16 @@ INSERT INTO `project_bcg_competitors` (`id`, `project_id`, `product_id`, `compet
 	(264, 13, 108, 'ASUS ROG', 12000.00, 0.00, 0, 1, 1, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(265, 13, 108, 'MSI Gaming', 10500.00, 0.00, 0, 0, 2, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(266, 13, 109, 'iPad Pro', 15000.00, 0.00, 0, 1, 1, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
-	(267, 13, 109, 'Surface Pro', 8500.00, 0.00, 0, 0, 2, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47');
+	(267, 13, 109, 'Surface Pro', 8500.00, 0.00, 0, 0, 2, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
+	(268, 14, 110, 'Apple iPhone', 25000.00, 0.00, 0, 1, 1, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(269, 14, 110, 'Samsung Galaxy', 22000.00, 0.00, 0, 0, 2, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(270, 14, 110, 'Xiaomi Mi', 18000.00, 0.00, 0, 0, 3, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(271, 14, 111, 'ASUS ROG', 12000.00, 0.00, 0, 1, 1, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(272, 14, 111, 'MSI Gaming', 10500.00, 0.00, 0, 0, 2, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(273, 14, 112, 'iPad Pro', 15000.00, 0.00, 0, 1, 1, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(274, 14, 112, 'Surface Pro', 8500.00, 0.00, 0, 0, 2, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24');
 
--- Volcando datos para la tabla planmaster.project_bcg_market_growth: ~32 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_market_growth: ~38 rows (aproximadamente)
 INSERT INTO `project_bcg_market_growth` (`id`, `project_id`, `product_id`, `period_name`, `period_start_year`, `period_end_year`, `tcm_percentage`, `period_order`, `created_at`, `updated_at`) VALUES
 	(3, 10, 4, '2023-2024', 2023, 2024, 0.00, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(4, 10, 4, '2024-2025', 2024, 2025, 0.00, 2, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
@@ -95,9 +103,15 @@ INSERT INTO `project_bcg_market_growth` (`id`, `project_id`, `product_id`, `peri
 	(253, 13, 109, '2025-2026', 2025, 2026, 12.10, 1, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(254, 13, 107, '2024-2025', 2024, 2025, 18.30, 2, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(255, 13, 108, '2024-2025', 2024, 2025, 10.50, 2, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
-	(256, 13, 109, '2024-2025', 2024, 2025, 14.70, 2, '2025-11-19 14:23:47', '2025-11-19 14:23:47');
+	(256, 13, 109, '2024-2025', 2024, 2025, 14.70, 2, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
+	(257, 14, 110, '2025-2026', 2025, 2026, 15.50, 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(258, 14, 111, '2025-2026', 2025, 2026, 8.20, 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(259, 14, 112, '2025-2026', 2025, 2026, 12.10, 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(260, 14, 110, '2024-2025', 2024, 2025, 18.30, 2, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(261, 14, 111, '2024-2025', 2024, 2025, 10.50, 2, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(262, 14, 112, '2024-2025', 2024, 2025, 14.70, 2, '2025-11-19 20:17:24', '2025-11-19 20:17:24');
 
--- Volcando datos para la tabla planmaster.project_bcg_matrix_results: ~99 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_matrix_results: ~102 rows (aproximadamente)
 INSERT INTO `project_bcg_matrix_results` (`id`, `project_id`, `product_id`, `prm_relative_position`, `tcm_market_growth`, `bcg_quadrant`, `quadrant_description`, `strategic_recommendation`, `matrix_position_x`, `matrix_position_y`, `bubble_size`, `created_at`, `updated_at`) VALUES
 	(1, 7, 11, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-10-30 01:40:35', '2025-10-30 01:40:35'),
 	(2, 7, 12, 0.0000, 9.35, 'perro', NULL, NULL, 0.0000, 46.7500, 0.8500, '2025-10-30 01:40:35', '2025-10-30 01:40:35'),
@@ -197,9 +211,12 @@ INSERT INTO `project_bcg_matrix_results` (`id`, `project_id`, `product_id`, `prm
 	(96, 12, 106, 0.3467, 13.40, 'interrogante', NULL, NULL, 17.3333, 67.0000, 0.5200, '2025-11-19 06:20:31', '2025-11-19 06:20:31'),
 	(97, 13, 107, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(98, 13, 108, 0.7083, 9.35, 'perro', NULL, NULL, 35.4167, 46.7500, 0.8500, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
-	(99, 13, 109, 0.3467, 13.40, 'interrogante', NULL, NULL, 17.3333, 67.0000, 0.5200, '2025-11-19 14:23:47', '2025-11-19 14:23:47');
+	(99, 13, 109, 0.3467, 13.40, 'interrogante', NULL, NULL, 17.3333, 67.0000, 0.5200, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
+	(100, 14, 110, 0.6000, 16.90, 'interrogante', NULL, NULL, 30.0000, 84.5000, 1.5000, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(101, 14, 111, 0.7083, 9.35, 'perro', NULL, NULL, 35.4167, 46.7500, 0.8500, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(102, 14, 112, 0.3467, 13.40, 'interrogante', NULL, NULL, 17.3333, 67.0000, 0.5200, '2025-11-19 20:17:24', '2025-11-19 20:17:24');
 
--- Volcando datos para la tabla planmaster.project_bcg_products: ~16 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_products: ~19 rows (aproximadamente)
 INSERT INTO `project_bcg_products` (`id`, `project_id`, `product_name`, `sales_forecast`, `sales_percentage`, `tcm_calculated`, `prm_calculated`, `bcg_quadrant`, `bcg_position_x`, `bcg_position_y`, `product_order`, `is_active`, `created_at`, `updated_at`) VALUES
 	(4, 10, 'Smartphone Pro', 15000.00, 52.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 1, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
 	(5, 10, 'Laptop Gaming', 8500.00, 29.00, 0.00, 0.00, NULL, 0.0000, 0.0000, 2, 1, '2025-10-30 01:26:01', '2025-10-30 01:26:01'),
@@ -216,9 +233,12 @@ INSERT INTO `project_bcg_products` (`id`, `project_id`, `product_name`, `sales_f
 	(106, 12, 'Tablet Ultra', 5200.00, 18.00, 13.40, 0.35, 'interrogante', 0.0000, 0.0000, 3, 1, '2025-11-19 06:20:31', '2025-11-19 06:20:31'),
 	(107, 13, 'Smartphone Pro', 15000.00, 52.00, 16.90, 0.60, 'interrogante', 0.0000, 0.0000, 1, 1, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(108, 13, 'Laptop Gaming', 8500.00, 29.00, 9.35, 0.71, 'perro', 0.0000, 0.0000, 2, 1, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
-	(109, 13, 'Tablet Ultra', 5200.00, 18.00, 13.40, 0.35, 'interrogante', 0.0000, 0.0000, 3, 1, '2025-11-19 14:23:47', '2025-11-19 14:23:47');
+	(109, 13, 'Tablet Ultra', 5200.00, 18.00, 13.40, 0.35, 'interrogante', 0.0000, 0.0000, 3, 1, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
+	(110, 14, 'Smartphone Pro', 15000.00, 52.00, 16.90, 0.60, 'interrogante', 0.0000, 0.0000, 1, 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(111, 14, 'Laptop Gaming', 8500.00, 29.00, 9.35, 0.71, 'perro', 0.0000, 0.0000, 2, 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(112, 14, 'Tablet Ultra', 5200.00, 18.00, 13.40, 0.35, 'interrogante', 0.0000, 0.0000, 3, 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24');
 
--- Volcando datos para la tabla planmaster.project_bcg_sector_demand: ~27 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_bcg_sector_demand: ~33 rows (aproximadamente)
 INSERT INTO `project_bcg_sector_demand` (`id`, `project_id`, `product_id`, `demand_year`, `total_sector_demand`, `company_participation`, `participation_percentage`, `market_share_notes`, `created_at`, `updated_at`) VALUES
 	(80, 7, 54, 2025, 13.80, 1.38, 10.00, NULL, '2025-11-05 17:55:30', '2025-11-05 20:06:37'),
 	(81, 7, 55, 2025, 9.10, 0.91, 10.00, NULL, '2025-11-05 17:55:30', '2025-11-05 20:06:37'),
@@ -246,9 +266,15 @@ INSERT INTO `project_bcg_sector_demand` (`id`, `project_id`, `product_id`, `dema
 	(172, 13, 109, 2024, 15.70, 1.57, 10.00, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(173, 13, 107, 2025, 18.20, 1.82, 10.00, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
 	(174, 13, 108, 2025, 12.10, 1.21, 10.00, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
-	(175, 13, 109, 2025, 22.40, 2.24, 10.00, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47');
+	(175, 13, 109, 2025, 22.40, 2.24, 10.00, NULL, '2025-11-19 14:23:47', '2025-11-19 14:23:47'),
+	(176, 14, 110, 2024, 12.50, 1.25, 10.00, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(177, 14, 111, 2024, 8.30, 0.83, 10.00, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(178, 14, 112, 2024, 15.70, 1.57, 10.00, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(179, 14, 110, 2025, 18.20, 1.82, 10.00, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(180, 14, 111, 2025, 12.10, 1.21, 10.00, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(181, 14, 112, 2025, 22.40, 2.24, 10.00, NULL, '2025-11-19 20:17:24', '2025-11-19 20:17:24');
 
--- Volcando datos para la tabla planmaster.project_came_matrix: ~17 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_came_matrix: ~21 rows (aproximadamente)
 INSERT INTO `project_came_matrix` (`id`, `project_id`, `action_type`, `action_number`, `action_text`, `created_at`, `updated_at`) VALUES
 	(1, 12, 'A', 1, 'Afrontare con valor', '2025-11-19 08:31:19', '2025-11-19 08:31:30'),
 	(2, 12, 'A', 2, 'Afrontare con mucha fe', '2025-11-19 08:31:30', '2025-11-19 08:31:39'),
@@ -266,9 +292,13 @@ INSERT INTO `project_came_matrix` (`id`, `project_id`, `action_type`, `action_nu
 	(14, 13, 'A', 1, 'Afrontar a mis competidores sacando pecho por el equipo', '2025-11-19 14:34:17', '2025-11-19 14:34:31'),
 	(15, 13, 'A', 2, 'Afrontar las amenazas del día del hombre', '2025-11-19 14:34:31', '2025-11-19 14:34:44'),
 	(16, 13, 'M', 1, 'Mantener las fuerzas de mis trabajadores', '2025-11-19 14:34:44', '2025-11-19 14:34:53'),
-	(17, 13, 'E', 1, 'Explotar las oportunidades y a los trabajadores', '2025-11-19 14:34:53', '2025-11-19 14:35:08');
+	(17, 13, 'E', 1, 'Explotar las oportunidades y a los trabajadores', '2025-11-19 14:34:53', '2025-11-19 14:35:08'),
+	(18, 14, 'C', 1, 'Debemos enfocarnos en el cariño de los trabajdores', '2025-11-19 20:21:03', '2025-11-19 20:21:16'),
+	(19, 14, 'A', 1, 'Debemos ser atacantes con las subidas de precios de mercado, estar preparados.', '2025-11-19 20:21:16', '2025-11-19 20:21:36'),
+	(20, 14, 'M', 1, 'Aumentar sueldo a nuestros trabajadores.', '2025-11-19 20:21:36', '2025-11-19 20:21:50'),
+	(21, 14, 'E', 1, 'Explotar nuestra fuerte venta de celulares, a su máxima expresión.', '2025-11-19 20:21:52', '2025-11-19 20:22:13');
 
--- Volcando datos para la tabla planmaster.project_foda_analysis: ~54 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_foda_analysis: ~64 rows (aproximadamente)
 INSERT INTO `project_foda_analysis` (`id`, `project_id`, `type`, `item_text`, `item_order`, `created_at`, `updated_at`) VALUES
 	(83, 8, 'fortaleza', 'ASSDADSAD', 1, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
 	(84, 8, 'fortaleza', 'ASDASD', 2, '2025-10-23 23:12:36', '2025-10-23 23:12:36'),
@@ -323,7 +353,17 @@ INSERT INTO `project_foda_analysis` (`id`, `project_id`, `type`, `item_text`, `i
 	(419, 13, 'oportunidad', 'Oportunidad de prueba 02', 2, '2025-11-19 14:30:28', '2025-11-19 14:30:28'),
 	(420, 13, 'oportunidad', 'Oportunidad de prueba 03', 3, '2025-11-19 14:30:28', '2025-11-19 14:30:28'),
 	(421, 13, 'amenaza', 'Amenaza de prueba 02', 1, '2025-11-19 14:30:28', '2025-11-19 14:30:28'),
-	(422, 13, 'amenaza', 'Amenaza de prueba 01', 2, '2025-11-19 14:30:28', '2025-11-19 14:30:28');
+	(422, 13, 'amenaza', 'Amenaza de prueba 01', 2, '2025-11-19 14:30:28', '2025-11-19 14:30:28'),
+	(425, 14, 'fortaleza', 'Marca reconocida en el mercado', 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(426, 14, 'fortaleza', 'Equipo técnico altamente capacitado', 2, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(427, 14, 'fortaleza', 'Red de distribución consolidada', 3, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(428, 14, 'debilidad', 'Altos costos de producción', 1, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(429, 14, 'debilidad', 'Dependencia de proveedores externos', 2, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(430, 14, 'debilidad', 'Limitada presencia digital', 3, '2025-11-19 20:17:24', '2025-11-19 20:17:24'),
+	(434, 14, 'oportunidad', 'Vamos a aumentar en ventas de máximas prioridades en celulares.', 1, '2025-11-19 20:19:42', '2025-11-19 20:19:42'),
+	(435, 14, 'oportunidad', 'Tenemos un equipo alto y poderoso, y hay que valorarlo', 2, '2025-11-19 20:19:42', '2025-11-19 20:19:42'),
+	(436, 14, 'amenaza', 'Tenemos fuertes ataques de otras empresas con ofertas agresivas', 1, '2025-11-19 20:19:42', '2025-11-19 20:19:42'),
+	(437, 14, 'amenaza', 'Tenemos problemas con la fuente de información tecnologica.', 2, '2025-11-19 20:19:42', '2025-11-19 20:19:42');
 
 -- Volcando datos para la tabla planmaster.project_mission: ~8 rows (aproximadamente)
 INSERT INTO `project_mission` (`id`, `project_id`, `mission_text`, `is_completed`, `created_at`, `updated_at`) VALUES
@@ -334,9 +374,10 @@ INSERT INTO `project_mission` (`id`, `project_id`, `mission_text`, `is_completed
 	(5, 9, 'habhdhabdhabhdbandnman ajbdbahbdahbdhasd  ahbdhjabdhba', 1, '2025-10-23 23:07:04', '2025-10-23 23:07:04'),
 	(6, 11, 'Mision de la empresa es ofrecer productos farmaceuticos de primera calidad para las personas de la ciudad de Tacnaaaa', 1, '2025-11-05 16:52:05', '2025-11-06 17:52:24'),
 	(7, 12, 'La fe y Esperanza tiene la misión de dar y otorgar fe y esperanza a todo el pueblo peruano.', 1, '2025-11-06 19:01:58', '2025-11-07 00:07:55'),
-	(8, 13, 'Misión de la empresa es testear esta aplicación para ver la funcionalidad al 100%', 1, '2025-11-19 14:20:40', '2025-11-19 14:20:40');
+	(8, 13, 'Misión de la empresa es testear esta aplicación para ver la funcionalidad al 100%', 1, '2025-11-19 14:20:40', '2025-11-19 14:20:40'),
+	(9, 14, 'Misión de la empresa es promover la confiabilidad, calidad y originalidad a nuestros productos tecnologicos.', 1, '2025-11-19 20:13:19', '2025-11-19 20:13:19');
 
--- Volcando datos para la tabla planmaster.project_pest_analysis: ~75 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_pest_analysis: ~100 rows (aproximadamente)
 INSERT INTO `project_pest_analysis` (`id`, `project_id`, `question_number`, `rating`, `created_at`, `updated_at`) VALUES
 	(1, 11, 1, 4, '2025-11-06 01:59:53', '2025-11-06 01:59:53'),
 	(2, 11, 2, 4, '2025-11-06 01:59:53', '2025-11-06 01:59:53'),
@@ -412,9 +453,34 @@ INSERT INTO `project_pest_analysis` (`id`, `project_id`, `question_number`, `rat
 	(97, 13, 22, 3, '2025-11-19 14:30:15', '2025-11-19 14:30:15'),
 	(98, 13, 23, 2, '2025-11-19 14:30:15', '2025-11-19 14:30:15'),
 	(99, 13, 24, 1, '2025-11-19 14:30:15', '2025-11-19 14:30:15'),
-	(100, 13, 25, 0, '2025-11-19 14:30:15', '2025-11-19 14:30:15');
+	(100, 13, 25, 0, '2025-11-19 14:30:15', '2025-11-19 14:30:15'),
+	(101, 14, 1, 0, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(102, 14, 2, 1, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(103, 14, 3, 2, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(104, 14, 4, 3, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(105, 14, 5, 4, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(106, 14, 6, 3, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(107, 14, 7, 2, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(108, 14, 8, 1, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(109, 14, 9, 0, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(110, 14, 10, 1, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(111, 14, 11, 2, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(112, 14, 12, 3, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(113, 14, 13, 4, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(114, 14, 14, 3, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(115, 14, 15, 2, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(116, 14, 16, 1, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(117, 14, 17, 0, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(118, 14, 18, 1, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(119, 14, 19, 2, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(120, 14, 20, 3, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(121, 14, 21, 4, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(122, 14, 22, 3, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(123, 14, 23, 2, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(124, 14, 24, 1, '2025-11-19 20:19:16', '2025-11-19 20:19:16'),
+	(125, 14, 25, 0, '2025-11-19 20:19:16', '2025-11-19 20:19:16');
 
--- Volcando datos para la tabla planmaster.project_porter_analysis: ~68 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_porter_analysis: ~85 rows (aproximadamente)
 INSERT INTO `project_porter_analysis` (`id`, `project_id`, `factor_category`, `factor_name`, `factor_description`, `hostil_label`, `favorable_label`, `selected_value`, `factor_order`, `created_at`, `updated_at`) VALUES
 	(1, 11, 'rivalidad', 'Crecimiento', NULL, 'Lento', 'Rápido', 1, 1, '2025-11-05 21:00:10', '2025-11-06 00:23:54'),
 	(2, 11, 'rivalidad', 'Naturaleza de los competidores', NULL, 'Muchos', 'Pocos', 1, 2, '2025-11-05 21:00:10', '2025-11-06 00:23:54'),
@@ -483,7 +549,24 @@ INSERT INTO `project_porter_analysis` (`id`, `project_id`, `factor_category`, `f
 	(149, 13, 'poder_clientes', 'Posibilidad de integración ascendente', NULL, 'Grande', 'Pequeña', 4, 2, '2025-11-19 14:24:07', '2025-11-19 14:28:30'),
 	(150, 13, 'poder_clientes', 'Rentabilidad de los clientes', NULL, 'Baja', 'Alta', 3, 3, '2025-11-19 14:24:07', '2025-11-19 14:28:30'),
 	(151, 13, 'poder_clientes', 'Coste de cambio de proveedor para cliente', NULL, 'Bajo', 'Alto', 2, 4, '2025-11-19 14:24:07', '2025-11-19 14:28:30'),
-	(152, 13, 'productos_sustitutivos', 'Disponibilidad de Productos Sustitutivos', NULL, 'Grande', 'Pequeña', 1, 1, '2025-11-19 14:24:07', '2025-11-19 14:28:30');
+	(152, 13, 'productos_sustitutivos', 'Disponibilidad de Productos Sustitutivos', NULL, 'Grande', 'Pequeña', 1, 1, '2025-11-19 14:24:07', '2025-11-19 14:28:30'),
+	(153, 14, 'rivalidad', 'Crecimiento', NULL, 'Lento', 'Rápido', 1, 1, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(154, 14, 'rivalidad', 'Naturaleza de los competidores', NULL, 'Muchos', 'Pocos', 2, 2, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(155, 14, 'rivalidad', 'Exceso de capacidad productiva', NULL, 'Sí', 'No', 3, 3, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(156, 14, 'rivalidad', 'Rentabilidad media del sector', NULL, 'Baja', 'Alta', 4, 4, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(157, 14, 'rivalidad', 'Diferenciación del producto', NULL, 'Escasa', 'Elevada', 5, 5, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(158, 14, 'rivalidad', 'Barreras de salida', NULL, 'Bajas', 'Altas', 4, 6, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(159, 14, 'barreras_entrada', 'Economías de escala', NULL, 'No', 'Sí', 3, 1, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(160, 14, 'barreras_entrada', 'Necesidad de capital', NULL, 'Bajas', 'Altas', 2, 2, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(161, 14, 'barreras_entrada', 'Acceso a la tecnología', NULL, 'Fácil', 'Difícil', 1, 3, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(162, 14, 'barreras_entrada', 'Reglamentos o leyes limitativos', NULL, 'No', 'Sí', 2, 4, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(163, 14, 'barreras_entrada', 'Trámites burocráticos', NULL, 'No', 'Sí', 3, 5, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(164, 14, 'barreras_entrada', 'Reacción esperada actuales competidores', NULL, 'Escasa', 'Enérgica', 4, 6, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(165, 14, 'poder_clientes', 'Número de clientes', NULL, 'Pocos', 'Muchos', 5, 1, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(166, 14, 'poder_clientes', 'Posibilidad de integración ascendente', NULL, 'Grande', 'Pequeña', 4, 2, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(167, 14, 'poder_clientes', 'Rentabilidad de los clientes', NULL, 'Baja', 'Alta', 3, 3, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(168, 14, 'poder_clientes', 'Coste de cambio de proveedor para cliente', NULL, 'Bajo', 'Alto', 2, 4, '2025-11-19 20:17:35', '2025-11-19 20:17:50'),
+	(169, 14, 'productos_sustitutivos', 'Disponibilidad de Productos Sustitutivos', NULL, 'Grande', 'Pequeña', 1, 1, '2025-11-19 20:17:35', '2025-11-19 20:17:50');
 
 -- Volcando datos para la tabla planmaster.project_porter_foda: ~12 rows (aproximadamente)
 INSERT INTO `project_porter_foda` (`id`, `project_id`, `type`, `item_text`, `item_order`, `created_at`, `updated_at`) VALUES
@@ -500,7 +583,7 @@ INSERT INTO `project_porter_foda` (`id`, `project_id`, `type`, `item_text`, `ite
 	(115, 12, 'amenaza', 'Consideramos que la infraestructura de la red es demasiada baja', 2, '2025-11-19 05:52:33', '2025-11-19 05:52:33'),
 	(116, 12, 'amenaza', 'ejemplo05', 3, '2025-11-19 05:52:33', '2025-11-19 05:52:33');
 
--- Volcando datos para la tabla planmaster.project_specific_objectives: ~35 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_specific_objectives: ~42 rows (aproximadamente)
 INSERT INTO `project_specific_objectives` (`id`, `strategic_objective_id`, `objective_title`, `objective_description`, `objective_order`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Conectividad Global', '', 1, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
 	(2, 1, 'Dispositivos Accesibles', '', 2, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
@@ -537,11 +620,17 @@ INSERT INTO `project_specific_objectives` (`id`, `strategic_objective_id`, `obje
 	(33, 17, 'Objetivo02.1', '', 1, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
 	(34, 17, 'Objetivo02.2', '', 2, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
 	(35, 18, 'Objetivo03.1', '', 1, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
-	(36, 18, 'Objetivo03.2', '', 2, '2025-11-19 14:22:09', '2025-11-19 14:22:09');
+	(36, 18, 'Objetivo03.2', '', 2, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
+	(37, 19, 'Aumentar en un 20% las ventas anuales mediante campañas de marketing digital y estrategias de posicionamiento.', '', 1, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(38, 19, 'Ampliar el catálogo de productos en un 15%, incorporando nuevas marcas y dispositivos emergentes del mercado.', '', 2, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(39, 20, 'Reducir los tiempos de entrega en un 30% optimizando la logística y las alianzas con proveedores.', '', 1, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(40, 20, 'Mejorar la atención al cliente, alcanzando un nivel de satisfacción del 90% en encuestas postventa.', '', 2, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(41, 21, 'Implementar un programa de fidelización para aumentar en un 25% el número de clientes recurrentes.', '', 1, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(42, 21, 'Optimizar los costos operativos en un 10% mediante la digitalización de procesos internos y la automatización de tareas.', '', 2, '2025-11-19 20:16:21', '2025-11-19 20:16:21');
 
 -- Volcando datos para la tabla planmaster.project_strategic_analysis: ~0 rows (aproximadamente)
 
--- Volcando datos para la tabla planmaster.project_strategic_objectives: ~18 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_strategic_objectives: ~21 rows (aproximadamente)
 INSERT INTO `project_strategic_objectives` (`id`, `project_id`, `objective_title`, `objective_description`, `objective_order`, `created_at`, `updated_at`) VALUES
 	(1, 8, 'Democratizar el Acceso a la Tecnología', '', 1, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
 	(2, 8, 'Impulsar la Educación Digital Global', '', 2, '2025-10-01 22:28:47', '2025-10-01 22:28:47'),
@@ -560,9 +649,12 @@ INSERT INTO `project_strategic_objectives` (`id`, `project_id`, `objective_title
 	(15, 12, 'Objetivo 03', '', 3, '2025-11-06 22:03:09', '2025-11-06 22:03:09'),
 	(16, 13, 'Objetivo01', '', 1, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
 	(17, 13, 'Objetivo02', '', 2, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
-	(18, 13, 'Objetivo03', '', 3, '2025-11-19 14:22:09', '2025-11-19 14:22:09');
+	(18, 13, 'Objetivo03', '', 3, '2025-11-19 14:22:09', '2025-11-19 14:22:09'),
+	(19, 14, 'Incrementar la participación en el mercado tecnológico mediante una oferta competitiva de productos innovadores y de alta calidad.', '', 1, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(20, 14, 'Fortalecer la satisfacción y fidelización del cliente ofreciendo un servicio integral antes y después de la venta.', '', 2, '2025-11-19 20:16:21', '2025-11-19 20:16:21'),
+	(21, 14, 'Optimizar la rentabilidad y eficiencia operativa para asegurar el crecimiento sostenible de la empresa.', '', 3, '2025-11-19 20:16:21', '2025-11-19 20:16:21');
 
--- Volcando datos para la tabla planmaster.project_strategic_relations: ~255 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_strategic_relations: ~449 rows (aproximadamente)
 INSERT INTO `project_strategic_relations` (`id`, `project_id`, `relation_type`, `fortaleza_id`, `debilidad_id`, `oportunidad_id`, `amenaza_id`, `value_score`, `created_at`, `updated_at`) VALUES
 	(1, 12, 'FO', 393, 0, 386, 0, 2, '2025-11-19 07:49:22', '2025-11-19 07:55:14'),
 	(2, 12, 'FO', 393, 0, 387, 0, 3, '2025-11-19 07:49:24', '2025-11-19 07:55:19'),
@@ -818,9 +910,203 @@ INSERT INTO `project_strategic_relations` (`id`, `project_id`, `relation_type`, 
 	(252, 13, 'DA', 0, 411, 0, 422, 4, '2025-11-19 14:33:19', '2025-11-19 14:33:20'),
 	(253, 13, 'DA', NULL, 411, NULL, 422, 2, '2025-11-19 14:33:19', '2025-11-19 14:33:19'),
 	(254, 13, 'DA', NULL, 411, NULL, 422, 3, '2025-11-19 14:33:19', '2025-11-19 14:33:19'),
-	(255, 13, 'DA', NULL, 411, NULL, 422, 4, '2025-11-19 14:33:20', '2025-11-19 14:33:20');
+	(255, 13, 'DA', NULL, 411, NULL, 422, 4, '2025-11-19 14:33:20', '2025-11-19 14:33:20'),
+	(256, 14, 'FO', 425, NULL, 434, NULL, 1, '2025-11-19 20:19:49', '2025-11-19 20:19:49'),
+	(257, 14, 'FO', 425, 0, 434, 0, 1, '2025-11-19 20:19:49', '2025-11-20 08:55:16'),
+	(258, 14, 'FO', 425, NULL, 434, NULL, 2, '2025-11-19 20:19:49', '2025-11-19 20:19:49'),
+	(259, 14, 'FO', 425, NULL, 434, NULL, 3, '2025-11-19 20:19:49', '2025-11-19 20:19:49'),
+	(260, 14, 'FO', 426, NULL, 434, NULL, 1, '2025-11-19 20:19:50', '2025-11-19 20:19:50'),
+	(261, 14, 'FO', 426, 0, 434, 0, 1, '2025-11-19 20:19:50', '2025-11-20 08:55:18'),
+	(262, 14, 'FO', 426, NULL, 434, NULL, 2, '2025-11-19 20:19:51', '2025-11-19 20:19:51'),
+	(263, 14, 'FO', 427, NULL, 434, NULL, 1, '2025-11-19 20:19:53', '2025-11-19 20:19:53'),
+	(264, 14, 'FO', 427, 0, 434, 0, 1, '2025-11-19 20:19:53', '2025-11-20 08:55:19'),
+	(265, 14, 'FO', 425, NULL, 435, NULL, 1, '2025-11-19 20:19:55', '2025-11-19 20:19:55'),
+	(266, 14, 'FO', 425, 0, 435, 0, 1, '2025-11-19 20:19:55', '2025-11-20 08:55:23'),
+	(267, 14, 'FO', 425, NULL, 435, NULL, 2, '2025-11-19 20:19:55', '2025-11-19 20:19:55'),
+	(268, 14, 'FO', 425, NULL, 435, NULL, 3, '2025-11-19 20:19:55', '2025-11-19 20:19:55'),
+	(269, 14, 'FO', 426, NULL, 435, NULL, 1, '2025-11-19 20:19:56', '2025-11-19 20:19:56'),
+	(270, 14, 'FO', 426, 0, 435, 0, 1, '2025-11-19 20:19:56', '2025-11-20 08:55:22'),
+	(271, 14, 'FO', 426, NULL, 435, NULL, 2, '2025-11-19 20:19:56', '2025-11-19 20:19:56'),
+	(272, 14, 'FO', 426, NULL, 435, NULL, 3, '2025-11-19 20:19:56', '2025-11-19 20:19:56'),
+	(273, 14, 'FO', 427, NULL, 435, NULL, 1, '2025-11-19 20:19:57', '2025-11-19 20:19:57'),
+	(274, 14, 'FO', 427, 0, 435, 0, 1, '2025-11-19 20:19:57', '2025-11-20 08:55:21'),
+	(275, 14, 'FO', 427, NULL, 435, NULL, 2, '2025-11-19 20:19:57', '2025-11-19 20:19:57'),
+	(276, 14, 'FO', 427, NULL, 435, NULL, 3, '2025-11-19 20:19:58', '2025-11-19 20:19:58'),
+	(277, 14, 'FA', 425, NULL, NULL, 436, 1, '2025-11-19 20:19:59', '2025-11-19 20:19:59'),
+	(278, 14, 'FA', 425, 0, 0, 436, 1, '2025-11-19 20:19:59', '2025-11-20 08:55:25'),
+	(279, 14, 'FA', 425, NULL, NULL, 436, 2, '2025-11-19 20:20:00', '2025-11-19 20:20:00'),
+	(280, 14, 'FA', 425, NULL, NULL, 436, 3, '2025-11-19 20:20:00', '2025-11-19 20:20:00'),
+	(281, 14, 'FA', 426, NULL, NULL, 436, 1, '2025-11-19 20:20:02', '2025-11-19 20:20:02'),
+	(282, 14, 'FA', 426, 0, 0, 436, 1, '2025-11-19 20:20:02', '2025-11-20 08:55:27'),
+	(283, 14, 'FA', 426, NULL, NULL, 436, 2, '2025-11-19 20:20:02', '2025-11-19 20:20:02'),
+	(284, 14, 'FA', 426, NULL, NULL, 436, 3, '2025-11-19 20:20:03', '2025-11-19 20:20:03'),
+	(285, 14, 'FA', 427, NULL, NULL, 436, 1, '2025-11-19 20:20:04', '2025-11-19 20:20:04'),
+	(286, 14, 'FA', 427, 0, 0, 436, 2, '2025-11-19 20:20:04', '2025-11-20 08:55:28'),
+	(287, 14, 'FA', 427, NULL, NULL, 436, 2, '2025-11-19 20:20:04', '2025-11-19 20:20:04'),
+	(288, 14, 'FA', 427, NULL, NULL, 436, 3, '2025-11-19 20:20:04', '2025-11-19 20:20:04'),
+	(289, 14, 'FA', 427, NULL, NULL, 437, 1, '2025-11-19 20:20:05', '2025-11-19 20:20:05'),
+	(290, 14, 'FA', 427, 0, 0, 437, 2, '2025-11-19 20:20:05', '2025-11-20 08:55:29'),
+	(291, 14, 'FA', 427, NULL, NULL, 437, 2, '2025-11-19 20:20:06', '2025-11-19 20:20:06'),
+	(292, 14, 'FA', 427, NULL, NULL, 437, 3, '2025-11-19 20:20:06', '2025-11-19 20:20:06'),
+	(293, 14, 'FA', 426, NULL, NULL, 437, 1, '2025-11-19 20:20:06', '2025-11-19 20:20:06'),
+	(294, 14, 'FA', 426, 0, 0, 437, 1, '2025-11-19 20:20:07', '2025-11-20 08:54:59'),
+	(295, 14, 'FA', 426, NULL, NULL, 437, 2, '2025-11-19 20:20:07', '2025-11-19 20:20:07'),
+	(296, 14, 'FA', 425, NULL, NULL, 437, 1, '2025-11-19 20:20:07', '2025-11-19 20:20:07'),
+	(297, 14, 'FA', 425, 0, 0, 437, 2, '2025-11-19 20:20:07', '2025-11-20 08:55:30'),
+	(298, 14, 'FA', 425, NULL, NULL, 437, 2, '2025-11-19 20:20:07', '2025-11-19 20:20:07'),
+	(299, 14, 'DO', NULL, 428, 434, NULL, 1, '2025-11-19 20:20:10', '2025-11-19 20:20:10'),
+	(300, 14, 'DO', 0, 428, 434, 0, 1, '2025-11-19 20:20:10', '2025-11-20 08:55:33'),
+	(301, 14, 'DO', NULL, 428, 434, NULL, 2, '2025-11-19 20:20:10', '2025-11-19 20:20:10'),
+	(302, 14, 'DO', NULL, 429, 434, NULL, 1, '2025-11-19 20:20:11', '2025-11-19 20:20:11'),
+	(303, 14, 'DO', 0, 429, 434, 0, 4, '2025-11-19 20:20:11', '2025-11-20 08:47:50'),
+	(304, 14, 'DO', NULL, 429, 434, NULL, 2, '2025-11-19 20:20:11', '2025-11-19 20:20:11'),
+	(305, 14, 'DO', NULL, 430, 434, NULL, 1, '2025-11-19 20:20:12', '2025-11-19 20:20:12'),
+	(306, 14, 'DO', 0, 430, 434, 0, 2, '2025-11-19 20:20:12', '2025-11-20 08:55:35'),
+	(307, 14, 'DO', NULL, 430, 434, NULL, 2, '2025-11-19 20:20:12', '2025-11-19 20:20:12'),
+	(308, 14, 'DO', NULL, 430, 434, NULL, 3, '2025-11-19 20:20:12', '2025-11-19 20:20:12'),
+	(309, 14, 'DO', NULL, 430, 435, NULL, 1, '2025-11-19 20:20:14', '2025-11-19 20:20:14'),
+	(310, 14, 'DO', 0, 430, 435, 0, 4, '2025-11-19 20:20:14', '2025-11-20 08:47:55'),
+	(311, 14, 'DO', NULL, 430, 435, NULL, 2, '2025-11-19 20:20:14', '2025-11-19 20:20:14'),
+	(312, 14, 'DO', NULL, 429, 435, NULL, 1, '2025-11-19 20:20:14', '2025-11-19 20:20:14'),
+	(313, 14, 'DO', 0, 429, 435, 0, 2, '2025-11-19 20:20:14', '2025-11-20 08:55:37'),
+	(314, 14, 'DO', NULL, 429, 435, NULL, 2, '2025-11-19 20:20:14', '2025-11-19 20:20:14'),
+	(315, 14, 'DO', NULL, 428, 435, NULL, 1, '2025-11-19 20:20:15', '2025-11-19 20:20:15'),
+	(316, 14, 'DO', 0, 428, 435, 0, 4, '2025-11-19 20:20:15', '2025-11-20 08:47:53'),
+	(317, 14, 'DA', NULL, 428, NULL, 436, 1, '2025-11-19 20:20:24', '2025-11-19 20:20:24'),
+	(318, 14, 'DA', 0, 428, 0, 436, 4, '2025-11-19 20:20:24', '2025-11-20 08:47:57'),
+	(319, 14, 'DA', NULL, 428, NULL, 436, 2, '2025-11-19 20:20:24', '2025-11-19 20:20:24'),
+	(320, 14, 'DA', NULL, 429, NULL, 436, 1, '2025-11-19 20:20:26', '2025-11-19 20:20:26'),
+	(321, 14, 'DA', 0, 429, 0, 436, 4, '2025-11-19 20:20:26', '2025-11-20 08:47:58'),
+	(322, 14, 'DA', NULL, 430, NULL, 436, 1, '2025-11-19 20:20:27', '2025-11-19 20:20:27'),
+	(323, 14, 'DA', 0, 430, 0, 436, 1, '2025-11-19 20:20:27', '2025-11-20 08:55:42'),
+	(324, 14, 'DA', NULL, 430, NULL, 436, 2, '2025-11-19 20:20:27', '2025-11-19 20:20:27'),
+	(325, 14, 'DA', NULL, 430, NULL, 436, 3, '2025-11-19 20:20:27', '2025-11-19 20:20:27'),
+	(326, 14, 'DA', NULL, 428, NULL, 437, 1, '2025-11-19 20:20:28', '2025-11-19 20:20:28'),
+	(327, 14, 'DA', 0, 428, 0, 437, 4, '2025-11-19 20:20:28', '2025-11-20 08:48:01'),
+	(328, 14, 'DA', NULL, 428, NULL, 437, 2, '2025-11-19 20:20:28', '2025-11-19 20:20:28'),
+	(329, 14, 'DA', NULL, 428, NULL, 437, 3, '2025-11-19 20:20:28', '2025-11-19 20:20:28'),
+	(330, 14, 'DA', NULL, 428, NULL, 437, 4, '2025-11-19 20:20:28', '2025-11-19 20:20:28'),
+	(331, 14, 'DA', NULL, 429, NULL, 437, 1, '2025-11-19 20:20:29', '2025-11-19 20:20:29'),
+	(332, 14, 'DA', 0, 429, 0, 437, 2, '2025-11-19 20:20:29', '2025-11-20 08:55:39'),
+	(333, 14, 'DA', NULL, 429, NULL, 437, 2, '2025-11-19 20:20:29', '2025-11-19 20:20:29'),
+	(334, 14, 'DA', NULL, 429, NULL, 437, 3, '2025-11-19 20:20:29', '2025-11-19 20:20:29'),
+	(335, 14, 'DA', NULL, 429, NULL, 437, 4, '2025-11-19 20:20:29', '2025-11-19 20:20:29'),
+	(336, 14, 'DA', NULL, 430, NULL, 437, 1, '2025-11-19 20:20:30', '2025-11-19 20:20:30'),
+	(337, 14, 'DA', 0, 430, 0, 437, 0, '2025-11-19 20:20:30', '2025-11-20 08:55:40'),
+	(338, 14, 'DA', NULL, 430, NULL, 437, 2, '2025-11-19 20:20:30', '2025-11-19 20:20:30'),
+	(339, 14, 'DA', NULL, 430, NULL, 437, 3, '2025-11-19 20:20:30', '2025-11-19 20:20:30'),
+	(340, 14, 'DA', NULL, 430, NULL, 437, 4, '2025-11-19 20:20:31', '2025-11-19 20:20:31'),
+	(341, 14, 'DA', NULL, 430, NULL, 436, 4, '2025-11-19 20:26:17', '2025-11-19 20:26:17'),
+	(342, 14, 'DA', NULL, 430, NULL, 436, 3, '2025-11-19 20:26:20', '2025-11-19 20:26:20'),
+	(343, 14, 'DA', NULL, 429, NULL, 436, 2, '2025-11-19 20:27:03', '2025-11-19 20:27:03'),
+	(344, 14, 'DA', NULL, 429, NULL, 436, 1, '2025-11-19 20:27:03', '2025-11-19 20:27:03'),
+	(345, 14, 'DO', NULL, 429, 434, NULL, 0, '2025-11-19 20:27:05', '2025-11-19 20:27:05'),
+	(346, 14, 'FA', 425, NULL, NULL, 436, 4, '2025-11-19 20:27:07', '2025-11-19 20:27:07'),
+	(347, 14, 'FA', 426, NULL, NULL, 436, 2, '2025-11-19 20:27:10', '2025-11-19 20:27:10'),
+	(348, 14, 'FA', 426, NULL, NULL, 436, 1, '2025-11-19 20:27:10', '2025-11-19 20:27:10'),
+	(349, 14, 'FA', 426, NULL, NULL, 436, 0, '2025-11-19 20:27:10', '2025-11-19 20:27:10'),
+	(350, 14, 'FA', 426, NULL, NULL, 436, 1, '2025-11-19 20:27:11', '2025-11-19 20:27:11'),
+	(351, 14, 'FA', 426, NULL, NULL, 436, 2, '2025-11-19 20:27:11', '2025-11-19 20:27:11'),
+	(352, 14, 'FA', 426, NULL, NULL, 436, 3, '2025-11-19 20:27:11', '2025-11-19 20:27:11'),
+	(353, 14, 'FA', 426, NULL, NULL, 436, 4, '2025-11-19 20:27:11', '2025-11-19 20:27:11'),
+	(354, 14, 'FA', 426, NULL, NULL, 436, 2, '2025-11-19 20:27:31', '2025-11-19 20:27:31'),
+	(355, 14, 'FA', 426, NULL, NULL, 436, 3, '2025-11-19 20:27:31', '2025-11-19 20:27:31'),
+	(356, 14, 'FA', 426, NULL, NULL, 436, 4, '2025-11-19 20:27:31', '2025-11-19 20:27:31'),
+	(357, 14, 'FA', 427, NULL, NULL, 436, 2, '2025-11-19 20:27:32', '2025-11-19 20:27:32'),
+	(358, 14, 'FA', 427, NULL, NULL, 436, 3, '2025-11-19 20:27:32', '2025-11-19 20:27:32'),
+	(359, 14, 'FA', 427, NULL, NULL, 436, 4, '2025-11-19 20:27:32', '2025-11-19 20:27:32'),
+	(360, 14, 'FA', 427, NULL, NULL, 437, 3, '2025-11-19 20:27:34', '2025-11-19 20:27:34'),
+	(361, 14, 'FA', 427, NULL, NULL, 437, 4, '2025-11-19 20:27:34', '2025-11-19 20:27:34'),
+	(362, 14, 'FA', 426, NULL, NULL, 437, 3, '2025-11-19 20:27:35', '2025-11-19 20:27:35'),
+	(363, 14, 'FA', 426, NULL, NULL, 437, 4, '2025-11-19 20:27:35', '2025-11-19 20:27:35'),
+	(364, 14, 'FA', 425, NULL, NULL, 437, 1, '2025-11-19 20:27:36', '2025-11-19 20:27:36'),
+	(365, 14, 'FA', 425, NULL, NULL, 437, 0, '2025-11-19 20:27:36', '2025-11-19 20:27:36'),
+	(366, 14, 'FA', 425, NULL, NULL, 437, 1, '2025-11-19 20:27:36', '2025-11-19 20:27:36'),
+	(367, 14, 'FA', 425, NULL, NULL, 437, 2, '2025-11-19 20:27:36', '2025-11-19 20:27:36'),
+	(368, 14, 'FA', 425, NULL, NULL, 437, 3, '2025-11-19 20:27:37', '2025-11-19 20:27:37'),
+	(369, 14, 'FA', 425, NULL, NULL, 437, 4, '2025-11-19 20:27:37', '2025-11-19 20:27:37'),
+	(370, 14, 'FO', 425, NULL, 434, NULL, 4, '2025-11-20 08:46:28', '2025-11-20 08:46:28'),
+	(371, 14, 'FO', 426, NULL, 434, NULL, 3, '2025-11-20 08:46:30', '2025-11-20 08:46:30'),
+	(372, 14, 'FO', 426, NULL, 434, NULL, 4, '2025-11-20 08:46:30', '2025-11-20 08:46:30'),
+	(373, 14, 'FO', 427, NULL, 434, NULL, 2, '2025-11-20 08:46:31', '2025-11-20 08:46:31'),
+	(374, 14, 'FO', 427, NULL, 434, NULL, 3, '2025-11-20 08:46:31', '2025-11-20 08:46:31'),
+	(375, 14, 'FO', 427, NULL, 434, NULL, 4, '2025-11-20 08:46:32', '2025-11-20 08:46:32'),
+	(376, 14, 'FO', 425, NULL, 435, NULL, 4, '2025-11-20 08:46:33', '2025-11-20 08:46:33'),
+	(377, 14, 'FO', 426, NULL, 435, NULL, 2, '2025-11-20 08:46:34', '2025-11-20 08:46:34'),
+	(378, 14, 'FO', 426, NULL, 435, NULL, 3, '2025-11-20 08:46:34', '2025-11-20 08:46:34'),
+	(379, 14, 'FO', 426, NULL, 435, NULL, 4, '2025-11-20 08:46:35', '2025-11-20 08:46:35'),
+	(380, 14, 'FO', 427, NULL, 435, NULL, 4, '2025-11-20 08:46:35', '2025-11-20 08:46:35'),
+	(381, 14, 'FO', 426, NULL, 434, NULL, 4, '2025-11-20 08:47:45', '2025-11-20 08:47:45'),
+	(382, 14, 'DO', NULL, 428, 434, NULL, 4, '2025-11-20 08:47:47', '2025-11-20 08:47:47'),
+	(383, 14, 'DO', NULL, 429, 434, NULL, 4, '2025-11-20 08:47:50', '2025-11-20 08:47:50'),
+	(384, 14, 'DO', NULL, 430, 434, NULL, 4, '2025-11-20 08:47:51', '2025-11-20 08:47:51'),
+	(385, 14, 'DO', NULL, 428, 435, NULL, 4, '2025-11-20 08:47:53', '2025-11-20 08:47:53'),
+	(386, 14, 'DO', NULL, 429, 435, NULL, 4, '2025-11-20 08:47:53', '2025-11-20 08:47:53'),
+	(387, 14, 'DO', NULL, 430, 435, NULL, 4, '2025-11-20 08:47:54', '2025-11-20 08:47:54'),
+	(388, 14, 'DA', NULL, 428, NULL, 436, 4, '2025-11-20 08:47:56', '2025-11-20 08:47:56'),
+	(389, 14, 'DA', NULL, 429, NULL, 436, 4, '2025-11-20 08:47:57', '2025-11-20 08:47:57'),
+	(390, 14, 'DA', NULL, 430, NULL, 436, 4, '2025-11-20 08:47:59', '2025-11-20 08:47:59'),
+	(391, 14, 'DA', NULL, 428, NULL, 437, 4, '2025-11-20 08:48:00', '2025-11-20 08:48:00'),
+	(392, 14, 'FA', 426, NULL, NULL, 437, 4, '2025-11-20 08:48:06', '2025-11-20 08:48:06'),
+	(393, 14, 'FA', 427, NULL, NULL, 436, 3, '2025-11-20 08:54:05', '2025-11-20 08:54:05'),
+	(394, 14, 'FA', 427, NULL, NULL, 436, 4, '2025-11-20 08:54:06', '2025-11-20 08:54:06'),
+	(395, 14, 'DA', NULL, 429, NULL, 437, 2, '2025-11-20 08:54:09', '2025-11-20 08:54:09'),
+	(396, 14, 'DA', NULL, 429, NULL, 437, 3, '2025-11-20 08:54:09', '2025-11-20 08:54:09'),
+	(397, 14, 'DA', NULL, 429, NULL, 437, 4, '2025-11-20 08:54:09', '2025-11-20 08:54:09'),
+	(398, 14, 'FA', 425, NULL, NULL, 436, 3, '2025-11-20 08:54:52', '2025-11-20 08:54:52'),
+	(399, 14, 'FA', 425, NULL, NULL, 436, 2, '2025-11-20 08:54:52', '2025-11-20 08:54:52'),
+	(400, 14, 'FA', 426, NULL, NULL, 436, 3, '2025-11-20 08:54:53', '2025-11-20 08:54:53'),
+	(401, 14, 'FA', 426, NULL, NULL, 436, 2, '2025-11-20 08:54:53', '2025-11-20 08:54:53'),
+	(402, 14, 'FA', 427, NULL, NULL, 436, 3, '2025-11-20 08:54:54', '2025-11-20 08:54:54'),
+	(403, 14, 'FA', 427, NULL, NULL, 437, 3, '2025-11-20 08:54:56', '2025-11-20 08:54:56'),
+	(404, 14, 'FA', 427, NULL, NULL, 437, 2, '2025-11-20 08:54:56', '2025-11-20 08:54:56'),
+	(405, 14, 'FA', 426, NULL, NULL, 437, 3, '2025-11-20 08:54:57', '2025-11-20 08:54:57'),
+	(406, 14, 'FA', 426, NULL, NULL, 437, 2, '2025-11-20 08:54:58', '2025-11-20 08:54:58'),
+	(407, 14, 'FA', 426, NULL, NULL, 437, 1, '2025-11-20 08:54:58', '2025-11-20 08:54:58'),
+	(408, 14, 'FA', 426, NULL, NULL, 437, 0, '2025-11-20 08:54:58', '2025-11-20 08:54:58'),
+	(409, 14, 'FA', 426, NULL, NULL, 437, 1, '2025-11-20 08:54:59', '2025-11-20 08:54:59'),
+	(410, 14, 'FO', 425, NULL, 434, NULL, 3, '2025-11-20 08:55:16', '2025-11-20 08:55:16'),
+	(411, 14, 'FO', 425, NULL, 434, NULL, 2, '2025-11-20 08:55:16', '2025-11-20 08:55:16'),
+	(412, 14, 'FO', 425, NULL, 434, NULL, 1, '2025-11-20 08:55:16', '2025-11-20 08:55:16'),
+	(413, 14, 'FO', 426, NULL, 434, NULL, 3, '2025-11-20 08:55:17', '2025-11-20 08:55:17'),
+	(414, 14, 'FO', 426, NULL, 434, NULL, 2, '2025-11-20 08:55:17', '2025-11-20 08:55:17'),
+	(415, 14, 'FO', 426, NULL, 434, NULL, 1, '2025-11-20 08:55:18', '2025-11-20 08:55:18'),
+	(416, 14, 'FO', 427, NULL, 434, NULL, 3, '2025-11-20 08:55:18', '2025-11-20 08:55:18'),
+	(417, 14, 'FO', 427, NULL, 434, NULL, 2, '2025-11-20 08:55:19', '2025-11-20 08:55:19'),
+	(418, 14, 'FO', 427, NULL, 434, NULL, 1, '2025-11-20 08:55:19', '2025-11-20 08:55:19'),
+	(419, 14, 'FO', 427, NULL, 435, NULL, 3, '2025-11-20 08:55:20', '2025-11-20 08:55:20'),
+	(420, 14, 'FO', 427, NULL, 435, NULL, 2, '2025-11-20 08:55:20', '2025-11-20 08:55:20'),
+	(421, 14, 'FO', 427, NULL, 435, NULL, 1, '2025-11-20 08:55:21', '2025-11-20 08:55:21'),
+	(422, 14, 'FO', 426, NULL, 435, NULL, 3, '2025-11-20 08:55:21', '2025-11-20 08:55:21'),
+	(423, 14, 'FO', 426, NULL, 435, NULL, 2, '2025-11-20 08:55:22', '2025-11-20 08:55:22'),
+	(424, 14, 'FO', 426, NULL, 435, NULL, 1, '2025-11-20 08:55:22', '2025-11-20 08:55:22'),
+	(425, 14, 'FO', 425, NULL, 435, NULL, 3, '2025-11-20 08:55:23', '2025-11-20 08:55:23'),
+	(426, 14, 'FO', 425, NULL, 435, NULL, 2, '2025-11-20 08:55:23', '2025-11-20 08:55:23'),
+	(427, 14, 'FO', 425, NULL, 435, NULL, 1, '2025-11-20 08:55:23', '2025-11-20 08:55:23'),
+	(428, 14, 'FA', 425, NULL, NULL, 436, 2, '2025-11-20 08:55:25', '2025-11-20 08:55:25'),
+	(429, 14, 'FA', 425, NULL, NULL, 436, 1, '2025-11-20 08:55:25', '2025-11-20 08:55:25'),
+	(430, 14, 'FA', 426, NULL, NULL, 436, 1, '2025-11-20 08:55:27', '2025-11-20 08:55:27'),
+	(431, 14, 'FA', 427, NULL, NULL, 436, 2, '2025-11-20 08:55:28', '2025-11-20 08:55:28'),
+	(432, 14, 'FA', 427, NULL, NULL, 437, 2, '2025-11-20 08:55:29', '2025-11-20 08:55:29'),
+	(433, 14, 'FA', 425, NULL, NULL, 437, 2, '2025-11-20 08:55:30', '2025-11-20 08:55:30'),
+	(434, 14, 'DO', NULL, 428, 434, NULL, 3, '2025-11-20 08:55:32', '2025-11-20 08:55:32'),
+	(435, 14, 'DO', NULL, 428, 434, NULL, 2, '2025-11-20 08:55:32', '2025-11-20 08:55:32'),
+	(436, 14, 'DO', NULL, 428, 434, NULL, 1, '2025-11-20 08:55:33', '2025-11-20 08:55:33'),
+	(437, 14, 'DO', NULL, 430, 434, NULL, 3, '2025-11-20 08:55:35', '2025-11-20 08:55:35'),
+	(438, 14, 'DO', NULL, 430, 434, NULL, 2, '2025-11-20 08:55:35', '2025-11-20 08:55:35'),
+	(439, 14, 'DO', NULL, 429, 435, NULL, 3, '2025-11-20 08:55:37', '2025-11-20 08:55:37'),
+	(440, 14, 'DO', NULL, 429, 435, NULL, 2, '2025-11-20 08:55:37', '2025-11-20 08:55:37'),
+	(441, 14, 'DA', NULL, 429, NULL, 437, 3, '2025-11-20 08:55:38', '2025-11-20 08:55:38'),
+	(442, 14, 'DA', NULL, 429, NULL, 437, 2, '2025-11-20 08:55:39', '2025-11-20 08:55:39'),
+	(443, 14, 'DA', NULL, 430, NULL, 437, 3, '2025-11-20 08:55:40', '2025-11-20 08:55:40'),
+	(444, 14, 'DA', NULL, 430, NULL, 437, 2, '2025-11-20 08:55:40', '2025-11-20 08:55:40'),
+	(445, 14, 'DA', NULL, 430, NULL, 437, 1, '2025-11-20 08:55:40', '2025-11-20 08:55:40'),
+	(446, 14, 'DA', NULL, 430, NULL, 437, 0, '2025-11-20 08:55:40', '2025-11-20 08:55:40'),
+	(447, 14, 'DA', NULL, 430, NULL, 436, 3, '2025-11-20 08:55:42', '2025-11-20 08:55:42'),
+	(448, 14, 'DA', NULL, 430, NULL, 436, 2, '2025-11-20 08:55:42', '2025-11-20 08:55:42'),
+	(449, 14, 'DA', NULL, 430, NULL, 436, 1, '2025-11-20 08:55:42', '2025-11-20 08:55:42');
 
--- Volcando datos para la tabla planmaster.project_values: ~27 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_values: ~31 rows (aproximadamente)
 INSERT INTO `project_values` (`id`, `project_id`, `value_text`, `value_order`, `created_at`, `updated_at`) VALUES
 	(1, 6, 'Integridad', 1, '2025-09-18 18:48:55', '2025-09-18 18:48:55'),
 	(2, 6, 'Compromiso', 2, '2025-09-18 18:48:55', '2025-09-18 18:48:55'),
@@ -848,9 +1134,13 @@ INSERT INTO `project_values` (`id`, `project_id`, `value_text`, `value_order`, `
 	(38, 13, 'Integriadad', 1, '2025-11-19 14:21:35', '2025-11-19 14:21:35'),
 	(39, 13, 'Compromiso', 2, '2025-11-19 14:21:35', '2025-11-19 14:21:35'),
 	(40, 13, 'Innovación', 3, '2025-11-19 14:21:35', '2025-11-19 14:21:35'),
-	(41, 13, 'Esperanza', 4, '2025-11-19 14:21:35', '2025-11-19 14:21:35');
+	(41, 13, 'Esperanza', 4, '2025-11-19 14:21:35', '2025-11-19 14:21:35'),
+	(42, 14, 'Integridad', 1, '2025-11-19 20:14:22', '2025-11-19 20:14:22'),
+	(43, 14, 'Compromiso', 2, '2025-11-19 20:14:22', '2025-11-19 20:14:22'),
+	(44, 14, 'Innovación', 3, '2025-11-19 20:14:22', '2025-11-19 20:14:22'),
+	(45, 14, 'Masicidad', 4, '2025-11-19 20:14:22', '2025-11-19 20:14:22');
 
--- Volcando datos para la tabla planmaster.project_value_chain: ~168 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_value_chain: ~200 rows (aproximadamente)
 INSERT INTO `project_value_chain` (`id`, `project_id`, `question_number`, `rating`, `created_at`, `updated_at`) VALUES
 	(1, 7, 1, 2, '2025-10-01 04:28:18', '2025-10-01 04:28:18'),
 	(2, 7, 2, 3, '2025-10-01 04:28:18', '2025-10-01 04:28:18'),
@@ -1026,9 +1316,34 @@ INSERT INTO `project_value_chain` (`id`, `project_id`, `question_number`, `ratin
 	(197, 13, 22, 3, '2025-11-19 14:22:45', '2025-11-19 14:22:45'),
 	(198, 13, 23, 2, '2025-11-19 14:22:45', '2025-11-19 14:22:45'),
 	(199, 13, 24, 1, '2025-11-19 14:22:45', '2025-11-19 14:22:45'),
-	(200, 13, 25, 0, '2025-11-19 14:22:45', '2025-11-19 14:22:45');
+	(200, 13, 25, 0, '2025-11-19 14:22:45', '2025-11-19 14:22:45'),
+	(201, 14, 1, 0, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(202, 14, 2, 1, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(203, 14, 3, 2, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(204, 14, 4, 3, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(205, 14, 5, 4, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(206, 14, 6, 3, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(207, 14, 7, 2, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(208, 14, 8, 1, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(209, 14, 9, 0, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(210, 14, 10, 1, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(211, 14, 11, 2, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(212, 14, 12, 3, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(213, 14, 13, 4, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(214, 14, 14, 3, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(215, 14, 15, 2, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(216, 14, 16, 1, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(217, 14, 17, 0, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(218, 14, 18, 1, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(219, 14, 19, 2, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(220, 14, 20, 3, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(221, 14, 21, 4, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(222, 14, 22, 3, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(223, 14, 23, 2, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(224, 14, 24, 1, '2025-11-19 20:16:47', '2025-11-19 20:16:47'),
+	(225, 14, 25, 0, '2025-11-19 20:16:47', '2025-11-19 20:16:47');
 
--- Volcando datos para la tabla planmaster.project_vision: ~7 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.project_vision: ~5 rows (aproximadamente)
 INSERT INTO `project_vision` (`id`, `project_id`, `vision_text`, `is_completed`, `created_at`, `updated_at`) VALUES
 	(1, 6, 'Ser reconocidos en 2027, como la mejor salchipaperia de Tacna', 1, '2025-09-18 18:48:30', '2025-09-18 18:48:30'),
 	(2, 8, 'afdddddddddddddddddddddddddddddddddddddddddddddd ssssssssssssssssssssssssssssssssssssssssssssss sssssssssssssssssssssssssssssssssssssssssssssssss', 1, '2025-10-01 22:24:15', '2025-10-01 22:24:15'),
@@ -1036,9 +1351,10 @@ INSERT INTO `project_vision` (`id`, `project_id`, `vision_text`, `is_completed`,
 	(4, 9, 'ajsdkjabjdkbkjs ajbdkjakjdnkjand ajndkjadkjbajd ajsdkjbakjdbsa', 1, '2025-10-23 23:08:21', '2025-10-23 23:08:21'),
 	(5, 11, 'Visión de la empresa es ser reconocida a nivel distrital de Tacna como una de las farmacias con mas relevancia.', 1, '2025-11-05 16:52:37', '2025-11-05 16:52:37'),
 	(6, 12, 'La misión de la empresa es otorgar fe y esperanza a toda la población peruana y con mucha fe y esperanza.', 1, '2025-11-06 19:02:20', '2025-11-07 00:07:58'),
-	(7, 13, 'Visión de este testeo es reconocer que la aplicación no presenta ni un solo fallo.', 1, '2025-11-19 14:21:10', '2025-11-19 14:21:10');
+	(7, 13, 'Visión de este testeo es reconocer que la aplicación no presenta ni un solo fallo.', 1, '2025-11-19 14:21:10', '2025-11-19 14:21:10'),
+	(8, 14, 'Visión de la empresa es ser reconocida a nivel mundial a un margen de tiempo de 5 años, donde la empresa busca el cariño de la gente.', 1, '2025-11-19 20:14:01', '2025-11-19 20:14:01');
 
--- Volcando datos para la tabla planmaster.strategic_projects: ~13 rows (aproximadamente)
+-- Volcando datos para la tabla planmaster.strategic_projects: ~10 rows (aproximadamente)
 INSERT INTO `strategic_projects` (`id`, `user_id`, `project_name`, `company_name`, `created_at`, `updated_at`, `completed_at`, `status`, `progress_percentage`) VALUES
 	(1, 7, 'dafafaffafaf', 'fafafafaf', '2025-09-17 23:55:51', '2025-09-17 23:55:51', NULL, 'in_progress', NULL),
 	(2, 2, 'Plan de Superación de Caida de ventas', 'CAPICODEX', '2025-09-18 00:08:52', '2025-09-18 00:08:52', NULL, 'in_progress', NULL),
@@ -1052,7 +1368,8 @@ INSERT INTO `strategic_projects` (`id`, `user_id`, `project_name`, `company_name
 	(10, 1, 'BCG Test 2025-10-30 02:21:51', 'Empresa Demo BCG', '2025-10-30 01:21:51', '2025-10-30 01:21:51', NULL, 'draft', 0.00),
 	(11, 10, 'Plan Estrategico para Farmacia Maria de los Angeles', 'Farmacia Maria de los Angeles', '2025-11-05 16:51:13', '2025-11-05 16:51:13', NULL, 'in_progress', 0.00),
 	(12, 10, 'Plan Estrategico de Fe', 'Fe y Esperanza', '2025-11-06 18:55:52', '2025-11-06 18:55:52', NULL, 'in_progress', 0.00),
-	(13, 10, 'Plan Estratégico Testeo', 'Testeo', '2025-11-19 14:20:14', '2025-11-19 14:20:14', NULL, 'in_progress', 0.00);
+	(13, 10, 'Plan Estratégico Testeo', 'Testeo', '2025-11-19 14:20:14', '2025-11-19 14:20:14', NULL, 'in_progress', 0.00),
+	(14, 10, 'Proyecto para aumento de Ventas de una empresa Tecnológica', 'TECNO VICTOR S.A.C.', '2025-11-19 20:12:24', '2025-11-19 20:12:24', NULL, 'in_progress', 0.00);
 
 -- Volcando datos para la tabla planmaster.users: ~11 rows (aproximadamente)
 INSERT INTO `users` (`id`, `email`, `password`, `name`, `avatar`, `google_id`, `email_verified`, `verification_token`, `reset_token`, `reset_token_expires`, `created_at`, `updated_at`, `last_login`, `status`) VALUES
@@ -1065,7 +1382,7 @@ INSERT INTO `users` (`id`, `email`, `password`, `name`, `avatar`, `google_id`, `
 	(7, 'sf2022073902@virtual.upt.pe', NULL, 'SEBASTIAN NICOLAS FUENTES AVALOS', 'https://lh3.googleusercontent.com/a/ACg8ocIldVbBQckiP7rwOIKiNWrDyrMX8yoUr2wjceuxppk4ahCQpm0=s96-c', '118030351119923353936', 1, NULL, NULL, NULL, '2025-09-17 21:59:09', '2025-10-22 23:55:08', '2025-10-22 23:55:08', 'active'),
 	(8, 'ferquatck@gmail.com', NULL, 'fer ,', 'https://lh3.googleusercontent.com/a/ACg8ocJwB9Y4ST5t74ag0w5PyB7qshajRj4NsO-1HvO7QsUIOizrBg=s96-c', '108307062242127529441', 1, NULL, NULL, NULL, '2025-09-17 22:01:35', '2025-09-17 22:01:35', '2025-09-17 22:01:35', 'active'),
 	(9, 'cescamac@upt.pe', '$2y$10$KRSRaJ0qScKBdlIBKwpBwukDiVHkbC7FlEOcCdXF4QGBCjs6quv5e', 'cesar camac', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 04:08:08', '2025-09-18 04:08:15', '2025-09-18 04:08:15', 'active'),
-	(10, 'gagaga@email.com', '$2y$10$S58/gIoNoC9ruw9dia59sOpduIAYei2QBiNMEMwwuoyG33aV.UkdW', 'gagaga', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 19:05:09', '2025-11-19 19:06:24', '2025-11-19 19:06:24', 'active'),
+	(10, 'gagaga@email.com', '$2y$10$S58/gIoNoC9ruw9dia59sOpduIAYei2QBiNMEMwwuoyG33aV.UkdW', 'gagaga', NULL, NULL, 1, NULL, NULL, NULL, '2025-09-18 19:05:09', '2025-11-20 08:40:07', '2025-11-20 08:40:07', 'active'),
 	(11, 'cc2022074262@virtual.upt.pe', NULL, 'CESAR NIKOLAS CAMAC MELENDEZ', 'https://lh3.googleusercontent.com/a/ACg8ocJ8aemfsa0JcyWht1g7g1wafmHFPaDnMqzk0JvbZnUWJ7-IDXmI=s96-c', '117081121404025596376', 1, NULL, NULL, NULL, '2025-10-22 22:55:19', '2025-10-29 22:03:30', '2025-10-29 22:03:30', 'active'),
 	(12, 'nicolas@gmail.com', '$2y$10$B9D2c/HG4gBK5jm4ywZ78OZ6eL9Y/HLPp4KsMgf28KfaEAD/EipxS', 'nicolas', NULL, NULL, 1, NULL, NULL, NULL, '2025-10-29 22:27:19', '2025-10-29 22:27:19', NULL, 'active'),
 	(13, 'nicolas@email.com', '$2y$10$gAzRBXs0em/rPVnOdZr2.OJKsKFidIaJrTqAICclH0v0TxAkDVInm', 'nicolas', NULL, NULL, 1, NULL, NULL, NULL, '2025-10-29 22:28:26', '2025-10-29 22:28:26', NULL, 'active');

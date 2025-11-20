@@ -178,7 +178,7 @@ class StrategicAnalysis {
         formData.append('amenaza_id', amenazaId);
         formData.append('value_score', valueScore);
         
-        fetch('/PlanMaster/Controllers/StrategicAnalysisController.php', {
+        fetch('../../Controllers/StrategicAnalysisController.php', {
             method: 'POST',
             body: formData
         })

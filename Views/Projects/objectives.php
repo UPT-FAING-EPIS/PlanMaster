@@ -162,6 +162,38 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
             margin-bottom: 20px;
         }
         
+        .btn-remove-strategic,
+        .btn-remove-specific {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-remove-strategic:hover,
+        .btn-remove-specific:hover {
+            background: #d32f2f;
+        }
+        
+        .btn-add-specific {
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 8px 15px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-add-specific:hover {
+            background: #1976d2;
+        }
+        
         .strategic-number {
             width: 40px;
             height: 40px;
@@ -247,6 +279,7 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
+            justify-content: space-between;
         }
         
         .specific-number {
@@ -463,7 +496,7 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                 <div class="objectives-description">
                     <h3>🎯 Definición de Objetivos Estratégicos</h3>
                     <p>
-                        A continuación reflexione sobre la misión, visión y valores definidos y establezca los objetivos estratégicos y específicos de su empresa. Le proponemos que comience con definir <strong>3 objetivos estratégicos</strong> y <strong>dos específicos</strong> para cada uno de ellos.
+                        A continuación reflexione sobre la misión, visión y valores definidos y establezca los objetivos estratégicos y específicos de su empresa. Puede añadir tantos objetivos como considere necesarios para su organización.
                     </p>
                 </div>
                 
@@ -480,10 +513,10 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                 </div>
                 <?php endif; ?>
                 
-                <!-- Contador de objetivos -->
+                <!-- Contador dinámico de objetivos -->
                 <div class="objectives-counter">
                     <h4>Estructura de Objetivos</h4>
-                    <p>3 Objetivos Estratégicos × 2 Objetivos Específicos cada uno = 6 Objetivos Específicos totales</p>
+                    <p id="objectives-summary">Agrega objetivos estratégicos y específicos según las necesidades de tu empresa</p>
                 </div>
                 
                 <!-- Formulario -->
@@ -492,97 +525,15 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                     
                     <!-- Objetivos Estratégicos -->
                     <div id="strategic-objectives">
-                        <?php for ($i = 1; $i <= 3; $i++): ?>
-                            <?php 
-                            $existing_strategic = isset($existing_objectives[$i-1]) ? $existing_objectives[$i-1] : null;
-                            ?>
-                            <div class="strategic-objective">
-                                <div class="strategic-header">
-                                    <div class="strategic-number"><?php echo $i; ?></div>
-                                    <h3 class="strategic-title">Objetivo Estratégico <?php echo $i; ?></h3>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="strategic_title_<?php echo $i; ?>" class="form-label">
-                                        Título del objetivo estratégico:
-                                    </label>
-                                    <input type="text" 
-                                           name="strategic_objectives[<?php echo $i-1; ?>][title]" 
-                                           id="strategic_title_<?php echo $i; ?>"
-                                           class="form-input strategic-title-input"
-                                           placeholder="Ej: Incrementar la participación en el mercado nacional"
-                                           value="<?php echo $existing_strategic ? htmlspecialchars($existing_strategic['objective_title']) : ''; ?>"
-                                           maxlength="150"
-                                           required>
-                                    <div class="char-counter">
-                                        <span class="char-count">0</span> / 150 caracteres
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="strategic_desc_<?php echo $i; ?>" class="form-label">
-                                        Descripción (opcional):
-                                    </label>
-                                    <textarea name="strategic_objectives[<?php echo $i-1; ?>][description]" 
-                                              id="strategic_desc_<?php echo $i; ?>"
-                                              class="form-textarea"
-                                              placeholder="Describe más detalles sobre este objetivo estratégico..."
-                                              maxlength="300"><?php echo $existing_strategic ? htmlspecialchars($existing_strategic['objective_description']) : ''; ?></textarea>
-                                    <div class="char-counter">
-                                        <span class="char-count">0</span> / 300 caracteres
-                                    </div>
-                                </div>
-                                
-                                <!-- Objetivos Específicos -->
-                                <div class="specific-objectives">
-                                    <?php for ($j = 1; $j <= 2; $j++): ?>
-                                        <?php 
-                                        $existing_specific = null;
-                                        if ($existing_strategic && isset($existing_strategic['specific_objectives'][$j-1])) {
-                                            $existing_specific = $existing_strategic['specific_objectives'][$j-1];
-                                        }
-                                        ?>
-                                        <div class="specific-objective">
-                                            <div class="specific-header">
-                                                <div class="specific-number"><?php echo $j; ?></div>
-                                                <span class="specific-label">Objetivo Específico <?php echo $j; ?></span>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="specific_title_<?php echo $i; ?>_<?php echo $j; ?>" class="form-label">
-                                                    Título del objetivo específico:
-                                                </label>
-                                                <input type="text" 
-                                                       name="strategic_objectives[<?php echo $i-1; ?>][specific_objectives][<?php echo $j-1; ?>][title]" 
-                                                       id="specific_title_<?php echo $i; ?>_<?php echo $j; ?>"
-                                                       class="form-input specific-title-input"
-                                                       placeholder="Ej: Aumentar las ventas en un 15% en el primer semestre"
-                                                       value="<?php echo $existing_specific ? htmlspecialchars($existing_specific['objective_title']) : ''; ?>"
-                                                       maxlength="120"
-                                                       required>
-                                                <div class="char-counter">
-                                                    <span class="char-count">0</span> / 120 caracteres
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="specific_desc_<?php echo $i; ?>_<?php echo $j; ?>" class="form-label">
-                                                    Descripción (opcional):
-                                                </label>
-                                                <textarea name="strategic_objectives[<?php echo $i-1; ?>][specific_objectives][<?php echo $j-1; ?>][description]" 
-                                                          id="specific_desc_<?php echo $i; ?>_<?php echo $j; ?>"
-                                                          class="form-textarea"
-                                                          placeholder="Detalles sobre cómo alcanzar este objetivo específico..."
-                                                          maxlength="200"><?php echo $existing_specific ? htmlspecialchars($existing_specific['objective_description']) : ''; ?></textarea>
-                                                <div class="char-counter">
-                                                    <span class="char-count">0</span> / 200 caracteres
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endfor; ?>
-                                </div>
-                            </div>
-                        <?php endfor; ?>
+                        <!-- Los objetivos se cargarán dinámicamente -->
+                    </div>
+                    
+                    <!-- Botón para añadir nuevo objetivo estratégico -->
+                    <div style="text-align: center; margin: 20px 0;">
+                        <button type="button" id="add-strategic-btn" class="btn btn-save" style="background: #4caf50;">
+                            <span class="btn-icon">+</span>
+                            Añadir Objetivo Estratégico
+                        </button>
                     </div>
                     
                     <div class="form-actions">
@@ -630,10 +581,243 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('objectives-form');
             const saveBtn = document.getElementById('save-btn');
+            const strategicContainer = document.getElementById('strategic-objectives');
+            const addStrategicBtn = document.getElementById('add-strategic-btn');
+            const summary = document.getElementById('objectives-summary');
+            
+            let strategicCount = 0;
+            const existingObjectives = <?php echo json_encode($existing_objectives ?: []); ?>;
+            
+            // Plantillas HTML
+            function getStrategicObjectiveTemplate(index, title = '', specificObjectives = []) {
+                // Si no hay objetivos específicos, crear uno por defecto
+                if (specificObjectives.length === 0) {
+                    specificObjectives = [{ objective_title: '' }];
+                }
+                
+                return `
+                    <div class="strategic-objective" data-strategic="${index}">
+                        <div class="strategic-header">
+                            <div class="strategic-number">${index + 1}</div>
+                            <h3 class="strategic-title">Objetivo Estratégico ${index + 1}</h3>
+                            <button type="button" class="btn-remove-strategic" onclick="removeStrategicObjective(${index})" style="margin-left: auto; padding: 5px 10px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">×</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Título del objetivo estratégico:</label>
+                            <input type="text" 
+                                   name="strategic_objectives[${index}][title]" 
+                                   class="form-input strategic-title-input"
+                                   placeholder="Ej: Incrementar la participación en el mercado nacional"
+                                   value="${title}"
+                                   maxlength="150"
+                                   required>
+                            <div class="char-counter">
+                                <span class="char-count">0</span> / 150 caracteres
+                            </div>
+                        </div>
+                        
+                        <div class="specific-objectives" data-strategic="${index}">
+                            ${specificObjectives.map((spec, specIndex) => getSpecificObjectiveTemplate(index, specIndex, spec.objective_title || '')).join('')}
+                        </div>
+                        
+                        <div style="text-align: center; margin: 15px 0;">
+                            <button type="button" class="btn-add-specific" onclick="addSpecificObjective(${index})" style="padding: 8px 15px; background: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                + Añadir Objetivo Específico
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            function getSpecificObjectiveTemplate(strategicIndex, specificIndex, title = '', showRemoveBtn = true) {
+                return `
+                    <div class="specific-objective" data-strategic="${strategicIndex}" data-specific="${specificIndex}">
+                        <div class="specific-header">
+                            <div class="specific-number">${specificIndex + 1}</div>
+                            <span class="specific-label">Objetivo Específico ${specificIndex + 1}</span>
+                            ${showRemoveBtn ? `<button type="button" class="btn-remove-specific" onclick="removeSpecificObjective(${strategicIndex}, ${specificIndex})" style="margin-left: auto; padding: 2px 8px; background: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">×</button>` : ''}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Título del objetivo específico:</label>
+                            <input type="text" 
+                                   name="strategic_objectives[${strategicIndex}][specific_objectives][${specificIndex}][title]" 
+                                   class="form-input specific-title-input"
+                                   placeholder="Ej: Aumentar las ventas en un 15% en el primer semestre"
+                                   value="${title}"
+                                   maxlength="120"
+                                   required>
+                            <div class="char-counter">
+                                <span class="char-count">0</span> / 120 caracteres
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Funciones globales
+            window.addSpecificObjective = function(strategicIndex) {
+                const specificContainer = document.querySelector(`.specific-objectives[data-strategic="${strategicIndex}"]`);
+                const existingSpecifics = specificContainer.querySelectorAll('.specific-objective').length;
+                const newSpecificHtml = getSpecificObjectiveTemplate(strategicIndex, existingSpecifics, '', true);
+                specificContainer.insertAdjacentHTML('beforeend', newSpecificHtml);
+                
+                // Actualizar botones de eliminar (mostrar si hay más de uno)
+                updateRemoveButtons(strategicIndex);
+                
+                updateSummary();
+                setupCharCounters();
+                setupValidation();
+            };
+            
+            window.removeSpecificObjective = function(strategicIndex, specificIndex) {
+                const strategicContainer = document.querySelector(`.specific-objectives[data-strategic="${strategicIndex}"]`);
+                const specificCount = strategicContainer.querySelectorAll('.specific-objective').length;
+                
+                // No permitir eliminar si solo hay uno
+                if (specificCount <= 1) {
+                    showNotification('Cada objetivo estratégico debe tener al menos un objetivo específico', 'warning');
+                    return;
+                }
+                
+                const specificObj = document.querySelector(`.specific-objective[data-strategic="${strategicIndex}"][data-specific="${specificIndex}"]`);
+                if (specificObj) {
+                    specificObj.remove();
+                    reindexSpecificObjectives(strategicIndex);
+                    updateRemoveButtons(strategicIndex);
+                    updateSummary();
+                    validateForm();
+                }
+            };
+            
+            window.removeStrategicObjective = function(strategicIndex) {
+                if (confirm('¿Está seguro de eliminar este objetivo estratégico y todos sus objetivos específicos?')) {
+                    const strategicObj = document.querySelector(`.strategic-objective[data-strategic="${strategicIndex}"]`);
+                    if (strategicObj) {
+                        strategicObj.remove();
+                        reindexStrategicObjectives();
+                        updateSummary();
+                        validateForm();
+                    }
+                }
+            };
+            
+            // Añadir nuevo objetivo estratégico
+            addStrategicBtn.addEventListener('click', function() {
+                const newStrategicHtml = getStrategicObjectiveTemplate(strategicCount, '', []);
+                strategicContainer.insertAdjacentHTML('beforeend', newStrategicHtml);
+                strategicCount++;
+                
+                updateSummary();
+                setupCharCounters();
+                setupValidation();
+            });
+            
+            // Reindexar objetivos
+            function reindexStrategicObjectives() {
+                const strategics = document.querySelectorAll('.strategic-objective');
+                strategicCount = 0;
+                
+                strategics.forEach((strategic, index) => {
+                    strategic.setAttribute('data-strategic', index);
+                    strategic.querySelector('.strategic-number').textContent = index + 1;
+                    strategic.querySelector('.strategic-title').textContent = `Objetivo Estratégico ${index + 1}`;
+                    
+                    // Actualizar nombres de inputs
+                    const titleInput = strategic.querySelector('.strategic-title-input');
+                    titleInput.name = `strategic_objectives[${index}][title]`;
+                    
+                    // Actualizar botones
+                    strategic.querySelector('.btn-remove-strategic').setAttribute('onclick', `removeStrategicObjective(${index})`);
+                    strategic.querySelector('.btn-add-specific').setAttribute('onclick', `addSpecificObjective(${index})`);
+                    
+                    // Reindexar objetivos específicos
+                    reindexSpecificObjectives(index);
+                    strategicCount++;
+                });
+            }
+            
+            function reindexSpecificObjectives(strategicIndex) {
+                const strategicObj = document.querySelector(`.strategic-objective[data-strategic="${strategicIndex}"]`);
+                if (!strategicObj) return;
+                
+                const specifics = strategicObj.querySelectorAll('.specific-objective');
+                specifics.forEach((specific, index) => {
+                    specific.setAttribute('data-specific', index);
+                    specific.querySelector('.specific-number').textContent = index + 1;
+                    specific.querySelector('.specific-label').textContent = `Objetivo Específico ${index + 1}`;
+                    
+                    // Actualizar nombres de inputs
+                    const titleInput = specific.querySelector('.specific-title-input');
+                    titleInput.name = `strategic_objectives[${strategicIndex}][specific_objectives][${index}][title]`;
+                    
+                    // Actualizar botón de eliminar
+                    specific.querySelector('.btn-remove-specific').setAttribute('onclick', `removeSpecificObjective(${strategicIndex}, ${index})`);
+                });
+            }
+            
+            // Actualizar botones de eliminar según la cantidad
+            function updateRemoveButtons(strategicIndex) {
+                const strategicContainer = document.querySelector(`.specific-objectives[data-strategic="${strategicIndex}"]`);
+                const specifics = strategicContainer.querySelectorAll('.specific-objective');
+                const showRemove = specifics.length > 1;
+                
+                specifics.forEach(specific => {
+                    const removeBtn = specific.querySelector('.btn-remove-specific');
+                    if (showRemove) {
+                        if (!removeBtn) {
+                            // Añadir botón si no existe
+                            const header = specific.querySelector('.specific-header');
+                            const specificIndex = specific.getAttribute('data-specific');
+                            header.insertAdjacentHTML('beforeend', 
+                                `<button type="button" class="btn-remove-specific" onclick="removeSpecificObjective(${strategicIndex}, ${specificIndex})" style="margin-left: auto; padding: 2px 8px; background: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">×</button>`
+                            );
+                        }
+                    } else {
+                        // Ocultar/remover botón si solo hay uno
+                        if (removeBtn) {
+                            removeBtn.remove();
+                        }
+                    }
+                });
+            }
+            
+            // Actualizar resumen
+            function updateSummary() {
+                const strategics = document.querySelectorAll('.strategic-objective').length;
+                const specifics = document.querySelectorAll('.specific-objective').length;
+                
+                if (strategics === 0) {
+                    summary.textContent = 'Agrega objetivos estratégicos y específicos según las necesidades de tu empresa';
+                } else {
+                    summary.textContent = `${strategics} Objetivo${strategics !== 1 ? 's' : ''} Estratégico${strategics !== 1 ? 's' : ''} con ${specifics} Objetivo${specifics !== 1 ? 's' : ''} Específico${specifics !== 1 ? 's' : ''} en total`;
+                }
+            }
+            
+            // Cargar objetivos existentes
+            function loadExistingObjectives() {
+                existingObjectives.forEach((objective, index) => {
+                    const specificObjectives = objective.specific_objectives || [];
+                    const newStrategicHtml = getStrategicObjectiveTemplate(index, objective.objective_title, specificObjectives);
+                    strategicContainer.insertAdjacentHTML('beforeend', newStrategicHtml);
+                    strategicCount++;
+                    
+                    // Actualizar botones para este objetivo estratégico
+                    updateRemoveButtons(index);
+                });
+                
+                // Si no hay objetivos existentes, crear uno por defecto
+                if (existingObjectives.length === 0) {
+                    addStrategicBtn.click();
+                }
+                
+                updateSummary();
+            }
             
             // Configurar contadores de caracteres
             function setupCharCounters() {
-                const inputs = document.querySelectorAll('.form-input, .form-textarea');
+                const inputs = document.querySelectorAll('.form-input');
                 
                 inputs.forEach(input => {
                     const counter = input.parentNode.querySelector('.char-count');
@@ -644,7 +828,6 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                             const currentLength = input.value.length;
                             counter.textContent = currentLength;
                             
-                            // Cambiar color según la proximidad al límite
                             const percentage = (currentLength / maxLength) * 100;
                             if (percentage >= 90) {
                                 counter.style.color = '#f44336';
@@ -655,7 +838,6 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                             }
                         }
                         
-                        // Actualizar al cargar y al escribir
                         updateCounter();
                         input.addEventListener('input', updateCounter);
                     }
@@ -667,9 +849,8 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                 const strategicTitles = document.querySelectorAll('.strategic-title-input');
                 const specificTitles = document.querySelectorAll('.specific-title-input');
                 
-                let isValid = true;
+                let isValid = strategicTitles.length > 0; // Al menos un objetivo estratégico
                 
-                // Validar títulos estratégicos
                 strategicTitles.forEach(input => {
                     const value = input.value.trim();
                     if (value.length < 5) {
@@ -680,7 +861,6 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                     }
                 });
                 
-                // Validar títulos específicos
                 specificTitles.forEach(input => {
                     const value = input.value.trim();
                     if (value.length < 5) {
@@ -705,99 +885,12 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
                 });
             }
             
-            // Auto-resize para textareas
-            function setupAutoResize() {
-                const textareas = document.querySelectorAll('.form-textarea');
-                
-                textareas.forEach(textarea => {
-                    textarea.addEventListener('input', function() {
-                        this.style.height = 'auto';
-                        this.style.height = Math.max(80, this.scrollHeight) + 'px';
-                    });
-                });
-            }
-            
-            // Auto-save
-            function setupAutoSave() {
-                let autoSaveInterval = setInterval(function() {
-                    if (validateForm()) {
-                        const formData = new FormData(form);
-                        const objectives = {};
-                        
-                        // Recopilar datos para el borrador
-                        for (let [key, value] of formData.entries()) {
-                            if (key.includes('strategic_objectives') && value.trim()) {
-                                objectives[key] = value;
-                            }
-                        }
-                        
-                        if (Object.keys(objectives).length > 0) {
-                            localStorage.setItem(`objectives_${<?php echo $project_id; ?>}`, JSON.stringify(objectives));
-                            showNotification('Borrador guardado automáticamente', 'info');
-                        }
-                    }
-                }, 45000); // Cada 45 segundos
-                
-                // Limpiar al enviar el formulario
-                form.addEventListener('submit', function() {
-                    localStorage.removeItem(`objectives_${<?php echo $project_id; ?>}`);
-                    clearInterval(autoSaveInterval);
-                });
-            }
-            
-            // Recuperar borrador
-            function loadDraft() {
-                const draft = localStorage.getItem(`objectives_${<?php echo $project_id; ?>}`);
-                if (draft) {
-                    try {
-                        const objectives = JSON.parse(draft);
-                        let hasExistingData = false;
-                        
-                        // Verificar si ya hay datos existentes
-                        const inputs = document.querySelectorAll('.strategic-title-input, .specific-title-input');
-                        inputs.forEach(input => {
-                            if (input.value.trim()) {
-                                hasExistingData = true;
-                            }
-                        });
-                        
-                        if (!hasExistingData) {
-                            // Cargar borrador solo si no hay datos existentes
-                            Object.entries(objectives).forEach(([key, value]) => {
-                                const input = document.querySelector(`[name="${key}"]`);
-                                if (input && !input.value) {
-                                    input.value = value;
-                                }
-                            });
-                            showNotification('Borrador recuperado', 'info');
-                        }
-                    } catch (e) {
-                        console.error('Error al cargar borrador:', e);
-                    }
-                }
-            }
-            
-            // Atajos de teclado
-            function setupKeyboardShortcuts() {
-                document.addEventListener('keydown', function(e) {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                        e.preventDefault();
-                        if (validateForm()) {
-                            saveBtn.click();
-                        } else {
-                            showNotification('Complete todos los campos requeridos antes de guardar', 'warning');
-                        }
-                    }
-                });
-            }
-            
             // Validación antes del envío
             form.addEventListener('submit', function(e) {
                 if (!validateForm()) {
                     e.preventDefault();
                     showNotification('Por favor complete todos los campos requeridos', 'error');
                     
-                    // Hacer scroll al primer campo inválido
                     const firstInvalid = document.querySelector('.form-input[style*="border-color: rgb(244, 67, 54)"], .form-input[style*="border-color: rgb(255, 152, 0)"]');
                     if (firstInvalid) {
                         firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -807,13 +900,9 @@ $existing_objectives = $objectivesModel->getStrategicObjectivesByProjectId($proj
             });
             
             // Inicialización
+            loadExistingObjectives();
             setupCharCounters();
             setupValidation();
-            setupAutoResize();
-            setupAutoSave();
-            setupKeyboardShortcuts();
-            loadDraft();
-            validateForm(); // Validación inicial
         });
         
         // Función para mostrar notificaciones
